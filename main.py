@@ -48,6 +48,7 @@ def callback_query(call):
             reply_markup=markup,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
+            parse_mode='Markdown',
         )
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='Сгенерировать работу', callback_data='generate')
@@ -64,7 +65,7 @@ def callback_query(call):
             reply_markup=markup,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            parse_mode = 'html',
+            parse_mode='html',
         )
     elif req[0] == 'connect':
         btn1 = types.InlineKeyboardButton(text='Представитель Scribo', url='https://t.me/nikpeg')
