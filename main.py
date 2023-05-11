@@ -133,7 +133,7 @@ def get_document(message):
                 WORK_DOWNLOADED_FREE_MESSAGE.format(
                     remaining_works,
                     "ое" if remaining_works == 1 else "ых",
-                    "е" if remaining_works <= 1 else "я" if remaining_works >= 2 else "й",
+                    "й" if remaining_works == 0 else "е" if remaining_works == 1 else "я",
                 ),
                 parse_mode='Markdown',
             )
@@ -207,7 +207,7 @@ def get_message(message):
                 WORK_DOWNLOADED_FREE_MESSAGE.format(
                     remaining_works,
                     "ое" if remaining_works == 1 else "ых",
-                    "е" if remaining_works <= 1 else "я" if remaining_works >= 2 else "й",
+                    "й" if remaining_works == 0 else "е" if remaining_works == 1 else "я",
                 ),
                 parse_mode='Markdown',
                 reply_markup=markup,
