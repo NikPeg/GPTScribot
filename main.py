@@ -5,7 +5,7 @@ from telebot import types
 
 bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
-current_works = []  # users' works in (chat_id: int, message_id: int, file_id: str) type
+current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
 
 
@@ -111,7 +111,7 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
-            for work_chat_id, work_message_id, file_unique_id in current_works:
+            for work_chat_id, work_message_id, work_text in current_works:
                 bot.forward_message(call.message.chat.id, work_chat_id, work_message_id)
         else:
             bot.edit_message_text(
@@ -133,7 +133,7 @@ def get_document(message):
                 WORK_DOWNLOADED_FREE_MESSAGE.format(
                     remaining_works,
                     "ое" if remaining_works == 1 else "ых",
-                    "е" if remaining_works <= 1 else "я",
+                    "е" if remaining_works <= 1 else "я" if remaining_works >= 2 else "й",
                 ),
                 parse_mode='Markdown',
             )
@@ -195,11 +195,40 @@ def get_message(message):
             bot.send_message(message.from_user.id, WORK_MESSAGE, reply_markup=markup)
             reply_chat_id = message.reply_to_message.forward_from.id
             decorating[message.from_user.id] = reply_chat_id
-            remove_work(message.reply_to_message.document.file_unique_id)
+            remove_work(message.reply_to_message.text)
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
-    else:
-        bot.send_message(message.from_user.id, IDK_MESSAGE, reply_markup=markup)
+    elif message.from_user.id not in MODERATORS:
+        users_works_count[message.from_user.id] = users_works_count.get(message.from_user.id, 0) + 1
+        remaining_works = 3 - users_works_count.get(message.from_user.id, 0)
+        if remaining_works >= 0:
+            bot.send_message(
+                message.from_user.id,
+                WORK_DOWNLOADED_FREE_MESSAGE.format(
+                    remaining_works,
+                    "ое" if remaining_works == 1 else "ых",
+                    "е" if remaining_works <= 1 else "я" if remaining_works >= 2 else "й",
+                ),
+                parse_mode='Markdown',
+                reply_markup=markup,
+            )
+        else:
+            bot.send_message(message.from_user.id, WORK_DOWNLOADED_MESSAGE, parse_mode='Markdown')
+        current_works.append((message.from_user.id, message.id, message.text))
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton(
+            text='Взять в работу',
+            callback_data=f'work_{message.from_user.id}_{message.id}_{message.text}',
+        )
+        btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        markup.add(btn1)
+        markup.add(btn2)
+        for moderator_id in MODERATORS:
+            try:
+                bot.forward_message(moderator_id, message.from_user.id, message.id)
+                bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
+            except telebot.apihelper.ApiTelegramException:
+                print(f"Moderator {moderator_id} has not started the bot yet")
 
 
 bot.infinity_polling()
