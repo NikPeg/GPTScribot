@@ -160,7 +160,7 @@ def get_document(message):
         btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
         markup.add(btn1)
         bot.send_message(moderator_id, GOOD_WORK_MESSAGE, reply_markup=markup)
-        bot.forward_message(decorating[moderator_id], moderator_id, message.id)
+        bot.copy_message(decorating[moderator_id], moderator_id, message.id)
         bot.send_message(decorating[moderator_id], READY_MESSAGE, reply_markup=markup)
         del decorating[moderator_id]
     else:
