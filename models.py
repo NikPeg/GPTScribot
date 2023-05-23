@@ -107,16 +107,16 @@ class CourseWorkFactory:
             cw.chapters_text.append(chapter_text)
 
     @staticmethod
-    def _trim_name(name):
+    def _strip_name(name):
         res = name
         while res and res[0] in NAME_USELESS_SYMBOLS:
             res = res[1:]
         while res and res[-1] in NAME_USELESS_SYMBOLS:
             res = res[:-1]
-        return res.trim()
+        return res.strip()
 
     def generate_coursework(self, name):
-        name = self._trim_name(name)
+        name = self._strip_name(name)
         log(f"Generating coursework {name}...")
         cw = CourseWork(name)
         self._generate_chapters(cw)
