@@ -3,11 +3,11 @@ from CourseWorkMessages import *
 
 
 class CourseWork:
-    def __init__(self, name, text=""):
+    def __init__(self, name):
         self.name = name
-        self.text = text
         self.file_name = f"{name[:60]}.tex"
         self.chapters = []
+        self.chapters_text = []
 
     def print(self):
         print(self.text)
@@ -17,6 +17,10 @@ class CourseWork:
 
     def save(self):
         pass
+
+    @property
+    def text(self):
+        return ""
 
 
 class CourseWorkFactory:
@@ -30,6 +34,10 @@ class CourseWorkFactory:
         cw.chapters = [chapter.strip() for chapter in chapters_list]
         if cw.chapters[-1] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
+
+    def _generate_chapters_text(self, cw):
+        for chapter in cw.chapters:
+            cw.chapters_text.append(self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name)))
 
     def generate_coursework(self, name):
         cw = CourseWork(name)
