@@ -7,6 +7,7 @@ class CourseWork:
         self.name = name
         self.text = text
         self.file_name = f"{name[:60]}.tex"
+        self.chapters = []
 
     def print(self):
         print(self.text)
@@ -23,15 +24,21 @@ class CourseWorkFactory:
         self.model = model
         self.gpt = GPTProxy(model)
 
-    def _generate_chapters(self, name):
-        return self.gpt.ask(GENERATE_CHAPTERS_LIST.format(name))
+    def _generate_chapters(self, cw):
+        chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
+        chapters_list = chapters_string.split("- ")[1:]
+        cw.chapters = [chapter.strip() for chapter in chapters_list]
+        if cw.chapters[-1] not in BIBLIOGRAPHIES:
+            cw.chapters.append(BIBLIOGRAPHY)
 
     def generate_coursework(self, name):
-        chapters = self._generate_chapters(name)
-        print(chapters)
+        cw = CourseWork(name)
+        self._generate_chapters(cw)
+        return cw
 
 
 if __name__ == "__main__":
     name = "История программы-примера Hello world и её влияние на мировую культуру"
     factory = CourseWorkFactory()
-    print(factory.generate_coursework(name))
+    cw = factory.generate_coursework(name)
+    print(cw.chapters)
