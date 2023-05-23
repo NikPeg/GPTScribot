@@ -4,7 +4,7 @@ from GPTProxy import GPTProxy
 from CourseWorkMessages import *
 from utils import log
 import io
-from tenacity import retry, wait_random_exponential
+from constants import USELESS_SYMBOLS
 
 
 class CourseWork:
@@ -21,15 +21,24 @@ class CourseWork:
         return f"Курсовая работа {self.name}"
 
     def save(self):
-        with io.open(f"{cw.file_name}.tex", mode="w", encoding="utf-8") as result_file:
+        with io.open(cw.file_name, mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
 
-    @cached_property
+    @property
+    def upper_name(self):
+        return self.name.upper()
+
+    @property
     def text(self):
         res = ""
-        with io.open("template.tex", mode="r", encoding="utf-8") as template:
-            res += template.read()
+        for i in range(1, 4):
+            with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
+                res += template.read()
+            if i < 3:
+                res += self.upper_name
+
         res += "\\newpage".join(self.chapters_text)
+        res += "\end{document}"
         return res
 
 
@@ -38,13 +47,20 @@ class CourseWorkFactory:
         self.model = model
         self.gpt = GPTProxy(model)
 
+    @staticmethod
+    def strip_chapter(text):
+        res = text.strip()
+        while res and res[0] in USELESS_SYMBOLS:
+            res = res[1:]
+        return res.strip()
+
     def _generate_chapters(self, cw):
         log("Generating chapters...")
         for i in range(10):
             chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
             log(f"GPT's response: {chapters_string}")
-            chapters_list = chapters_string.split("- ")[1:]
-            cw.chapters = [chapter.strip() for chapter in chapters_list]
+            chapters_list = chapters_string.split("\n")
+            cw.chapters = [self.strip_chapter(chapter) for chapter in chapters_list]
             if len(cw.chapters) >= 5:
                 break
         else:
@@ -54,9 +70,9 @@ class CourseWorkFactory:
         log(f"Chapters: {cw.chapters}")
 
     def _generate_chapters_text(self, cw):
-        log("Generating chapters\' text...")
+        log("\n\n\nGenerating chapters\' text...")
         for chapter in cw.chapters:
-            log(f"\n\n\nGenerating chapter {chapter}...")
+            log(f"\nGenerating chapter {chapter}...")
             chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
@@ -72,5 +88,7 @@ class CourseWorkFactory:
 if __name__ == "__main__":
     name = "История программы-примера Hello world и её влияние на мировую культуру"
     factory = CourseWorkFactory()
-    cw = factory.generate_coursework(name)
-    cw.save()
+    # cw = factory.generate_coursework(name)
+    # cw.save()
+    cw = CourseWork(name)
+    cw.text
