@@ -20,7 +20,11 @@ class CourseWork:
 
     @property
     def text(self):
-        return ""
+        res = ""
+        with open("template.tex", "r") as template:
+            res += template.read()
+        res += "\\newpage".join(self.chapters_text)
+        return res
 
 
 class CourseWorkFactory:
@@ -37,11 +41,14 @@ class CourseWorkFactory:
 
     def _generate_chapters_text(self, cw):
         for chapter in cw.chapters:
-            cw.chapters_text.append(self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name)))
+            chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
+            print(chapter_text)
+            cw.chapters_text.append(chapter_text)
 
     def generate_coursework(self, name):
         cw = CourseWork(name)
         self._generate_chapters(cw)
+        self._generate_chapters_text(cw)
         return cw
 
 
@@ -49,4 +56,5 @@ if __name__ == "__main__":
     name = "История программы-примера Hello world и её влияние на мировую культуру"
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name)
-    print(cw.chapters)
+    print("\n\n\nИтоговая работа:")
+    print(cw.text)
