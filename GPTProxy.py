@@ -1,6 +1,6 @@
 from config import OPENAI_API_KEY
 import openai
-from tenacity import retry, wait_random_exponential
+from tenacity import retry, wait_random_exponential, wait_fixed, stop_after_attempt
 
 
 class GPTProxy:
@@ -8,7 +8,7 @@ class GPTProxy:
         openai.api_key = OPENAI_API_KEY
         self.model = model
 
-    @retry(wait=wait_random_exponential(multiplier=1, max=60))
+    @retry(wait=wait_fixed(21), stop=stop_after_attempt(10))
     def ask(self, message):
         try:
             completion = openai.ChatCompletion.create(
