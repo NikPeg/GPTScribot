@@ -108,7 +108,8 @@ class CourseWorkFactory:
 
 
 if __name__ == "__main__":
-    name = "История программы-примера Hello world и её влияние на мировую культуру"
+    # name = "История программы-примера Hello world и её влияние на мировую культуру"
+    name = input("Введите название работы...\n")
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name)
     cw.save()
