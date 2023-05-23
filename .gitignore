@@ -1,4 +1,4 @@
 settings.py
 .idea
 __pycache__
-.config.py
+config.py
