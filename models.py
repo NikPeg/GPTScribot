@@ -4,7 +4,7 @@ from GPTProxy import GPTProxy
 from CourseWorkMessages import *
 from utils import log
 import io
-from constants import USELESS_SYMBOLS
+from constants import *
 
 
 class CourseWork:
@@ -43,7 +43,7 @@ class CourseWork:
                 res += self.upper_name
 
         res += "\\newpage".join(self.chapters_text)
-        res += "\end{document}"
+        res += "\n\\end{document}"
         return res
 
 
@@ -53,7 +53,7 @@ class CourseWorkFactory:
         self.gpt = GPTProxy(model)
 
     @staticmethod
-    def strip_chapter(text):
+    def _strip_chapter(text):
         res = text.strip()
         while res and res[0] in USELESS_SYMBOLS:
             res = res[1:]
@@ -61,24 +61,41 @@ class CourseWorkFactory:
 
     def _generate_chapters(self, cw):
         log("Generating chapters...")
+
         for i in range(10):
             chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
             log(f"GPT's response: {chapters_string}")
             chapters_list = chapters_string.split("\n")
-            cw.chapters = [self.strip_chapter(chapter) for chapter in chapters_list]
+            cw.chapters = [self._strip_chapter(chapter) for chapter in chapters_list]
             if len(cw.chapters) >= 5:
                 break
         else:
             log(f"!!!There is a problem with {cw.name}!!!")
+
         if cw.chapters[-1] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}")
+
+    def _replace_special_symbols(self, text):
+        res = text
+        for c in SPECIAL_SYMBOLS:
+            text.replace(c, f"\\{c}")
+        return res
+
+    def _validate_chapter(self, text, name):
+        res = text
+        if SECTION not in text:
+            res = f"{SECTION}{{name}}\n{text}"
+        elif not text.startswith("\\section"):
+            res = SECTION + text.partition(SECTION)[2]
+        return res
 
     def _generate_chapters_text(self, cw):
         log("\n\n\nGenerating chapters\' text...")
         for chapter in cw.chapters:
             log(f"\nGenerating chapter {chapter}...")
             chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
+            chapter_text = self._validate_chapter(chapter_text, chapter)
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
 
