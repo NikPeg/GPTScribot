@@ -49,8 +49,8 @@ class CourseWork:
             if i < 3:
                 res += self.upper_name
 
-        res += "\\newpage".join(self.chapters_text)
-        res += "\n\\end{document}"
+        res += NEW_PAGE.join(self.chapters_text)
+        res += END_DOCUMENT
         return res
 
 
@@ -83,19 +83,22 @@ class CourseWorkFactory:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}")
 
-    def _replace_special_symbols(self, text):
+    @staticmethod
+    def _replace_special_symbols(text):
         res = text
         for c in SPECIAL_SYMBOLS:
             text.replace(c, f"\\{c}")
+        for seq in USELESS_SEQUENCES:
+            text.replace(seq, "")
         return res
 
     def _validate_chapter(self, text, name):
         res = text
         if SECTION not in text:
-            res = f"{SECTION}{{{name}}}\n{text}"
+            res = f"\n{SECTION}{{{name}}}\n{text}"
         elif not text.startswith(SECTION):
-            res = SECTION + text.partition(SECTION)[2]
-        return res
+            res = "\n" + SECTION + text.partition(SECTION)[2]
+        return self._replace_special_symbols(res)
 
     def _generate_chapters_text(self, cw):
         log("\n\n\nGenerating chapters\' text...")
