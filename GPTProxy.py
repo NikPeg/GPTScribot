@@ -22,3 +22,8 @@ class GPTProxy:
         except Exception as e:
             print(e)
             raise e
+
+
+if __name__ == "__main__":
+    proxy = GPTProxy()
+    print(proxy.ask("How do you do?"))
