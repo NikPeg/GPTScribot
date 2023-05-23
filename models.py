@@ -26,7 +26,12 @@ class CourseWork:
 
     @property
     def upper_name(self):
-        return self.name.upper()
+        words_list = self.name.upper().split()[:30]
+        section = len(words_list) // 3
+        res = ""
+        for i in range(section, len(words_list), section):
+            res += " ".join(words_list) + "\\\\"
+        return res
 
     @property
     def text(self):
@@ -88,7 +93,5 @@ class CourseWorkFactory:
 if __name__ == "__main__":
     name = "История программы-примера Hello world и её влияние на мировую культуру"
     factory = CourseWorkFactory()
-    # cw = factory.generate_coursework(name)
-    # cw.save()
-    cw = CourseWork(name)
-    cw.text
+    cw = factory.generate_coursework(name)
+    cw.save()
