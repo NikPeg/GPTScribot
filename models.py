@@ -87,9 +87,9 @@ class CourseWorkFactory:
     def _replace_special_symbols(text):
         res = text
         for c in SPECIAL_SYMBOLS:
-            text.replace(c, f"\\{c}")
+            res.replace(c, f"\\{c}")
         for seq in USELESS_SEQUENCES:
-            text.replace(seq, "")
+            res.replace(seq, "")
         return res
 
     def _validate_chapter(self, text, name):
