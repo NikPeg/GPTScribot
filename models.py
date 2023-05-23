@@ -1,10 +1,9 @@
-from functools import cached_property
+import io
 
 from GPTProxy import GPTProxy
-from CourseWorkMessages import *
-from utils import log
-import io
 from constants import *
+from coursework_messages import *
+from utils import log
 
 
 class CourseWork:
@@ -109,7 +108,7 @@ class CourseWorkFactory:
 
 if __name__ == "__main__":
     # name = "История программы-примера Hello world и её влияние на мировую культуру"
-    name = input("Введите название работы...\n")
+    name = input(ENTER_NAME)
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name)
     cw.save()
