@@ -26,10 +26,18 @@ class CourseWork:
     @property
     def upper_name(self):
         words_list = self.name.upper().split()[:30]
-        section = len(words_list) // 3
+        words_count = len(words_list)
         res = ""
-        for i in range(section, len(words_list), section):
-            res += " ".join(words_list) + "\\\\"
+        if words_count <= 5:
+            res += " ".join(words_list)
+        elif words_count <= 10:
+            res += " ".join(words_list[:words_count // 2]) + NEW_LINE
+            res += " ".join(words_list[words_count // 2:]) + NEW_LINE
+        else:
+            words_count = min(words_count, 15)
+            res += " ".join(words_list[:words_count // 3]) + NEW_LINE
+            res += " ".join(words_list[words_count // 3:words_count * 2 // 3]) + NEW_LINE
+            res += " ".join(words_list[words_count * 2 // 3:words_count]) + NEW_LINE
         return res
 
     @property
@@ -84,8 +92,8 @@ class CourseWorkFactory:
     def _validate_chapter(self, text, name):
         res = text
         if SECTION not in text:
-            res = f"{SECTION}{{name}}\n{text}"
-        elif not text.startswith("\\section"):
+            res = f"{SECTION}{{{name}}}\n{text}"
+        elif not text.startswith(SECTION):
             res = SECTION + text.partition(SECTION)[2]
         return res
 
@@ -98,7 +106,17 @@ class CourseWorkFactory:
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
 
+    @staticmethod
+    def _trim_name(name):
+        res = name
+        while res and res[0] in NAME_USELESS_SYMBOLS:
+            res = res[1:]
+        while res and res[-1] in NAME_USELESS_SYMBOLS:
+            res = res[:-1]
+        return res.trim()
+
     def generate_coursework(self, name):
+        name = self._trim_name(name)
         log(f"Generating coursework {name}...")
         cw = CourseWork(name)
         self._generate_chapters(cw)
