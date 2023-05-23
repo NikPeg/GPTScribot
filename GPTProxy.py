@@ -12,7 +12,7 @@ class GPTProxy:
     def ask(self, message):
         try:
             completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model=self.model,
                 messages=[
                     {"role": "user", "content": message}
                 ]
