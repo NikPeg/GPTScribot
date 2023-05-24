@@ -140,7 +140,7 @@ class CourseWorkFactory:
             if line == BEGIN_ENUM:
                 res = res[:-BLANK_LINE_LEN]
             if line.strip():
-                res += f"{line}\n" if line.endswith("}") or "\\item" in line else f"{line}{BLANK_LINE}"
+                res += f"{line}\n" if line.endswith("}") or "item" in line else f"{line}{BLANK_LINE}"
         return res
 
     def _generate_chapters_text(self, cw):
