@@ -137,10 +137,11 @@ class CourseWorkFactory:
     def _chapter_with_blank_lines(text):
         res = ""
         for line in text.split("\n"):
-            if line == BEGIN_ENUM:
+            line = line.strip()
+            if line in BEGINS:
                 res = res[:-BLANK_LINE_LEN]
-            if line.strip():
-                res += f"{line}\n" if line.endswith("}") or "item" in line else f"{line}{BLANK_LINE}"
+            if line:
+                res += f"{line}\n" if line.endswith("}") or ITEM in line else f"{line}{BLANK_LINE}"
         return res
 
     def _generate_chapters_text(self, cw):
@@ -181,4 +182,4 @@ if __name__ == "__main__":
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name)
     cw.save()
-    log(f"Курсовая работа {cw.file_name} сгенерирована!")
+    log(f"Курсовая работа {cw.name} сгенерирована!")

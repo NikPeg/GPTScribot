@@ -14,4 +14,5 @@ NAME_USELESS_SYMBOLS = {'.', '"', "'", "?"}
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
-BEGIN_ENUM = "\\begin{enumerate}"
+BEGINS = {"\\begin{enumerate}", "\\begin{itemize}"}
+ITEM = "item"
