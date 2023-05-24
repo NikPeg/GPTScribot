@@ -6,6 +6,7 @@ from constants import *
 from gpt_messages import *
 from utils import log
 from transliterate import translit
+from string import ascii_letters, digits
 
 
 class CourseWork:
@@ -63,7 +64,11 @@ class CourseWork:
             res += " " + word if res else word
             if len(res) >= 60:
                 break
-        return f"{res}.tex"
+        ascii_res = ""
+        for c in res:
+            if c in ascii_letters + digits + " ":
+                ascii_res += c
+        return f"{ascii_res}.tex"
 
 
 class CourseWorkFactory:
