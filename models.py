@@ -1,4 +1,5 @@
 import io
+from functools import cached_property
 
 from GPTProxy import GPTProxy
 from constants import *
@@ -23,7 +24,7 @@ class CourseWork:
         with io.open(cw.file_name, mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
 
-    @property
+    @cached_property
     def upper_name(self):
         words_list = self.name.upper().split()[:30]
         words_count = len(words_list)
@@ -53,7 +54,7 @@ class CourseWork:
         res += END_DOCUMENT
         return res
 
-    @property
+    @cached_property
     def file_name(self):
         translit_name = translit(name, language_code='ru', reversed=True)
         splitted_name = translit_name.split()
@@ -128,12 +129,20 @@ class CourseWorkFactory:
             res = self._reorder_section(text, section)
         return self._replace_special_symbols(res, name)
 
+    @staticmethod
+    def _chapter_with_blank_lines(text):
+        res = ""
+        for line in text.split("\n"):
+            if line != "\n":
+                res += f"{line}{BLANK_LINE}"
+
     def _generate_chapters_text(self, cw):
         log("\n\n\nGenerating chapters\' text...")
         for chapter in cw.chapters:
             log(f"\nGenerating chapter {chapter}...")
             chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             chapter_text = self._validate_chapter(chapter_text, chapter)
+            chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
 
@@ -161,4 +170,4 @@ if __name__ == "__main__":
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name)
     cw.save()
-    log(f"Курсовая работа {name} сгенерирована!")
+    log(f"Курсовая работа {cw.file_name} сгенерирована!")
