@@ -143,8 +143,10 @@ class CourseWorkFactory:
         res = ""
         for line in text.split("\n"):
             line = line.strip()
-            if line in BEGINS:
-                res = f"{res[:-BLANK_LINE_LEN]}\n"
+            for begin in BEGINS_WITHOUT_NEW_LINES:
+                if line.startswith(begin):
+                    res = f"{res[:-BLANK_LINE_LEN]}\n"
+                    break
             if line:
                 if line.startswith(SLASH) or line.endswith(SLASH) or line.endswith(HLINE):
                     res += f"{line}\n"
