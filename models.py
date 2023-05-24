@@ -76,6 +76,8 @@ class CourseWorkFactory:
         res = text.strip()
         while res and res[0] in USELESS_SYMBOLS:
             res = res[1:]
+        while res and res[-1] in USELESS_SYMBOLS:
+            res = res[:-1]
         return res.strip()
 
     def _generate_chapters(self, cw):
@@ -133,8 +135,8 @@ class CourseWorkFactory:
     def _chapter_with_blank_lines(text):
         res = ""
         for line in text.split("\n"):
-            if line != "\n":
-                res += f"{line}{BLANK_LINE}"
+            if line:
+                res += line if not line.endswith("}") else f"{line}{BLANK_LINE}"
         return res
 
     def _generate_chapters_text(self, cw):
