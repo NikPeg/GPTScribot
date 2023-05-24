@@ -16,4 +16,4 @@ SYMBOLS_TO_REPLACE = {
 }
 SLASH = "\\"
 HLINE = "\\hline"
-BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\subsection"}
+BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\subsection", "\\item", "\\bibitem"}

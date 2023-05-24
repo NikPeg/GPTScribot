@@ -139,14 +139,19 @@ class CourseWorkFactory:
         return self._replace_special_symbols(res, name)
 
     @staticmethod
+    def _delete_blank_line(text):
+        if text.endswith(BLANK_LINE):
+            return f"{text[:-BLANK_LINE_LEN]}\n"
+        return text
+
+    @staticmethod
     def _chapter_with_blank_lines(text):
         res = ""
         for line in text.split("\n"):
             line = line.strip()
             for begin in BEGINS_WITHOUT_NEW_LINES:
                 if line.startswith(begin):
-                    res = f"{res[:-BLANK_LINE_LEN]}\n"
-                    break
+                    res = CourseWorkFactory._delete_blank_line(res)
             if line:
                 if line.startswith(SLASH) or line.endswith(SLASH) or line.endswith(HLINE):
                     res += f"{line}\n"
