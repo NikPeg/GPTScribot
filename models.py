@@ -59,7 +59,7 @@ class CourseWork:
         splitted_name = translit_name.split()
         res = ""
         for word in splitted_name:
-            res += word
+            res += " " + word if res else word
             if len(res) >= 60:
                 break
         return f"{res}.tex"
