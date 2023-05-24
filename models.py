@@ -138,7 +138,7 @@ class CourseWorkFactory:
         res = ""
         for line in text.split("\n"):
             if line:
-                res += f"{line}\n" if line.endswith("}") else f"{line}{BLANK_LINE}"
+                res += f"{line}\n" if line.endswith("}") or "\\item" in line else f"{line}{BLANK_LINE}"
         return res
 
     def _generate_chapters_text(self, cw):
