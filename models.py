@@ -84,9 +84,10 @@ class CourseWorkFactory:
         log(f"Chapters: {cw.chapters}")
 
     @staticmethod
-    def _replace_special_symbols(text):
+    def _replace_special_symbols(text, name):
+        symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = text
-        for c in SPECIAL_SYMBOLS:
+        for c in symbols:
             res = res.replace(c, f"\\{c}")
             res = res.replace(f"\\\\{c}", f"\\{c}")
         for seq in USELESS_SEQUENCES:
@@ -98,8 +99,11 @@ class CourseWorkFactory:
         if SECTION not in text:
             res = f"\n{SECTION}{{{name}}}\n{text}"
         elif not text.startswith(SECTION):
-            res = "\n" + SECTION + text.partition(SECTION)[2]
-        return self._replace_special_symbols(res)
+            if name in BIBLIOGRAPHIES:
+                res = f"\n{SECTION}*{text.partition(SECTION)[2]}"
+            else:
+                res = f"\n{SECTION}{text.partition(SECTION)[2]}"
+        return self._replace_special_symbols(res, name)
 
     def _generate_chapters_text(self, cw):
         log("\n\n\nGenerating chapters\' text...")
