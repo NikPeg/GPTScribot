@@ -141,7 +141,7 @@ class CourseWorkFactory:
             if line in BEGINS:
                 res = res[:-BLANK_LINE_LEN]
             if line:
-                res += f"{line}\n" if line.endswith("}") or ITEM in line else f"{line}{BLANK_LINE}"
+                res += f"{line}\n" if line.startswith(SLASH) or line.endswith(SLASH) else f"{line}{BLANK_LINE}"
         return res
 
     def _generate_chapters_text(self, cw):
