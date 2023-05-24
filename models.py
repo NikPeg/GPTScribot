@@ -105,15 +105,27 @@ class CourseWorkFactory:
             res = res.replace(seq, "")
         return res
 
+    @staticmethod
+    def _add_section(text, name, section):
+        if text.startswith(name):
+            return f"\n{section}{{{name}}}\n{text.partition(name)[2]}"
+        else:
+            return f"\n{section}{{{name}}}\n{text}"
+
+    @staticmethod
+    def _reorder_section(text, section):
+        return f"\n{section}{text.partition(SECTION)[2]}"
+
     def _validate_chapter(self, text, name):
         res = text
+        if name in BIBLIOGRAPHIES:
+            section = BIBLIOGRAPHY_SECTION
+        else:
+            section = SECTION
         if SECTION not in text:
-            res = f"\n{SECTION}{{{name}}}\n{text}"
+            res = self._add_section(text, name, section)
         elif not text.startswith(SECTION):
-            if name in BIBLIOGRAPHIES:
-                res = f"\n{SECTION}*{text.partition(SECTION)[2]}"
-            else:
-                res = f"\n{SECTION}{text.partition(SECTION)[2]}"
+            res = self._reorder_section(text, section)
         return self._replace_special_symbols(res, name)
 
     def _generate_chapters_text(self, cw):
