@@ -139,7 +139,7 @@ class CourseWorkFactory:
         for line in text.split("\n"):
             line = line.strip()
             if line in BEGINS:
-                res = res[:-BLANK_LINE_LEN]
+                res = f"{res[:-BLANK_LINE_LEN]}\n"
             if line:
                 if line.startswith(SLASH) or line.endswith(SLASH) or line.endswith(HLINE):
                     res += f"{line}\n"

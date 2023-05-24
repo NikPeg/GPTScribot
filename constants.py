@@ -16,4 +16,4 @@ SYMBOLS_TO_REPLACE = {
 }
 SLASH = "\\"
 HLINE = "\\hline"
-BEGINS = {"\\begin{enumerate}", "\\begin{itemize}"}
+BEGINS = {"\\begin{enumerate}", "\\begin{itemize}", "\\subsection"}
