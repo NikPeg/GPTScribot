@@ -3,7 +3,7 @@ from functools import cached_property
 
 from GPTProxy import GPTProxy
 from constants import *
-from coursework_messages import *
+from gpt_messages import *
 from utils import log
 from transliterate import translit
 
@@ -135,16 +135,21 @@ class CourseWorkFactory:
         for line in text.split("\n"):
             if line != "\n":
                 res += f"{line}{BLANK_LINE}"
+        return res
 
     def _generate_chapters_text(self, cw):
         log("\n\n\nGenerating chapters\' text...")
         for chapter in cw.chapters:
             log(f"\nGenerating chapter {chapter}...")
-            chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
+            if chapter in BIBLIOGRAPHIES:
+                chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name))
+            else:
+                chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             chapter_text = self._validate_chapter(chapter_text, chapter)
             chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
+
 
     @staticmethod
     def _strip_name(name):
