@@ -4,12 +4,14 @@ from GPTProxy import GPTProxy
 from constants import *
 from coursework_messages import *
 from utils import log
+from transliterate import translit
 
 
 class CourseWork:
     def __init__(self, name):
         self.name = name
-        self.file_name = f"{name[:60]}.tex"
+        translit_name = translit(name, language_code='ru', reversed=True)
+        self.file_name = f"{translit_name[:60]}.tex"
         self.chapters = []
         self.chapters_text = []
 
