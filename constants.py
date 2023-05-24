@@ -10,3 +10,6 @@ BLANK_LINE = "\\\\\n~\\\\\n"
 NEW_PAGE = "\n\\newpage\n"
 END_DOCUMENT = "\n\\end{document}"
 NAME_USELESS_SYMBOLS = {'.', '"', "'", "?"}
+SYMBOLS_TO_REPLACE = {
+    '"': '"{}',
+}

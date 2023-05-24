@@ -104,6 +104,8 @@ class CourseWorkFactory:
         for c in symbols:
             res = res.replace(c, f"\\{c}")
             res = res.replace(f"\\\\{c}", f"\\{c}")
+        for c in SYMBOLS_TO_REPLACE:
+            res = res.replace(c, SYMBOLS_TO_REPLACE[c])
         for seq in USELESS_SEQUENCES:
             res = res.replace(seq, "")
         return res
@@ -136,7 +138,7 @@ class CourseWorkFactory:
         res = ""
         for line in text.split("\n"):
             if line:
-                res += line if not line.endswith("}") else f"{line}{BLANK_LINE}"
+                res += f"{line}\n" if line.endswith("}") else f"{line}{BLANK_LINE}"
         return res
 
     def _generate_chapters_text(self, cw):
