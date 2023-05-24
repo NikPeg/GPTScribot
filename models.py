@@ -10,8 +10,6 @@ from transliterate import translit
 class CourseWork:
     def __init__(self, name):
         self.name = name
-        translit_name = translit(name, language_code='ru', reversed=True)
-        self.file_name = f"{translit_name[:60]}.tex"
         self.chapters = []
         self.chapters_text = []
 
@@ -54,6 +52,17 @@ class CourseWork:
         res += NEW_PAGE.join(self.chapters_text)
         res += END_DOCUMENT
         return res
+
+    @property
+    def file_name(self):
+        translit_name = translit(name, language_code='ru', reversed=True)
+        splitted_name = translit_name.split()
+        res = ""
+        for word in splitted_name:
+            res += word
+            if len(res) >= 60:
+                break
+        return f"{res}.tex"
 
 
 class CourseWorkFactory:
