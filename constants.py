@@ -7,9 +7,11 @@ USELESS_SEQUENCES = {"\\url"}
 BIBLIOGRAPHIES = {"Библиография", "Список использованных источников", "Источники", "Материалы", "Список литературы"}
 NEW_LINE = "\\\\\n"
 BLANK_LINE = "\\\\\n~\\\\\n"
+BLANK_LINE_LEN = len(BLANK_LINE) + 2
 NEW_PAGE = "\n\\newpage\n"
 END_DOCUMENT = "\n\\end{document}"
 NAME_USELESS_SYMBOLS = {'.', '"', "'", "?"}
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
+BEGIN_ENUM = "\\begin{enumerate}"
