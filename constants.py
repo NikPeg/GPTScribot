@@ -16,3 +16,4 @@ SYMBOLS_TO_REPLACE = {
 }
 BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\item", "\\bibitem"}
 ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline"}
+RUSSIAN = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"

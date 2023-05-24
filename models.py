@@ -6,7 +6,7 @@ from constants import *
 from gpt_messages import *
 from utils import log
 from transliterate import translit
-from string import ascii_letters, digits
+from string import ascii_letters, digits, printable
 
 
 class CourseWork:
@@ -105,7 +105,10 @@ class CourseWorkFactory:
     @staticmethod
     def _replace_special_symbols(text, name):
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
-        res = text
+        res = ""
+        for c in text:
+            if c in printable + RUSSIAN:
+                res += c
         for c in symbols:
             res = res.replace(c, f"\\{c}")
             res = res.replace(f"\\\\{c}", f"\\{c}")
