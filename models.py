@@ -88,6 +88,7 @@ class CourseWorkFactory:
         res = text
         for c in SPECIAL_SYMBOLS:
             res = res.replace(c, f"\\{c}")
+            res = res.replace(f"\\\\{c}", f"\\{c}")
         for seq in USELESS_SEQUENCES:
             res = res.replace(seq, "")
         return res
