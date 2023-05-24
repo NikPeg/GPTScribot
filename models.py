@@ -137,7 +137,7 @@ class CourseWorkFactory:
     def _chapter_with_blank_lines(text):
         res = ""
         for line in text.split("\n"):
-            if line:
+            if line.strip():
                 res += f"{line}\n" if line.endswith("}") or "\\item" in line else f"{line}{BLANK_LINE}"
         return res
 
