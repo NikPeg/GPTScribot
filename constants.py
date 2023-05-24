@@ -1,8 +1,8 @@
 USELESS_SYMBOLS = {'-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '}
 SECTION = "\\section"
 SPECIAL_SYMBOLS = {"$", "&", "_", "%"}
-USELESS_SEQUENCES = {"url"}
-BIBLIOGRAPHIES = {"Библиография", "Список использованных источников", "Источники", "Материалы"}
+USELESS_SEQUENCES = {"\\url"}
+BIBLIOGRAPHIES = {"Библиография", "Список использованных источников", "Источники", "Материалы", "Список литературы"}
 NEW_LINE = "\\\\\n"
 NEW_PAGE = "\\newpage"
 END_DOCUMENT = "\n\\end{document}"
