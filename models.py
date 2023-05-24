@@ -153,8 +153,10 @@ class CourseWorkFactory:
                 if line.startswith(begin):
                     res = CourseWorkFactory._delete_blank_line(res)
             if line:
-                if line.endswith("}") or line.endswith(SLASH) or line.endswith(HLINE):
-                    res += f"{line}\n"
+                for end in ENDS_WITHOUT_NEW_LINES:
+                    if line.endswith(end):
+                        res += f"{line}\n"
+                        break
                 else:
                     res += f"{line}{BLANK_LINE}"
         return res

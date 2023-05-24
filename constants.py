@@ -14,6 +14,5 @@ NAME_USELESS_SYMBOLS = {'.', '"', "'", "?"}
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
-SLASH = "\\"
-HLINE = "\\hline"
-BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\subsection", "\\item", "\\bibitem"}
+BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\item", "\\bibitem"}
+ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline"}
