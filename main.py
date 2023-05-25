@@ -112,7 +112,7 @@ def callback_query(call):
                 message_id=call.message.message_id,
             )
             for work_chat_id, work_message_id, work_text in current_works:
-                bot.forward_message(call.message.chat.id, work_chat_id, work_message_id)
+                bot.send_message(call.message.chat.id, f"{work_chat_id}\n{work_text}")
         else:
             bot.edit_message_text(
                 EMPTY_LIST_MESSAGE,
@@ -124,47 +124,20 @@ def callback_query(call):
 
 @bot.message_handler(content_types=['document'])
 def get_document(message):
-    if message.from_user.id not in MODERATORS:
-        users_works_count[message.from_user.id] = users_works_count.get(message.from_user.id, 0) + 1
-        remaining_works = 3 - users_works_count.get(message.from_user.id, 0)
-        if remaining_works >= 0:
-            bot.send_message(
-                message.from_user.id,
-                WORK_DOWNLOADED_FREE_MESSAGE.format(
-                    remaining_works,
-                    "ое" if remaining_works == 1 else "ых",
-                    "й" if remaining_works == 0 else "е" if remaining_works == 1 else "я",
-                ),
-                parse_mode='Markdown',
-            )
+    if message.from_user.id in MODERATORS:
+        if message.from_user.id in decorating:
+            moderator_id = message.from_user.id
+            markup = types.InlineKeyboardMarkup()
+            btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+            markup.add(btn1)
+            bot.send_message(moderator_id, GOOD_WORK_MESSAGE, reply_markup=markup)
+            bot.copy_message(decorating[moderator_id], moderator_id, message.id)
+            bot.send_message(decorating[moderator_id], READY_MESSAGE, reply_markup=markup)
+            del decorating[moderator_id]
         else:
-            bot.send_message(message.from_user.id, WORK_DOWNLOADED_MESSAGE, parse_mode='Markdown')
-        current_works.append((message.from_user.id, message.id, message.document.file_unique_id))
-        markup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(
-            text='Взять в работу',
-            callback_data=f'work_{message.from_user.id}_{message.id}_{message.document.file_unique_id}',
-        )
-        btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-        markup.add(btn1)
-        markup.add(btn2)
-        for moderator_id in MODERATORS:
-            try:
-                bot.forward_message(moderator_id, message.from_user.id, message.id)
-                bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
-            except telebot.apihelper.ApiTelegramException:
-                print(f"Moderator {moderator_id} has not started the bot yet")
-    elif message.from_user.id in decorating:
-        moderator_id = message.from_user.id
-        markup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-        markup.add(btn1)
-        bot.send_message(moderator_id, GOOD_WORK_MESSAGE, reply_markup=markup)
-        bot.copy_message(decorating[moderator_id], moderator_id, message.id)
-        bot.send_message(decorating[moderator_id], READY_MESSAGE, reply_markup=markup)
-        del decorating[moderator_id]
+            bot.send_message(message.from_user.id, NO_WORKS_MESSAGE, parse_mode='Markdown')
     else:
-        bot.send_message(message.from_user.id, NO_WORKS_MESSAGE, parse_mode='Markdown')
+        bot.send_message(message.from_user.id, IDK_MESSAGE)
 
 
 @bot.message_handler(content_types=['photo'])
@@ -225,7 +198,7 @@ def get_message(message):
         markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
-                bot.forward_message(moderator_id, message.from_user.id, message.id)
+                bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
                 bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
