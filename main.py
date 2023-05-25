@@ -1,4 +1,4 @@
-from settings import *
+from config import *
 from messages import *
 import telebot
 from telebot import types
