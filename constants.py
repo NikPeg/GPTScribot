@@ -1,7 +1,8 @@
 USELESS_SYMBOLS = {'-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '}
 SECTION = "\\section"
 BIBLIOGRAPHY_SECTION = "\\section*"
-SPECIAL_SYMBOLS = {"$", "%"}
+SPECIAL_SYMBOLS = {"%"}
+# SPECIAL_SYMBOLS = {"$", "%"}
 BIBLIOGRAPHY_SPECIAL_SYMBOLS = {"$", "&", "_", "%"}
 USELESS_SEQUENCES = {"\\url", "[label={[\\arabic*]}]"}
 BIBLIOGRAPHIES = {"Библиография", "Список использованных источников", "Источники", "Материалы", "Список литературы"}
@@ -14,6 +15,6 @@ NAME_USELESS_SYMBOLS = {'.', '"', "'", "?"}
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
-BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\item", "\\bibitem", }
+BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\subsubsection", "\\item", "\\bibitem", }
 ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline", "\\centering"}
 RUSSIAN = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
