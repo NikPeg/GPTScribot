@@ -112,7 +112,7 @@ def callback_query(call):
                 message_id=call.message.message_id,
             )
             for work_chat_id, work_message_id, work_text in current_works:
-                bot.send_message(call.message.chat.id, f"{work_chat_id}\n{work_text}")
+                bot.send_message(call.message.chat.id, f"{work_chat_id}\n\n{work_text}")
         else:
             bot.edit_message_text(
                 EMPTY_LIST_MESSAGE,
@@ -149,9 +149,9 @@ def get_photo(message):
     bot.send_message(ADMIN, f"User @{message.from_user.username} paid!")
 
 
-def remove_work(file_unique_id):
+def remove_work(work_text):
     for work in current_works:
-        if work[2] == file_unique_id:
+        if work[2] == work_text:
             current_works.remove(work)
             break
 
@@ -166,9 +166,9 @@ def get_message(message):
             bot.send_message(message.from_user.id, WRONG_WORK_MESSAGE, reply_markup=markup)
         elif message.reply_to_message:
             bot.send_message(message.from_user.id, WORK_MESSAGE, reply_markup=markup)
-            reply_chat_id = message.reply_to_message.forward_from.id
+            reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             decorating[message.from_user.id] = reply_chat_id
-            remove_work(message.reply_to_message.text)
+            remove_work(message.reply_to_message.text.partition("\n")[2])
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
@@ -198,7 +198,7 @@ def get_message(message):
         markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
-                bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
+                bot.send_message(moderator_id, f"{message.from_user.id}\n\n{message.text}")
                 bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
