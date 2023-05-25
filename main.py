@@ -112,7 +112,7 @@ def callback_query(call):
                 message_id=call.message.message_id,
             )
             for work_chat_id, work_message_id, work_text in current_works:
-                bot.send_message(call.message.chat.id, f"{work_chat_id}\n\n{work_text}")
+                bot.send_message(call.message.chat.id, f"{work_chat_id}\n{work_text}")
         else:
             bot.edit_message_text(
                 EMPTY_LIST_MESSAGE,
@@ -198,7 +198,7 @@ def get_message(message):
         markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
-                bot.send_message(moderator_id, f"{message.from_user.id}\n\n{message.text}")
+                bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
                 bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
