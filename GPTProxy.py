@@ -26,5 +26,14 @@ class GPTProxy:
 
 if __name__ == "__main__":
     proxy = GPTProxy()
-    question = input("Type your question:\n")
-    print(proxy.ask(question))
+    while True:
+        print("\nType your question:")
+        line = None
+        question = ""
+        while line != "":
+            line = input()
+            question += line
+        answer = proxy.ask(question)
+        step = 70
+        for i in range(0, len(answer), step):
+            print(answer[i:i + step])
