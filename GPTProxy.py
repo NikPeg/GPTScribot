@@ -26,4 +26,5 @@ class GPTProxy:
 
 if __name__ == "__main__":
     proxy = GPTProxy()
-    print(proxy.ask("How do you do?"))
+    question = input("Type your question:\n")
+    print(proxy.ask(question))
