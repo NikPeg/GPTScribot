@@ -24,16 +24,25 @@ class GPTProxy:
             raise e
 
 
+def handle_question(question):
+    res = ""
+    for line in question:
+        if line not in {"*", "5 баллов", "10 баллов"}:
+            res += line + "\n"
+    res += "Choose only one answer"
+    return res
+
+
 if __name__ == "__main__":
     proxy = GPTProxy()
     while True:
         print("\nType your question:")
         line = None
-        question = ""
+        question = []
         while line != "":
             line = input()
-            question += line
-        answer = proxy.ask(question)
+            question.append(line)
+        answer = proxy.ask(handle_question(question))
         step = 70
         for i in range(0, len(answer), step):
             print(answer[i:i + step])
