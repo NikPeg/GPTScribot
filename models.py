@@ -134,19 +134,22 @@ class CourseWorkFactory:
             res = res.replace(seq, "")
         if name in BIBLIOGRAPHIES:
             self.ref_index = 1
-            res = re.sub(r'\\bibitem\{.*?\}', self._next_bibitem, text)
+            res = re.sub(r'\\bibitem\{.*?\}', self._next_bibitem, res)
         else:
             self.cite_index = 1
-            res = re.sub(r'\\cite\{.*?\}', self._next_cite, text)
+            res = re.sub(r'\\cite\{.*?\}', self._next_cite, res)
         return res
 
     @staticmethod
     def _add_section(text, name, section):
-        new_line_index = text.index("\n")
-        first_line = text[:new_line_index]
-        if name in first_line:
-            return f"\n{section}{{{name}}}\n{text[new_line_index + 2:]}"
-        else:
+        try:
+            new_line_index = text.index("\n")
+            first_line = text[:new_line_index]
+            if name in first_line:
+                return f"\n{section}{{{name}}}\n{text[new_line_index + 2:]}"
+            else:
+                return f"\n{section}{{{name}}}\n{text}"
+        except ValueError:
             return f"\n{section}{{{name}}}\n{text}"
 
     @staticmethod
@@ -224,6 +227,8 @@ if __name__ == "__main__":
     # name = "История программы-примера Hello world и её влияние на мировую культуру"
     name = input(ENTER_NAME)
     factory = CourseWorkFactory()
-    cw = factory.generate_coursework(name)
-    cw.save()
-    log(f"Курсовая работа {cw.name} сгенерирована!")
+    # cw = factory.generate_coursework(name)
+    # cw.save()
+    # log(f"Курсовая работа {cw.name} сгенерирована!")
+    s = "adcd&gdfv\&dsvs\\&dscdsj\\\&"
+    print(factory._validate_chapter(s, BIBLIOGRAPHY))
