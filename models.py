@@ -197,7 +197,8 @@ class CourseWorkFactory:
             else:
                 chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             chapter_text = self._validate_chapter(chapter_text, chapter)
-            chapter_text = self._chapter_with_blank_lines(chapter_text)
+            if chapter not in BIBLIOGRAPHIES:
+                chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
 
