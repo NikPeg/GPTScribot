@@ -1,4 +1,5 @@
 import io
+import re
 from functools import cached_property
 
 from GPTProxy import GPTProxy
@@ -75,6 +76,8 @@ class CourseWorkFactory:
     def __init__(self, model="gpt-3.5-turbo"):
         self.model = model
         self.gpt = GPTProxy(model)
+        self.ref_index = 1
+        self.cite_index = 1
 
     @staticmethod
     def _strip_chapter(text):
@@ -106,8 +109,17 @@ class CourseWorkFactory:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}")
 
-    @staticmethod
-    def _replace_special_symbols(text, name):
+    def _next_bibitem(self, match):
+        result = f'\\bibitem{{ref{self.ref_index}}}'
+        self.ref_index += 1
+        return result
+
+    def _next_cite(self, match):
+        result = f'\\cite{{ref{self.cite_index}}}'
+        self.cite_index += 1
+        return result
+
+    def _replace_special_symbols(self, text, name):
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = ""
         for c in text:
@@ -120,6 +132,12 @@ class CourseWorkFactory:
             res = res.replace(c, SYMBOLS_TO_REPLACE[c])
         for seq in USELESS_SEQUENCES:
             res = res.replace(seq, "")
+        if name in BIBLIOGRAPHIES:
+            self.ref_index = 1
+            res = re.sub(r'\\bibitem\{.*?\}', self._next_bibitem, text)
+        else:
+            self.cite_index = 1
+            res = re.sub(r'\\cite\{.*?\}', self._next_cite, text)
         return res
 
     @staticmethod
@@ -180,7 +198,6 @@ class CourseWorkFactory:
             chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text)
             cw.chapters_text.append(chapter_text)
-
 
     @staticmethod
     def _strip_name(name):
