@@ -143,7 +143,8 @@ class CourseWorkFactory:
     @staticmethod
     def _add_section(text, name, section):
         if text.startswith(name):
-            return f"\n{section}{{{name}}}\n{text.partition(name)[2]}"
+            new_line_index = text.index("\n")
+            return f"\n{section}{{{name}}}\n{text[new_line_index + 2:]}"
         else:
             return f"\n{section}{{{name}}}\n{text}"
 
