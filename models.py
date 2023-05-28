@@ -227,8 +227,6 @@ if __name__ == "__main__":
     # name = "История программы-примера Hello world и её влияние на мировую культуру"
     name = input(ENTER_NAME)
     factory = CourseWorkFactory()
-    # cw = factory.generate_coursework(name)
-    # cw.save()
-    # log(f"Курсовая работа {cw.name} сгенерирована!")
-    s = "adcd&gdfv\&dsvs\\&dscdsj\\\&"
-    print(factory._validate_chapter(s, BIBLIOGRAPHY))
+    cw = factory.generate_coursework(name)
+    cw.save()
+    log(f"{cw.name} сгенерирована!")
