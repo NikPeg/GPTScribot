@@ -15,6 +15,7 @@ NAME_USELESS_SYMBOLS = {'.', '"', "'", "?"}
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
+RUSSIAN_SECTION = "Раздел"
 BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\subsubsection", "\\item", "\\bibitem", }
 ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline", "\\centering", "&"}
 RUSSIAN = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"

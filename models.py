@@ -145,7 +145,7 @@ class CourseWorkFactory:
         try:
             new_line_index = text.index("\n")
             first_line = text[:new_line_index]
-            if name in first_line:
+            if name in first_line or first_line.startswith(RUSSIAN_SECTION):
                 return f"\n{section}{{{name}}}\n{text[new_line_index + 2:]}"
             else:
                 return f"\n{section}{{{name}}}\n{text}"
