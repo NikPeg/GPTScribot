@@ -229,4 +229,4 @@ if __name__ == "__main__":
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name)
     cw.save()
-    log(f"{cw.name} сгенерирована!")
+    log(f"Курсовая работа\n{cw.name} сгенерирована!")
