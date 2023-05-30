@@ -138,7 +138,7 @@ class CourseWorkFactory:
         else:
             self.cite_index = 1
             res = re.sub(r'\\cite\{.*?\}', self._next_cite, res)
-            res = re.sub(r"\$(?!\d)", r"\$", res)
+            res = re.sub(r"\$(?=\d)", r"\\$", res)
         return res
 
     @staticmethod
