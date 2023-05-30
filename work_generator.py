@@ -24,12 +24,13 @@ class CourseWork:
         return f"Курсовая работа {self.name}"
 
     def save(self):
-        with io.open(cw.file_name, mode="w", encoding="utf-8") as result_file:
+        with io.open(cw.file_name(), mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
-        subprocess.run(["pdflatex", cw.file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        result = subprocess.run(["pdflatex", cw.file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        subprocess.run(["pdflatex", cw.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(["pdflatex", cw.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         print(result.stdout)
         print(result.stderr)
+        return result.returncode
 
     @cached_property
     def upper_name(self):
@@ -61,8 +62,7 @@ class CourseWork:
         res += END_DOCUMENT
         return res
 
-    @cached_property
-    def file_name(self):
+    def file_name(self, type="tex"):
         translit_name = translit(name, language_code='ru', reversed=True)
         splitted_name = translit_name.split()
         res = ""
@@ -74,7 +74,7 @@ class CourseWork:
         for c in res:
             if c in ascii_letters + digits + " ":
                 ascii_res += c
-        return f"{ascii_res}.tex"
+        return f"{ascii_res}.{type}"
 
 
 class CourseWorkFactory:

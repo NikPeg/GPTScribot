@@ -1,5 +1,6 @@
 from config import *
 from messages import *
+from work_generator import CourseWorkFactory, CourseWork
 import telebot
 from telebot import types
 
@@ -7,6 +8,7 @@ bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
+factory = CourseWorkFactory()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -156,6 +158,12 @@ def remove_work(work_text):
             break
 
 
+def send_work(cw: CourseWork, moderator: int, user: int) -> None:
+    bot.send_message(moderator, READY_MESSAGE)
+    bot.send_message(user, READY_MESSAGE)
+    bot.send_document(moderator, open(cw.file_name("pdf"), 'rb'))
+    bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
+
 @bot.message_handler(content_types=['text'])
 def get_message(message):
     markup = types.InlineKeyboardMarkup()
@@ -169,6 +177,24 @@ def get_message(message):
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             decorating[message.from_user.id] = reply_chat_id
             remove_work(message.reply_to_message.text.partition("\n")[2])
+        else:
+            bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
+    if message.from_user.id in MODERATORS and message.text.lower() == "сгенерировать":
+        if message.reply_to_message:
+            bot.send_message(message.from_user.id, GENERATING_MESSAGE, reply_markup=markup)
+            reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
+            decorating[message.from_user.id] = reply_chat_id
+            for i in range(5):
+                cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
+                result = cw.save()
+                if result == 0:
+                    send_work(cw, message.from_user.id, reply_chat_id)
+                    remove_work(message.reply_to_message.text.partition("\n")[2])
+                    break
+            else:
+                bot.send_message(message.from_user.id,
+                                 PROBLEM_MESSAGE.format(message.reply_to_message.text.split("\n")[1]),
+                                 reply_markup=markup)
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
