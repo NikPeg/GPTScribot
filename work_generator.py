@@ -2,7 +2,7 @@ import io
 import re
 from functools import cached_property
 
-from GPTProxy import GPTProxy
+from proxy import GPTProxy
 from constants import *
 from gpt_messages import *
 from utils import log
