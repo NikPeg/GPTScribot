@@ -96,23 +96,23 @@ class CourseWorkFactory:
     def _generate_chapters(self, cw):
         log("Generating chapters...")
 
-        # for i in range(10):
-        #     cw.chapters = []
-        #     chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
-        #     log(f"GPT's response: {chapters_string}")
-        #     chapters_list = chapters_string.split("\n")
-        #     for chapter in chapters_list:
-        #         chapter_name = self._strip_chapter(chapter)
-        #         if chapter_name:
-        #             cw.chapters.append(chapter_name)
-        #     if len(cw.chapters) >= 5:
-        #         break
-        # else:
-        #     log(f"!!!There is a problem with {cw.name}!!!")
-        #
-        # if cw.chapters[-1] not in BIBLIOGRAPHIES:
-        #     cw.chapters.append(BIBLIOGRAPHY)
-        cw.chapters.append("Введение")
+        for i in range(10):
+            cw.chapters = []
+            chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
+            log(f"GPT's response: {chapters_string}")
+            chapters_list = chapters_string.split("\n")
+            for chapter in chapters_list:
+                chapter_name = self._strip_chapter(chapter)
+                if chapter_name:
+                    cw.chapters.append(chapter_name)
+            if len(cw.chapters) >= 5:
+                break
+        else:
+            log(f"!!!There is a problem with {cw.name}!!!")
+
+        if cw.chapters[-1] not in BIBLIOGRAPHIES:
+            cw.chapters.append(BIBLIOGRAPHY)
+        # cw.chapters.append("Введение")
         log(f"Chapters: {cw.chapters}")
 
     def _next_bibitem(self, match):
