@@ -8,6 +8,7 @@ from gpt_messages import *
 from utils import log
 from transliterate import translit
 from string import ascii_letters, digits, printable
+import subprocess
 
 
 class CourseWork:
@@ -25,6 +26,10 @@ class CourseWork:
     def save(self):
         with io.open(cw.file_name, mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
+        subprocess.run(["pdflatex", cw.file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(["pdflatex", cw.file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(result.stdout)
+        print(result.stderr)
 
     @cached_property
     def upper_name(self):
@@ -91,22 +96,23 @@ class CourseWorkFactory:
     def _generate_chapters(self, cw):
         log("Generating chapters...")
 
-        for i in range(10):
-            cw.chapters = []
-            chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
-            log(f"GPT's response: {chapters_string}")
-            chapters_list = chapters_string.split("\n")
-            for chapter in chapters_list:
-                chapter_name = self._strip_chapter(chapter)
-                if chapter_name:
-                    cw.chapters.append(chapter_name)
-            if len(cw.chapters) >= 5:
-                break
-        else:
-            log(f"!!!There is a problem with {cw.name}!!!")
-
-        if cw.chapters[-1] not in BIBLIOGRAPHIES:
-            cw.chapters.append(BIBLIOGRAPHY)
+        # for i in range(10):
+        #     cw.chapters = []
+        #     chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
+        #     log(f"GPT's response: {chapters_string}")
+        #     chapters_list = chapters_string.split("\n")
+        #     for chapter in chapters_list:
+        #         chapter_name = self._strip_chapter(chapter)
+        #         if chapter_name:
+        #             cw.chapters.append(chapter_name)
+        #     if len(cw.chapters) >= 5:
+        #         break
+        # else:
+        #     log(f"!!!There is a problem with {cw.name}!!!")
+        #
+        # if cw.chapters[-1] not in BIBLIOGRAPHIES:
+        #     cw.chapters.append(BIBLIOGRAPHY)
+        cw.chapters.append("Введение")
         log(f"Chapters: {cw.chapters}")
 
     def _next_bibitem(self, match):
