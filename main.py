@@ -231,5 +231,17 @@ def get_message(message):
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
 
+        for i in range(5):
+            bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
+            cw = factory.generate_coursework(message.text)
+            if cw.save():
+                send_work(cw, ADMIN, message.from_user.id)
+                remove_work(message.text)
+                break
+        else:
+            bot.send_message(ADMIN,
+                             PROBLEM_MESSAGE.format(message.text.split("\n")[1]),
+                             reply_markup=markup)
+
 
 bot.infinity_polling()
