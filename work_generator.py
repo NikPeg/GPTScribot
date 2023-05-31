@@ -31,8 +31,8 @@ class CourseWork:
             log("\nTry to run pdflatex...\n", self.bot)
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            log(result.stdout)
-            log(result.stderr)
+            log(result.stdout, bot=self.bot)
+            log(result.stderr, bot=self.bot)
             return result.returncode == 0
         except Exception as e:
             log(e, self.bot)
