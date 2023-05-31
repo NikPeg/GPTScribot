@@ -23,14 +23,18 @@ class CourseWork:
     def __str__(self):
         return f"Курсовая работа {self.name}"
 
-    def save(self):
-        with io.open(cw.file_name(), mode="w", encoding="utf-8") as result_file:
+    def save(self) -> bool:
+        with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
-        subprocess.run(["pdflatex", cw.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        result = subprocess.run(["pdflatex", cw.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
+        try:
+            subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            print(result.stdout)
+            print(result.stderr)
+            return result.returncode == 0
+        except Exception as e:
+            log(e)
+            return False
 
     @cached_property
     def upper_name(self):
@@ -63,7 +67,7 @@ class CourseWork:
         return res
 
     def file_name(self, type="tex"):
-        translit_name = translit(name, language_code='ru', reversed=True)
+        translit_name = translit(self.name, language_code='ru', reversed=True)
         splitted_name = translit_name.split()
         res = ""
         for word in splitted_name:
@@ -96,23 +100,23 @@ class CourseWorkFactory:
     def _generate_chapters(self, cw):
         log("Generating chapters...")
 
-        for i in range(10):
-            cw.chapters = []
-            chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
-            log(f"GPT's response: {chapters_string}")
-            chapters_list = chapters_string.split("\n")
-            for chapter in chapters_list:
-                chapter_name = self._strip_chapter(chapter)
-                if chapter_name:
-                    cw.chapters.append(chapter_name)
-            if len(cw.chapters) >= 5:
-                break
-        else:
-            log(f"!!!There is a problem with {cw.name}!!!")
-
-        if cw.chapters[-1] not in BIBLIOGRAPHIES:
-            cw.chapters.append(BIBLIOGRAPHY)
-        # cw.chapters.append("Введение")
+        # for i in range(10):
+        #     cw.chapters = []
+        #     chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
+        #     log(f"GPT's response: {chapters_string}")
+        #     chapters_list = chapters_string.split("\n")
+        #     for chapter in chapters_list:
+        #         chapter_name = self._strip_chapter(chapter)
+        #         if chapter_name:
+        #             cw.chapters.append(chapter_name)
+        #     if len(cw.chapters) >= 5:
+        #         break
+        # else:
+        #     log(f"!!!There is a problem with {cw.name}!!!")
+        #
+        # if cw.chapters[-1] not in BIBLIOGRAPHIES:
+        #     cw.chapters.append(BIBLIOGRAPHY)
+        cw.chapters.append("Введение")
         log(f"Chapters: {cw.chapters}")
 
     def _next_bibitem(self, match):

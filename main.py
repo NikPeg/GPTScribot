@@ -185,9 +185,9 @@ def get_message(message):
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             decorating[message.from_user.id] = reply_chat_id
             for i in range(5):
+                bot.send_message(message.from_user.id, ATTEMPT_MESSAGE.format(i), reply_markup=markup)
                 cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
-                result = cw.save()
-                if result == 0:
+                if cw.save():
                     send_work(cw, message.from_user.id, reply_chat_id)
                     remove_work(message.reply_to_message.text.partition("\n")[2])
                     break
