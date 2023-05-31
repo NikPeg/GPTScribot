@@ -7,7 +7,7 @@ from constants import *
 from gpt_messages import *
 from utils import log
 from transliterate import translit
-from string import ascii_letters, digits, printable
+from string import ascii_letters, digits, printable, punctuation
 import subprocess
 
 
@@ -134,7 +134,7 @@ class CourseWorkFactory:
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = ""
         for c in text:
-            if c in printable + RUSSIAN:
+            if c in digits + ascii_letters + punctuation + RUSSIAN + " ":
                 res += c
         for c in symbols:
             res = res.replace(c, f"\\{c}")
