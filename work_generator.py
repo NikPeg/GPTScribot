@@ -77,7 +77,7 @@ class CourseWork:
                 break
         ascii_res = ""
         for c in res:
-            if c in ascii_letters + digits + " ":
+            if c in ascii_letters + digits + " \t\n":
                 ascii_res += c
         return f"{ascii_res}.{type}"
 
