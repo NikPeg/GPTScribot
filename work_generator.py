@@ -12,10 +12,11 @@ import subprocess
 
 
 class CourseWork:
-    def __init__(self, name):
+    def __init__(self, name, bot=None):
         self.name = name
         self.chapters = []
         self.chapters_text = []
+        self.bot = bot
 
     def print(self):
         print(self.text)
@@ -27,14 +28,14 @@ class CourseWork:
         with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
         try:
-            log("\nTry to run pdflatex...\n")
+            log("\nTry to run pdflatex...\n", self.bot)
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            log(result.stdout)
-            log(result.stderr)
+            log(result.stdout, self.bot)
+            log(result.stderr, self.bot)
             return result.returncode == 0
         except Exception as e:
-            log(e)
+            log(e, self.bot)
             return False
 
     @cached_property
@@ -83,11 +84,12 @@ class CourseWork:
 
 
 class CourseWorkFactory:
-    def __init__(self, model="gpt-3.5-turbo"):
+    def __init__(self, model="gpt-3.5-turbo", bot=None):
         self.model = model
         self.gpt = GPTProxy(model)
         self.ref_index = 1
         self.cite_index = 1
+        self.bot = bot
 
     @staticmethod
     def _strip_chapter(text):
@@ -99,12 +101,12 @@ class CourseWorkFactory:
         return res.strip()
 
     def _generate_chapters(self, cw):
-        log("Generating chapters...")
+        log("Generating chapters...", self.bot)
 
         for i in range(10):
             cw.chapters = []
             chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
-            log(f"GPT's response: {chapters_string}")
+            log(f"GPT's response: {chapters_string}", self.bot)
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
                 chapter_name = self._strip_chapter(chapter)
@@ -113,12 +115,12 @@ class CourseWorkFactory:
             if len(cw.chapters) >= 5:
                 break
         else:
-            log(f"!!!There is a problem with {cw.name}!!!")
+            log(f"!!!There is a problem with {cw.name}!!!", self.bot)
 
         if cw.chapters[-1] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
         # cw.chapters.append("Введение")
-        log(f"Chapters: {cw.chapters}")
+        log(f"Chapters: {cw.chapters}", self.bot)
 
     def _next_bibitem(self, match):
         result = f'\\bibitem{{ref{self.ref_index}}}'
@@ -204,9 +206,9 @@ class CourseWorkFactory:
         return res
 
     def _generate_chapters_text(self, cw):
-        log("\n\n\nGenerating chapters\' text...")
+        log("\n\n\nGenerating chapters\' text...", self.bot)
         for chapter in cw.chapters:
-            log(f"\nGenerating chapter {chapter}...")
+            log(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
                 chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name))
             else:
@@ -214,7 +216,7 @@ class CourseWorkFactory:
             chapter_text = self._validate_chapter(chapter_text, chapter)
             if chapter not in BIBLIOGRAPHIES:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
-            log(chapter_text)
+            log(chapter_text, self.bot)
             cw.chapters_text.append(chapter_text)
 
     @staticmethod
@@ -228,7 +230,7 @@ class CourseWorkFactory:
 
     def generate_coursework(self, name):
         name = self._strip_name(name)
-        log(f"Generating coursework {name}...")
+        log(f"Generating coursework {name}...", self.bot)
         cw = CourseWork(name)
         self._generate_chapters(cw)
         self._generate_chapters_text(cw)

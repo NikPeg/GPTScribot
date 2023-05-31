@@ -1,6 +1,8 @@
-from config import DEBUG
+from config import DEBUG, ADMIN
 
 
-def log(text):
+def log(text, bot=None):
     if DEBUG:
         print(text)
+    if bot:
+        bot.send_message(ADMIN, text)
