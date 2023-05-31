@@ -27,6 +27,7 @@ class CourseWork:
         with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
         try:
+            log("\nTry to run pdflatex...\n")
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             log(result.stdout)
