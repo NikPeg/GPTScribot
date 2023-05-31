@@ -8,7 +8,7 @@ bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
-factory = CourseWorkFactory()
+factory = CourseWorkFactory(bot=bot)
 
 
 @bot.message_handler(commands=['start', 'help'])

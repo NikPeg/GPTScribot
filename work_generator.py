@@ -29,8 +29,8 @@ class CourseWork:
             result_file.write(self.text)
         try:
             log("\nTry to run pdflatex...\n", self.bot)
-            subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            subprocess.run(["pdflatex", self.file_name()], text=True)
+            result = subprocess.run(["pdflatex", self.file_name()], text=True)
             log(result.stdout, self.bot)
             log(result.stderr, self.bot)
             return result.returncode == 0
@@ -232,7 +232,7 @@ class CourseWorkFactory:
     def generate_coursework(self, name):
         name = self._strip_name(name)
         log(f"Generating coursework {name}...", self.bot)
-        cw = CourseWork(name)
+        cw = CourseWork(name, bot=self.bot)
         self._generate_chapters(cw)
         self._generate_chapters_text(cw)
         return cw
