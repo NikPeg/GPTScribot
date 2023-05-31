@@ -164,6 +164,7 @@ def send_work(cw: CourseWork, moderator: int, user: int) -> None:
     bot.send_document(moderator, open(cw.file_name("pdf"), 'rb'))
     bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
 
+
 @bot.message_handler(content_types=['text'])
 def get_message(message):
     markup = types.InlineKeyboardMarkup()
@@ -199,7 +200,7 @@ def get_message(message):
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
         users_works_count[message.from_user.id] = users_works_count.get(message.from_user.id, 0) + 1
-        remaining_works = 3 - users_works_count.get(message.from_user.id, 0)
+        remaining_works = FREE_WORKS_COUNT - users_works_count.get(message.from_user.id, 0)
         if remaining_works >= 0:
             bot.send_message(
                 message.from_user.id,
@@ -212,7 +213,8 @@ def get_message(message):
                 reply_markup=markup,
             )
         else:
-            bot.send_message(message.from_user.id, WORK_DOWNLOADED_MESSAGE, parse_mode='Markdown')
+            bot.send_message(message.from_user.id, WORK_DOWNLOADED_MESSAGE.format(PRICE, DONATE_URL),
+                             parse_mode='Markdown')
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton(

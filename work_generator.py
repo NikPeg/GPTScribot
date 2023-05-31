@@ -29,8 +29,8 @@ class CourseWork:
         try:
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            print(result.stdout)
-            print(result.stderr)
+            log(result.stdout)
+            log(result.stderr)
             return result.returncode == 0
         except Exception as e:
             log(e)
@@ -114,8 +114,8 @@ class CourseWorkFactory:
         else:
             log(f"!!!There is a problem with {cw.name}!!!")
 
-        if cw.chapters[-1] not in BIBLIOGRAPHIES:
-            cw.chapters.append(BIBLIOGRAPHY)
+        # if cw.chapters[-1] not in BIBLIOGRAPHIES:
+        #     cw.chapters.append(BIBLIOGRAPHY)
         # cw.chapters.append("Введение")
         log(f"Chapters: {cw.chapters}")
 
