@@ -25,6 +25,7 @@ class CourseWork:
         return f"Курсовая работа {self.name}"
 
     def save(self) -> bool:
+        log("Saving work...", self.bot)
         with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
             result_file.write(self.text)
         try:
