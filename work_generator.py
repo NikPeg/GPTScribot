@@ -31,7 +31,8 @@ class CourseWork:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
                 result_file.write(self.text)
         except Exception as e:
-            log("Exception while saving tex", self.bot)
+            log(f"Exception while saving tex: {e}", self.bot)
+            return False
         try:
             log("Try to run pdflatex...", self.bot)
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
