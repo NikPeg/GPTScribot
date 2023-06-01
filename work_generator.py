@@ -1,4 +1,5 @@
 import io
+import os
 import re
 from functools import cached_property
 
@@ -82,6 +83,9 @@ class CourseWork:
             if c in ascii_letters + digits + " \t\n":
                 ascii_res += c
         return f"{ascii_res}.{type}"
+
+    def delete(self):
+        os.remove(self.file_name("*"))
 
 
 class CourseWorkFactory:

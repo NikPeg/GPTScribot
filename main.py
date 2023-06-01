@@ -151,9 +151,9 @@ def get_photo(message):
     bot.send_message(ADMIN, f"User @{message.from_user.username} paid!")
 
 
-def remove_work(work_text):
+def remove_work(work_name):
     for work in current_works:
-        if work[2] == work_text:
+        if work[2] == work_name:
             current_works.remove(work)
             break
 
@@ -193,7 +193,7 @@ def get_message(message):
                 cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
                 if cw.save():
                     send_work(cw, message.from_user.id, reply_chat_id)
-                    remove_work(message.reply_to_message.text.partition("\n")[2])
+                    remove_work(cw.name)
                     break
             else:
                 bot.send_message(message.from_user.id,
@@ -237,10 +237,13 @@ def get_message(message):
         for i in range(5):
             bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
             cw = factory.generate_coursework(message.text)
-            if cw.save():
-                send_work(cw, ADMIN, message.from_user.id)
-                remove_work(message.text)
-                break
+            try:
+                if cw.save():
+                    send_work(cw, ADMIN, message.from_user.id)
+                    remove_work(cw.name)
+                    break
+            finally:
+                cw.delete()
         else:
             bot.send_message(ADMIN,
                              PROBLEM_MESSAGE.format(message.text.split("\n")[1]),
