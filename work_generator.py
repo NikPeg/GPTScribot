@@ -27,17 +27,20 @@ class CourseWork:
 
     def save(self) -> bool:
         log("Saving work...", self.bot)
-        with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
-            result_file.write(self.text)
         try:
-            log("\nTry to run pdflatex...\n", self.bot)
+            with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
+                result_file.write(self.text)
+        except Exception as e:
+            log("Exception while saving tex", self.bot)
+        try:
+            log("Try to run pdflatex...", self.bot)
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             log(result.stdout, bot=self.bot)
             log(result.stderr, bot=self.bot)
             return result.returncode == 0
         except Exception as e:
-            log(e, self.bot)
+            log(f"Exception while running pdflatex: {e}", self.bot)
             return False
 
     @cached_property
@@ -86,7 +89,10 @@ class CourseWork:
 
     def delete(self):
         for file_type in "aux", "log", "pdf", "tex", "toc":
-            os.remove(self.file_name(file_type))
+            try:
+                os.remove(self.file_name(file_type))
+            except:
+                pass
 
 
 class CourseWorkFactory:
