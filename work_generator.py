@@ -65,7 +65,7 @@ class CourseWork:
     def text(self):
         res = ""
         for i in range(1, 4):
-            with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
+            with io.open(os.getcwd() + f"/template{i}.tex", mode="r", encoding="utf-8") as template:
                 res += template.read()
             if i < 3:
                 res += self.upper_name
