@@ -3,6 +3,7 @@ from messages import *
 from work_generator import CourseWorkFactory, CourseWork
 import telebot
 from telebot import types
+from utils import *
 
 bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
@@ -196,6 +197,8 @@ def get_message(message):
                         send_work(cw, message.from_user.id, reply_chat_id)
                         remove_work(cw.name)
                         break
+                except Exception as e:
+                    log(f"Exception while saving: {e}")
                 finally:
                     cw.delete()
             else:
@@ -245,6 +248,8 @@ def get_message(message):
                     send_work(cw, ADMIN, message.from_user.id)
                     remove_work(cw.name)
                     break
+            except Exception as e:
+                log(f"Exception while saving: {e}")
             finally:
                 cw.delete()
         else:
