@@ -191,10 +191,13 @@ def get_message(message):
             for i in range(5):
                 bot.send_message(message.from_user.id, ATTEMPT_MESSAGE.format(i), reply_markup=markup)
                 cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
-                if cw.save():
-                    send_work(cw, message.from_user.id, reply_chat_id)
-                    remove_work(cw.name)
-                    break
+                try:
+                    if cw.save():
+                        send_work(cw, message.from_user.id, reply_chat_id)
+                        remove_work(cw.name)
+                        break
+                finally:
+                    cw.delete()
             else:
                 bot.send_message(message.from_user.id,
                                  PROBLEM_MESSAGE.format(message.reply_to_message.text.split("\n")[1]),

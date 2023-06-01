@@ -85,7 +85,8 @@ class CourseWork:
         return f"{ascii_res}.{type}"
 
     def delete(self):
-        os.remove(self.file_name("*"))
+        for file_type in "aux", "log", "pdf", "tex", "toc":
+            os.remove(self.file_name(file_type))
 
 
 class CourseWorkFactory:
