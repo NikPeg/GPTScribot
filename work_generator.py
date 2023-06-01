@@ -86,7 +86,7 @@ class CourseWork:
         for c in res:
             if c in ascii_letters + digits + " \t\n":
                 ascii_res += c
-        return f"{ascii_res}.{type}"
+        return os.getcwd() + f"/{ascii_res}.{type}"
 
     def delete(self):
         for file_type in "aux", "log", "pdf", "tex", "toc":
