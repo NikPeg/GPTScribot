@@ -258,4 +258,5 @@ def get_message(message):
                              reply_markup=markup)
 
 
+log("Bot is running!", bot)
 bot.infinity_polling()
