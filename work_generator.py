@@ -65,7 +65,7 @@ class CourseWork:
     def text(self):
         res = ""
         for i in range(1, 4):
-            with io.open(os.getcwd() + f"/template{i}.tex", mode="r", encoding="utf-8") as template:
+            with io.open(f"{os.path.abspath(__file__).partition('/')[0]}/template{i}.tex", mode="r", encoding="utf-8") as template:
                 res += template.read()
             if i < 3:
                 res += self.upper_name
@@ -86,7 +86,7 @@ class CourseWork:
         for c in res:
             if c in ascii_letters + digits + " \t\n":
                 ascii_res += c
-        return os.getcwd() + f"/{ascii_res}.{type}"
+        return f"{os.path.abspath(__file__).partition('/')[0]}/{ascii_res}.{type}"
 
     def delete(self):
         for file_type in "aux", "log", "pdf", "tex", "toc":
