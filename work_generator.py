@@ -88,12 +88,16 @@ class CourseWork:
                 ascii_res += c
         return f"{ascii_res}.{type}"
 
-    def delete(self):
-        for file_type in "aux", "log", "pdf", "tex", "toc":
+    def delete(self, delete_tex: bool = True):
+        for file_type in "aux", "log", "pdf", "toc":
             try:
                 os.remove(self.file_name(file_type))
             except:
                 pass
+        try:
+            os.remove(self.file_name("tex"))
+        except:
+            pass
 
 
 class CourseWorkFactory:

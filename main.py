@@ -201,7 +201,7 @@ def get_message(message):
                 except Exception as e:
                     log(f"Exception while saving: {e}")
                 finally:
-                    cw.delete()
+                    cw.delete(delete_tex=False)
             else:
                 bot.send_message(message.from_user.id,
                                  PROBLEM_MESSAGE.format(message.reply_to_message.text.split("\n")[1]),
