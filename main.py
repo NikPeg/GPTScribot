@@ -246,7 +246,7 @@ def get_message(message):
             try:
                 if cw.save():
                     send_work(cw, ADMIN, message.from_user.id)
-                    remove_work(cw.name)
+                    remove_work(message.text)
                     break
             except Exception as e:
                 log(f"Exception while saving: {e}")
