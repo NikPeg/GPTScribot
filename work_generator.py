@@ -94,10 +94,11 @@ class CourseWork:
                 os.remove(self.file_name(file_type))
             except:
                 pass
-        try:
-            os.remove(self.file_name("tex"))
-        except:
-            pass
+        if delete_tex:
+            try:
+                os.remove(self.file_name("tex"))
+            except:
+                pass
 
 
 class CourseWorkFactory:
