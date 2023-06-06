@@ -149,7 +149,7 @@ class CourseWorkFactory:
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = ""
         for c in text:
-            if c in digits + ascii_letters + punctuation + RUSSIAN + " \t\n":
+            if c in digits + ascii_letters + punctuation + RUSSIAN + " \n":
                 res += c
         for c in symbols:
             res = res.replace(c, f"\\{c}")
