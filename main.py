@@ -189,7 +189,6 @@ def get_message(message):
         if message.reply_to_message:
             bot.send_message(message.from_user.id, GENERATING_MESSAGE, reply_markup=markup)
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
-            decorating[message.from_user.id] = reply_chat_id
             for i in range(TRIES_COUNT):
                 bot.send_message(message.from_user.id, ATTEMPT_MESSAGE.format(i), reply_markup=markup)
                 cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
@@ -241,7 +240,7 @@ def get_message(message):
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
 
-        for i in range(5):
+        for i in range(TRIES_COUNT):
             bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
             cw = factory.generate_coursework(message.text)
             try:
@@ -252,7 +251,7 @@ def get_message(message):
             except Exception as e:
                 log(f"Exception while saving: {e}")
             finally:
-                cw.delete()
+                cw.delete(delete_tex=False)
         else:
             bot.send_message(ADMIN,
                              PROBLEM_MESSAGE.format(message.text.split("\n")[1]),

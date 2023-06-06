@@ -250,6 +250,8 @@ class CourseWorkFactory:
         name = self._strip_name(name)
         log(f"Generating coursework {name}...", self.bot)
         cw = CourseWork(name, bot=self.bot)
+        if os.path.exists(cw.file_name()):
+            return cw
         self._generate_chapters(cw)
         self._generate_chapters_text(cw)
         return cw
