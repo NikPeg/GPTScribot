@@ -252,6 +252,7 @@ class CourseWorkFactory:
         log(f"Generating coursework {name}...", self.bot)
         cw = CourseWork(name, bot=self.bot)
         if os.path.exists(cw.file_name()):
+            log("The file is already exist!", self.bot)
             return cw
         self._generate_chapters(cw)
         self._generate_chapters_text(cw)
