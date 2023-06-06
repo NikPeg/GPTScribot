@@ -4,6 +4,7 @@ from work_generator import CourseWorkFactory, CourseWork
 import telebot
 from telebot import types
 from utils import *
+from constants import TRIES_COUNT
 
 bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
@@ -189,7 +190,7 @@ def get_message(message):
             bot.send_message(message.from_user.id, GENERATING_MESSAGE, reply_markup=markup)
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             decorating[message.from_user.id] = reply_chat_id
-            for i in range(5):
+            for i in range(TRIES_COUNT):
                 bot.send_message(message.from_user.id, ATTEMPT_MESSAGE.format(i), reply_markup=markup)
                 cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
                 try:
