@@ -199,7 +199,7 @@ def get_message(message):
                 except Exception as e:
                     log(f"Exception while saving: {e}")
                 finally:
-                    cw.delete(delete_tex=False)
+                    cw.delete(i < TRIES_COUNT - 1)
             else:
                 bot.send_message(message.from_user.id,
                                  PROBLEM_MESSAGE.format(message.reply_to_message.text.split("\n")[1]),
@@ -250,7 +250,7 @@ def get_message(message):
             except Exception as e:
                 log(f"Exception while saving: {e}")
             finally:
-                cw.delete(delete_tex=False)
+                cw.delete(i < TRIES_COUNT)
         else:
             bot.send_message(ADMIN,
                              PROBLEM_MESSAGE.format(message.text.split("\n")[1]),
