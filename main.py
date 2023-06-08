@@ -195,6 +195,7 @@ def get_message(message):
                     if cw.save():
                         send_work(cw, message.from_user.id, reply_chat_id)
                         remove_work(cw.name)
+                        cw.delete()
                         break
                 except Exception as e:
                     log(f"Exception while saving: {e}")
@@ -246,11 +247,12 @@ def get_message(message):
                 if cw.save():
                     send_work(cw, ADMIN, message.from_user.id)
                     remove_work(message.text)
+                    cw.delete()
                     break
             except Exception as e:
                 log(f"Exception while saving: {e}")
             finally:
-                cw.delete(i < TRIES_COUNT)
+                cw.delete(i < TRIES_COUNT - 1)
         else:
             bot.send_message(ADMIN,
                              PROBLEM_MESSAGE.format(message.text.split("\n")[1]),
