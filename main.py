@@ -4,7 +4,6 @@ from work_generator import CourseWorkFactory, CourseWork
 import telebot
 from telebot import types
 from utils import *
-from constants import TRIES_COUNT
 
 bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
