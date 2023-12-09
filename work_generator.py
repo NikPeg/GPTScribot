@@ -3,6 +3,7 @@ import os
 import re
 from functools import cached_property
 
+import config
 from proxy import GPTProxy
 from constants import *
 from gpt_messages import *
@@ -25,11 +26,11 @@ class CourseWork:
     def __str__(self):
         return f"Курсовая работа {self.name}"
 
-    def save(self) -> bool:
+    def save(self, free=True) -> bool:
         log("Saving work...", self.bot)
         try:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
-                result_file.write(self.text)
+                result_file.write(self.text(free))
         except Exception as e:
             log(f"Exception while saving tex: {e}", self.bot)
             return False
@@ -61,16 +62,27 @@ class CourseWork:
             res += " ".join(words_list[words_count * 2 // 3:words_count]) + NEW_LINE
         return res
 
-    @property
-    def text(self):
+    def text(self, free=True):
         res = ""
         for i in range(1, 4):
             with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
                 res += template.read()
             if i < 3:
                 res += self.upper_name
-
-        res += NEW_PAGE.join(self.chapters_text)
+        with io.open(f"templateFree.tex", mode="r", encoding="utf-8") as template:
+            free_text = template.read().format(price=config.PRICE)
+        if free:
+            for chapter in self.chapters_text[:len(self.chapters) // 2]:
+                res += NEW_PAGE + chapter
+            for chapter_name in self.chapters[len(self.chapters) // 2:]:
+                res += NEW_PAGE
+                if chapter_name in BIBLIOGRAPHIES:
+                    section = BIBLIOGRAPHY_SECTION
+                else:
+                    section = SECTION
+                res += f"\n{section}{{{chapter_name}}}\n{free_text}"
+        else:
+            res += NEW_PAGE.join(self.chapters_text)
         res += END_DOCUMENT
         return res
 
