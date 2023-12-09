@@ -128,9 +128,10 @@ def callback_query(call):
     elif req[0] == 'paid':
         bot.edit_message_text(
             FREE_MESSAGE,
-            reply_markup=types.InlineKeyboardMarkup(),
+            reply_markup=markup,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
+            parse_mode='html'
         )
         for i in range(TRIES_COUNT):
             cw: CourseWork = cw_by_id.get(call.message.chat.id)
