@@ -11,7 +11,7 @@ users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
 factory = CourseWorkFactory(bot=bot)
-LAST_WORK: CourseWork = None
+cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -127,7 +127,10 @@ def callback_query(call):
             )
     elif req[0] == 'paid':
         for i in range(TRIES_COUNT):
-            cw: CourseWork = LAST_WORK
+            cw: CourseWork = cw_by_id.get(call.message.chat.id)
+            if not cw:
+                send_problem(ADMIN, call.message.chat.id)
+                break
             try:
                 if cw.save(free=False):
                     send_work(cw, ADMIN, call.message.chat.id, free=False)
@@ -191,6 +194,14 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
         markup.add(btn1)
         bot.send_message(moderator, READY_MESSAGE, reply_markup=markup)
         bot.send_message(user, READY_MESSAGE, reply_markup=markup)
+
+
+def send_problem(moderator: int, user: int) -> None:
+    markup = types.InlineKeyboardMarkup()
+    btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+    markup.add(btn1)
+    bot.send_message(moderator, PAID_PROBLEM_MESSAGE, reply_markup=markup)
+    bot.send_message(user, PAID_PROBLEM_MESSAGE, reply_markup=markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -272,8 +283,7 @@ def get_message(message):
                     send_work(cw, ADMIN, message.from_user.id)
                     remove_work(message.text)
                     cw.delete()
-                    global LAST_WORK
-                    LAST_WORK = cw
+                    cw_by_id[message.from_user.id] = cw
                     break
             except Exception as e:
                 log(f"Exception while saving: {e}")
