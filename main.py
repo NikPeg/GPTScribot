@@ -1,3 +1,4 @@
+import config
 from config import *
 from messages import *
 from work_generator import CourseWorkFactory, CourseWork
@@ -159,14 +160,18 @@ def remove_work(work_name):
             break
 
 
-def send_work(cw: CourseWork, moderator: int, user: int) -> None:
+def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
     markup.add(btn1)
     bot.send_document(moderator, open(cw.file_name("pdf"), 'rb'))
     bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
-    bot.send_message(moderator, READY_MESSAGE, reply_markup=markup)
-    bot.send_message(user, READY_MESSAGE, reply_markup=markup)
+    if free:
+        bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+        bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+    else:
+        bot.send_message(moderator, READY_MESSAGE, reply_markup=markup)
+        bot.send_message(user, READY_MESSAGE, reply_markup=markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -254,9 +259,7 @@ def get_message(message):
             finally:
                 cw.delete(i < TRIES_COUNT - 1)
         else:
-            bot.send_message(ADMIN,
-                             PROBLEM_MESSAGE.format(message.text.split("\n")[1]),
-                             reply_markup=markup)
+            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
 
 
 log("Bot is running!", bot)
