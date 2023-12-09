@@ -270,12 +270,7 @@ def get_message(message):
                              parse_mode='Markdown')
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(
-            text='Взять в работу',
-            callback_data=f'work_{message.from_user.id}_{message.id}_{message.text}',
-        )
         btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-        markup.add(btn1)
         markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
