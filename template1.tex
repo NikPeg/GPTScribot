@@ -1,4 +1,4 @@
-\documentclass[draft]{article}
+\documentclass{article}
 \usepackage{cmap}
 \usepackage[T1,T2A]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -14,7 +14,6 @@
 \usepackage{lipsum}
 \usepackage[usestackEOL]{stackengine}
 \usepackage{kantlipsum}
-\usepackage{graphicx}
 \usepackage{caption}
 \usepackage{float}
 \usepackage{zref-totpages}
@@ -25,7 +24,8 @@
 \renewcommand{\headrulewidth}{0pt}
 \captionsetup[table]{justification=centering}
 \usetikzlibrary{positioning}
-\graphicspath{{pictures/}}
+\usepackage{graphicx}
+\graphicspath{ {./pictures/} }
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 \newcommand\zz[1]{\par{\normalsize\strut #1} \hfill\ignorespaces}
 \addto\captionsrussian{\def\refname{}}

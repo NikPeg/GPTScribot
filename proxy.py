@@ -11,14 +11,15 @@ class GPTProxy:
     @retry(wait=wait_fixed(21), stop=stop_after_attempt(10))
     def ask(self, message):
         try:
-            completion = openai.ChatCompletion.create(
-                model=self.model,
-                messages=[
-                    {"role": "user", "content": message}
-                ]
-            )
-
-            return completion.choices[0].message.content
+            # completion = openai.ChatCompletion.create(
+            #     model=self.model,
+            #     messages=[
+            #         {"role": "user", "content": message}
+            #     ]
+            # )
+            #
+            # return completion.choices[0].message.content
+            return "1. Введение\n2. Анализ конкурентов\n3. Основная часть работы\n4.Что-то еще\n5.Мемы\n6.Вывод"
         except Exception as e:
             print(e)
             raise e
