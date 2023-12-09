@@ -183,8 +183,8 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
     bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
     if free:
         btn2 = types.InlineKeyboardButton(text='Я оплатил', callback_data='paid')
-        markup.add(btn1)
         markup.add(btn2)
+        markup.add(btn1)
         bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
         bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
     else:
@@ -272,6 +272,7 @@ def get_message(message):
                     send_work(cw, ADMIN, message.from_user.id)
                     remove_work(message.text)
                     cw.delete()
+                    global LAST_WORK
                     LAST_WORK = cw
                     break
             except Exception as e:
