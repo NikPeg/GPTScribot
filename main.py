@@ -11,6 +11,7 @@ users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
 factory = CourseWorkFactory(bot=bot)
+LAST_WORK: CourseWork = None
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -124,6 +125,21 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
+    elif req[0] == 'paid':
+        for i in range(TRIES_COUNT):
+            cw: CourseWork = LAST_WORK
+            try:
+                if cw.save(free=False):
+                    send_work(cw, ADMIN, call.message.chat.id, free=False)
+                    remove_work(cw.name)
+                    cw.delete()
+                    break
+            except Exception as e:
+                log(f"Exception while saving: {e}")
+            finally:
+                cw.delete(i < TRIES_COUNT - 1)
+        else:
+            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
 
 
 @bot.message_handler(content_types=['document'])
@@ -163,13 +179,16 @@ def remove_work(work_name):
 def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-    markup.add(btn1)
     bot.send_document(moderator, open(cw.file_name("pdf"), 'rb'))
     bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
     if free:
+        btn2 = types.InlineKeyboardButton(text='Я оплатил', callback_data='paid')
+        markup.add(btn1)
+        markup.add(btn2)
         bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
         bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
     else:
+        markup.add(btn1)
         bot.send_message(moderator, READY_MESSAGE, reply_markup=markup)
         bot.send_message(user, READY_MESSAGE, reply_markup=markup)
 
@@ -253,6 +272,7 @@ def get_message(message):
                     send_work(cw, ADMIN, message.from_user.id)
                     remove_work(message.text)
                     cw.delete()
+                    LAST_WORK = cw
                     break
             except Exception as e:
                 log(f"Exception while saving: {e}")
