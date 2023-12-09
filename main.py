@@ -126,8 +126,10 @@ def callback_query(call):
                 message_id=call.message.message_id,
             )
     elif req[0] == 'paid':
+        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        markup.add(btn1)
         bot.edit_message_text(
-            FREE_MESSAGE,
+            FREE_MESSAGE.format(price=config.PRICE),
             reply_markup=markup,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
