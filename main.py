@@ -172,13 +172,13 @@ def get_document(message):
         bot.send_message(message.from_user.id, IDK_MESSAGE)
 
 
-@bot.message_handler(content_types=['photo'])
-def get_photo(message):
-    markup = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-    markup.add(btn1)
-    bot.send_message(message.from_user.id, PAID_MESSAGE, reply_markup=markup)
-    bot.send_message(ADMIN, f"User @{message.from_user.username} paid!")
+# @bot.message_handler(content_types=['photo'])
+# def get_photo(message):
+#     markup = types.InlineKeyboardMarkup()
+#     btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+#     markup.add(btn1)
+#     bot.send_message(message.from_user.id, PAID_MESSAGE, reply_markup=markup)
+#     bot.send_message(ADMIN, f"User @{message.from_user.username} paid!")
 
 
 def remove_work(work_name):
@@ -257,11 +257,12 @@ def get_message(message):
         if remaining_works >= 0:
             bot.send_message(
                 message.from_user.id,
-                WORK_DOWNLOADED_FREE_MESSAGE.format(
-                    remaining_works,
-                    "ое" if remaining_works == 1 else "ых",
-                    "й" if remaining_works == 0 else "е" if remaining_works == 1 else "я",
-                ),
+                WORK_DOWNLOADED_MESSAGE,
+                # .format(
+                #     remaining_works,
+                #     "ое" if remaining_works == 1 else "ых",
+                #     "й" if remaining_works == 0 else "е" if remaining_works == 1 else "я",
+                # ),
                 parse_mode='Markdown',
                 reply_markup=markup,
             )
