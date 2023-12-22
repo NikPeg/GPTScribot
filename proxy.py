@@ -1,10 +1,10 @@
 from config import OPENAI_API_KEY
 import openai
-from tenacity import retry, wait_random_exponential, wait_fixed, stop_after_attempt
+from tenacity import retry, wait_fixed, stop_after_attempt
 
 
 class GPTProxy:
-    def __init__(self, model="gpt-3.5-turbo"):
+    def __init__(self, model="gpt-4"):
         openai.api_key = OPENAI_API_KEY
         self.model = model
 
@@ -19,19 +19,9 @@ class GPTProxy:
             )
 
             return completion.choices[0].message.content
-            # return "1. Введение\n2. Анализ конкурентов\n3. Основная часть работы\n4.Что-то еще\n5.Мемы\n6.Вывод"
         except Exception as e:
             print(e)
             raise e
-
-
-def handle_question(question):
-    res = ""
-    for line in question:
-        if line not in {"*", "5 баллов", "10 баллов"}:
-            res += line + "\n"
-    res += "Choose only one answer"
-    return res
 
 
 if __name__ == "__main__":
@@ -43,5 +33,5 @@ if __name__ == "__main__":
         while line != "n":
             line = input()
             question.append(line)
-        answer = proxy.ask(handle_question(question))
+        answer = proxy.ask(question)
         print(answer)
