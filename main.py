@@ -48,6 +48,8 @@ def callback_query(call):
             message_id=call.message.message_id,
         )
     elif req[0] == 'generate':
+        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        markup.add(btn1)
         bot.edit_message_text(
             GENERATE_MESSAGE,
             reply_markup=markup,
