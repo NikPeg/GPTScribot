@@ -254,23 +254,12 @@ def get_message(message):
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
-        users_works_count[message.from_user.id] = users_works_count.get(message.from_user.id, 0) + 1
-        remaining_works = FREE_WORKS_COUNT - users_works_count.get(message.from_user.id, 0)
-        if remaining_works >= 0:
-            bot.send_message(
-                message.from_user.id,
-                WORK_DOWNLOADED_MESSAGE,
-                # .format(
-                #     remaining_works,
-                #     "ое" if remaining_works == 1 else "ых",
-                #     "й" if remaining_works == 0 else "е" if remaining_works == 1 else "я",
-                # ),
-                parse_mode='Markdown',
-                reply_markup=markup,
-            )
-        else:
-            bot.send_message(message.from_user.id, WORK_DOWNLOADED_MESSAGE.format(PRICE, DONATE_URL),
-                             parse_mode='Markdown')
+        bot.send_message(
+            message.from_user.id,
+            WORK_DOWNLOADED_MESSAGE,
+            parse_mode='Markdown',
+            reply_markup=markup,
+        )
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
         btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
