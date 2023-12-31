@@ -101,7 +101,7 @@ class CourseWork:
         return f"{ascii_res}.{type}"
 
     def delete(self, delete_tex: bool = True):
-        for file_type in "aux", "log", "pdf", "toc":
+        for file_type in "aux", "log", "pdf", "toc", "tex":
             try:
                 os.remove(self.file_name(file_type))
             except:
