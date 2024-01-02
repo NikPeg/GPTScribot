@@ -11,6 +11,7 @@ from utils import log
 from transliterate import translit
 from string import ascii_letters, digits, printable, punctuation
 import subprocess
+from google_images_search import GoogleImagesSearch
 
 
 class CourseWork:
@@ -120,6 +121,7 @@ class CourseWorkFactory:
         self.ref_index = 1
         self.cite_index = 1
         self.bot = bot
+        self.gis = GoogleImagesSearch(config.GOOGLE_DEVELOPER_KEY, config.GOOGLE_CUSTOM_SEARCH_CX)
 
     @staticmethod
     def _strip_chapter(text):
@@ -216,6 +218,23 @@ class CourseWorkFactory:
             res = self._reorder_section(text, section)
         return self._replace_special_symbols(res, name)
 
+    def _add_photos(self, text):
+        photo_index = 0
+        while photo_index < len(text):
+            photo_index = text.find(PICTURE_SUBSTRING, photo_index)
+            if photo_index == -1:
+                break
+            match = re.search(r"\\includegraphics.*\{(.*?)\}.*\\caption\{(.*?)\}", text[photo_index:])
+            if match:
+                photo_name = match.group(1)
+                photo_caption = match.group(2)
+                _search_params = {
+                    "q": photo_caption,
+                    "num": 1
+                }
+                self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=photo_name)
+            photo_index += len(PICTURE_SUBSTRING)
+
     @staticmethod
     def _delete_blank_line(text):
         if text.endswith(BLANK_LINE):
@@ -249,6 +268,7 @@ class CourseWorkFactory:
                 chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             log(f"GPT's response: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter)
+            self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text, self.bot)
