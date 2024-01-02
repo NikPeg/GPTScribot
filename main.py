@@ -47,6 +47,7 @@ def callback_query(call):
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
         )
+        log(f"User {call.message.chat.id} pressed info button", bot)
     elif req[0] == 'generate':
         btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -57,6 +58,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='Markdown',
         )
+        log(f"User {call.message.chat.id} pressed generate button", bot)
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='Сгенерировать работу', callback_data='generate')
         btn2 = types.InlineKeyboardButton(text='Узнать о Scribo', callback_data='info')
@@ -74,6 +76,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='html',
         )
+        log(f"User {call.message.chat.id} pressed menu button", bot)
     elif req[0] == 'connect':
         btn1 = types.InlineKeyboardButton(text='Представитель Scribo', url='https://t.me/nikpeg')
         btn2 = types.InlineKeyboardButton(text='Канал проекта', url='https://t.me/scribo_project')
@@ -86,6 +89,7 @@ def callback_query(call):
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
         )
+        log(f"User {call.message.chat.id} pressed connect button", bot)
     elif req[0] == 'work':
         btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -108,6 +112,7 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
+        log(f"Moderator {call.message.chat.id} pressed work button", bot)
     elif req[0] == 'list':
         btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -127,6 +132,7 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
+        log(f"Moderator {call.message.chat.id} pressed work button", bot)
     elif req[0] == 'paid':
         btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -137,6 +143,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='html'
         )
+        log(f"User {call.message.chat.id} pressed paid button", bot)
         for i in range(TRIES_COUNT):
             cw: CourseWork = cw_by_id.get(call.message.chat.id)
             if not cw:
@@ -172,15 +179,7 @@ def get_document(message):
             bot.send_message(message.from_user.id, NO_WORKS_MESSAGE, parse_mode='Markdown')
     else:
         bot.send_message(message.from_user.id, IDK_MESSAGE)
-
-
-# @bot.message_handler(content_types=['photo'])
-# def get_photo(message):
-#     markup = types.InlineKeyboardMarkup()
-#     btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-#     markup.add(btn1)
-#     bot.send_message(message.from_user.id, PAID_MESSAGE, reply_markup=markup)
-#     bot.send_message(ADMIN, f"User @{message.from_user.username} paid!")
+        log(f"User {message.from_user.id} sent some document", bot)
 
 
 def remove_work(work_name):
@@ -231,6 +230,7 @@ def get_message(message):
             remove_work(message.reply_to_message.text.partition("\n")[2])
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
+        log(f"Moderator {message.from_user.id} sent беру", bot)
     if message.from_user.id in MODERATORS and message.text.lower() == "сгенерировать":
         if message.reply_to_message:
             bot.send_message(message.from_user.id, GENERATING_MESSAGE, reply_markup=markup)
@@ -254,6 +254,7 @@ def get_message(message):
                                  reply_markup=markup)
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
+        log(f"Moderator {message.from_user.id} sent сгенерировать", bot)
     elif message.from_user.id not in MODERATORS:
         bot.send_message(
             message.from_user.id,
@@ -261,6 +262,7 @@ def get_message(message):
             parse_mode='Markdown',
             reply_markup=markup,
         )
+        log(f"User {message.from_user.id} sent work: {message.text}", bot)
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
         btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
