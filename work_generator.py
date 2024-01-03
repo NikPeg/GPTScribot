@@ -168,6 +168,7 @@ class CourseWorkFactory:
     def _ask_to_replace(self, match):
         symbol = match.re.pattern
         s = match.string
+        log(f"Len of string: {len(s)}, symbol index: {match.span()[0]}", self.bot)
         if match.span()[0] == len(s):
             return ""
         log(f"Asking GPT about symbol {symbol}", self.bot)
