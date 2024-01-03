@@ -12,6 +12,7 @@ from transliterate import translit
 from string import ascii_letters, digits, printable, punctuation
 import subprocess
 from google_images_search import GoogleImagesSearch
+import shutil
 
 
 class CourseWork:
@@ -225,22 +226,23 @@ class CourseWorkFactory:
             if photo_index == -1:
                 break
             log(f"Photo index: {photo_index}", self.bot)
-            try:
-                filename_match = re.compile(r'\\includegraphics.*\{(.+?)\..*\}').search(text[photo_index:])
-                description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
-                if filename_match and description_match:
-                    filename = description_match.group(1)
-                    description = description_match.group(1)
-                    log(f"Filename: {filename}, description: {description}", self.bot)
-                    _search_params = {
-                        "q": description,
-                        "num": 1
-                    }
+            filename_match = re.compile(r'\\includegraphics.*\{(.+?)\..*\}').search(text[photo_index:])
+            description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
+            if filename_match and description_match:
+                filename = description_match.group(1)
+                description = description_match.group(1)
+                log(f"Filename: {filename}, description: {description}", self.bot)
+                _search_params = {
+                    "q": description,
+                    "num": 1
+                }
+                try:
                     self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=filename)
-                else:
-                    log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
-            except Exception as e:
-                log(f"Exception while loading picture: {e}", self.bot)
+                except Exception as e:
+                    log(f"Exception while loading picture: {e}", self.bot)
+                    shutil.copy("pictures/sample.png", f"pictures/{filename}.png")
+            else:
+                log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
             photo_index += len(PICTURE_SUBSTRING)
 
     @staticmethod

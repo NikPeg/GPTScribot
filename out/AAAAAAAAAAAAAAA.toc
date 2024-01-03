@@ -1,7 +1,0 @@
-\babel@toc {russian}{}\relax 
-\contentsline {section}{\numberline {1}Введение}{3}{}%
-\contentsline {section}{\numberline {2}Анализ конкурентов}{4}{}%
-\contentsline {section}{\numberline {3}Основная часть работы}{5}{}%
-\contentsline {section}{\numberline {4}Что-то еще}{6}{}%
-\contentsline {section}{\numberline {5}Мемы}{7}{}%
-\contentsline {section}{\numberline {6}Вывод}{8}{}%

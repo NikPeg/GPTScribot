@@ -1,3 +1,5 @@
+import shutil
+
 from google_images_search import GoogleImagesSearch
 
 from config import *
@@ -23,4 +25,8 @@ _search_params = {
     # 'imgColorType': 'imgColorTypeUndefined' ##
 }
 # this will only search for images:
-gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name='Схема общей системы безопасности')
+try:
+    gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name='Схема общей системы безопасности')
+except Exception as e:
+    print(f"Exception while loading picture: {e}")
+    shutil.copy("pictures/sample.png", f"pictures/filename.png")
