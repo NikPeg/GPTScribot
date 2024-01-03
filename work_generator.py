@@ -167,11 +167,11 @@ class CourseWorkFactory:
 
     def _ask_to_replace(self, match):
         symbol = match.group(1)
-        log(f"Asking GPT about symbol {symbol}")
+        log(f"Asking GPT about symbol {symbol}", self.bot)
         substring = self.res[max(0, match.span()[0] - 50):min(len(self.res), match.span()[0] + 50)]
-        log(f"Substring to ask: {substring}")
+        log(f"Substring to ask: {substring}", self.bot)
         gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol].format(substring))
-        log(f"GPT's answer: {gpt_answer}")
+        log(f"GPT's answer: {gpt_answer}", self.bot)
         if gpt_answer.lower().startswith("да"):
             return symbol
         else:
