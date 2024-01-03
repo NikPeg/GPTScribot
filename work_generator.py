@@ -165,6 +165,18 @@ class CourseWorkFactory:
         self.cite_index += 1
         return result
 
+    def _ask_to_replace(self, match):
+        symbol = match.group(1)
+        log(f"Asking GPT about symbol {symbol}")
+        substring = self.res[max(0, match.span()[0] - 50):min(len(self.res), match.span()[0] + 50)]
+        log(f"Substring to ask: {substring}")
+        gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol].format(substring))
+        log(f"GPT's answer: {gpt_answer}")
+        if gpt_answer.lower().startswith("да"):
+            return symbol
+        else:
+            return f"\\{symbol}"
+
     def _replace_special_symbols(self, text, name):
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = ""
@@ -176,6 +188,9 @@ class CourseWorkFactory:
             res = res.replace(f"\\\\{c}", f"\\{c}")
         for c in SYMBOLS_TO_REPLACE:
             res = res.replace(c, SYMBOLS_TO_REPLACE[c])
+        for c in SYMBOLS_TO_ASK:
+            self.res = res
+            res = re.sub(c, self._ask_to_replace, res)
         for seq in USELESS_SEQUENCES:
             res = res.replace(seq, "")
         if name in BIBLIOGRAPHIES:
