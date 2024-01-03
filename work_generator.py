@@ -167,16 +167,18 @@ class CourseWorkFactory:
 
     def _ask_to_replace(self, match):
         symbol = match.re.pattern
-        log(f"Asking GPT about symbol {symbol}", self.bot)
         s = match.string
+        if match.span()[0] == len(s):
+            return ""
+        log(f"Asking GPT about symbol {symbol}", self.bot)
         substring = s[max(0, match.span()[0] - 50):min(len(s), match.span()[0] + 50)]
         log(f"Substring to ask: {substring}", self.bot)
-        gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol].format(substring))
+        gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol][0].format(substring))
         log(f"GPT's answer: {gpt_answer}", self.bot)
-        if gpt_answer.lower().startswith("да"):
-            return symbol
-        else:
+        if gpt_answer.lower().startswith(SYMBOLS_TO_ASK[symbol][1]):
             return f"\\{symbol}"
+        else:
+            return symbol
 
     def _replace_special_symbols(self, text, name):
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
