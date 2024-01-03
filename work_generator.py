@@ -172,7 +172,7 @@ class CourseWorkFactory:
             return ""
         log(f"Asking GPT about symbol {symbol}", self.bot)
         log(f"Len of string: {len(s)}, symbol index: {match.span()[0]}", self.bot)
-        substring = s[max(0, match.span()[0] - 50):min(len(s), match.span()[0] + 50)]
+        substring = s[max(0, match.span()[0] - 100):min(len(s), match.span()[0] + 100)]
         log(f"Substring to ask: {substring}", self.bot)
         gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol][0].format(substring))
         log(f"GPT's answer: {gpt_answer}", self.bot)
@@ -192,6 +192,7 @@ class CourseWorkFactory:
             res = res.replace(f"\\\\{c}", f"\\{c}")
         for c in SYMBOLS_TO_REPLACE:
             res = res.replace(c, SYMBOLS_TO_REPLACE[c])
+            res = res.replace(f"\\\\{c}", f"\\{c}")
         for c in SYMBOLS_TO_ASK:
             res = re.sub(c, self._ask_to_replace, res)
         for seq in USELESS_SEQUENCES:
