@@ -199,7 +199,9 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
         btn2 = types.InlineKeyboardButton(text='Я оплатил✅', callback_data='paid')
         markup.add(btn1)
         bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+        markup = types.InlineKeyboardMarkup()
         markup.add(btn2)
+        markup.add(btn1)
         bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
     else:
         markup.add(btn1)
