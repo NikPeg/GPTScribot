@@ -26,3 +26,4 @@ BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\subsubsection
 ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline", "\\centering", "&"}
 RUSSIAN = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
 PICTURE_SUBSTRING = "\\begin{figure}"
+DIPLOMA_SUBSTRING = "иплом"

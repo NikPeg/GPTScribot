@@ -1,3 +1,4 @@
+import enum
 import io
 import os
 import re
@@ -114,6 +115,10 @@ class CourseWork:
             except:
                 pass
 
+
+class CourseWorkType(enum.StrEnum):
+    DIPLOMA = "Дипломная работа"
+    COURSE_WORK = "Курсовая работа"
 
 class CourseWorkFactory:
     def __init__(self, model="gpt-3.5-turbo", bot=None):
@@ -302,17 +307,18 @@ class CourseWorkFactory:
             log(chapter_text, self.bot)
             cw.chapters_text.append(chapter_text)
 
-    @staticmethod
-    def _strip_name(name):
+    def _process_name(self, name):
         res = name
         while res and res[0] in NAME_USELESS_SYMBOLS:
             res = res[1:]
         while res and res[-1] in NAME_USELESS_SYMBOLS:
             res = res[:-1]
-        return res.strip()
+        res = res.strip()
+        self.work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
+        return res
 
     def generate_coursework(self, name):
-        name = self._strip_name(name)
+        name = self._process_name(name)
         log(f"Generating coursework {name}...", self.bot)
         cw = CourseWork(name, bot=self.bot)
         if os.path.exists(cw.file_name()):
