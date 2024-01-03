@@ -229,7 +229,7 @@ class CourseWorkFactory:
             filename_match = re.compile(r'\\includegraphics.*\{(.+?)\..*\}').search(text[photo_index:])
             description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
             if filename_match and description_match:
-                filename = description_match.group(1)
+                filename = filename_match.group(1)
                 description = description_match.group(1)
                 log(f"Filename: {filename}, description: {description}", self.bot)
                 _search_params = {
