@@ -1,4 +1,4 @@
-from gpt_messages import AMPERSAND_QUESTION
+from gpt_messages import AMPERSAND_QUESTION, DOLLAR_QUESTION
 
 USELESS_SYMBOLS = {'-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '}
 SECTION = "\\section"
@@ -19,6 +19,7 @@ SYMBOLS_TO_REPLACE = {
 }
 SYMBOLS_TO_ASK = {
     '&': AMPERSAND_QUESTION,
+    '$': DOLLAR_QUESTION,
 }
 RUSSIAN_SECTION = "Раздел"
 BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\subsubsection", "\\item", "\\bibitem", }

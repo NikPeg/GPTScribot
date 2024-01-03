@@ -199,7 +199,6 @@ class CourseWorkFactory:
         else:
             self.cite_index = 1
             res = re.sub(r'\\cite\{.*?\}', self._next_cite, res)
-            res = re.sub(r"\$(?=\d)", r"\\$", res)
         res = res.replace("\\begin{document}", "")
         res = res.replace("\\end{document}", "")
         res = res.replace("дипломн", "курсов")
