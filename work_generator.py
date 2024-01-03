@@ -102,7 +102,7 @@ class CourseWork:
         return f"{ascii_res}.{type}"
 
     def delete(self, delete_tex: bool = True):
-        for file_type in "aux", "log", "pdf", "toc", "tex":
+        for file_type in "aux", "log", "pdf", "toc":
             try:
                 os.remove(self.file_name(file_type))
             except:
@@ -297,7 +297,7 @@ class CourseWorkFactory:
         cw = CourseWork(name, bot=self.bot)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot)
-            return cw
+            cw.delete()
         self._generate_chapters(cw)
         self._generate_chapters_text(cw)
         return cw
