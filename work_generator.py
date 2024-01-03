@@ -169,7 +169,7 @@ class CourseWorkFactory:
         symbol = match.re.pattern
         log(f"Asking GPT about symbol {symbol}", self.bot)
         s = match.string
-        substring = s[max(0, match.span()[0] - 30):min(len(s), match.span()[0] + 30)]
+        substring = s[max(0, match.span()[0] - 50):min(len(s), match.span()[0] + 50)]
         log(f"Substring to ask: {substring}", self.bot)
         gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol].format(substring))
         log(f"GPT's answer: {gpt_answer}", self.bot)
