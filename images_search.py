@@ -1,8 +1,10 @@
 from google_images_search import GoogleImagesSearch
 
+from config import *
+
 # you can provide API key and CX using arguments,
 # or you can set environment variables: GCS_DEVELOPER_KEY, GCS_CX
-gis = GoogleImagesSearch('AIzaSyBQCEVvvPOa_KMxoCQWHiuNAB8GoyOsEL8', '42a5950c36f38455f')
+gis = GoogleImagesSearch(GOOGLE_DEVELOPER_KEY, GOOGLE_CUSTOM_SEARCH_CX)
 
 # define search params
 # option for commonly used search param are shown below for easy reference.
