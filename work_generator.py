@@ -224,18 +224,23 @@ class CourseWorkFactory:
             photo_index = text.find(PICTURE_SUBSTRING, photo_index)
             if photo_index == -1:
                 break
-            filename_match = re.compile(r'\{(.+?)\..*\}').search(text[photo_index:])
-            description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
-            if filename_match and description_match:
-                filename = description_match.group(1)
-                description = description_match.group(1)
-                _search_params = {
-                    "q": description,
-                    "num": 1
-                }
-                self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=filename)
-            else:
-                log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
+            log(f"Photo index: {photo_index}", self.bot)
+            try:
+                filename_match = re.compile(r'\\includegraphics.*\{(.+?)\..*\}').search(text[photo_index:])
+                description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
+                if filename_match and description_match:
+                    filename = description_match.group(1)
+                    description = description_match.group(1)
+                    log(f"Filename: {filename}, description: {description}", self.bot)
+                    _search_params = {
+                        "q": description,
+                        "num": 1
+                    }
+                    self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=filename)
+                else:
+                    log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
+            except Exception as e:
+                log(f"Exception while loading picture: {e}", self.bot)
             photo_index += len(PICTURE_SUBSTRING)
 
     @staticmethod
