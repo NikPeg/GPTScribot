@@ -316,17 +316,23 @@ class CourseWorkFactory:
 
     def _process_name(self, name):
         res = name
+        additional_topics = ""
+        log("Asking GPT about additional topics...", self.bot)
+        if self.gpt.ask(SECTIONS_QUESTION.format(res)).lower().startswith("да"):
+            log("Asking GPT about additional topics list...", self.bot)
+            additional_topics = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
+            log(f"Additional topics list: {additional_topics}", self.bot)
         res = self.gpt.ask(WORK_NAME.format(res))
         while res and res[0] in NAME_USELESS_SYMBOLS:
             res = res[1:]
         while res and res[-1] in NAME_USELESS_SYMBOLS:
             res = res[:-1]
         res = res.strip()
-        return res
+        return res, additional_topics
 
     def generate_coursework(self, name):
         work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
-        name = self._process_name(name)
+        name, additional_topics = self._process_name(name)
         log(f"Generating coursework {name}...", self.bot)
         cw = CourseWork(name, bot=self.bot, work_type=work_type)
         if os.path.exists(cw.file_name()):
