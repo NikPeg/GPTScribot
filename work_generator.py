@@ -22,12 +22,13 @@ class CourseWorkType(enum.StrEnum):
 
 
 class CourseWork:
-    def __init__(self, name, bot=None, work_type=CourseWorkType.COURSE_WORK):
+    def __init__(self, name, bot=None, work_type=CourseWorkType.COURSE_WORK, additional_sections=""):
         self.name = name
         self.chapters = []
         self.chapters_text = []
         self.bot = bot
         self.work_type = work_type
+        self.additional_sections = additional_sections
 
     def print(self):
         print(self.text)
@@ -149,12 +150,14 @@ class CourseWorkFactory:
             cw.chapters = []
             chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
             log(f"GPT's response: {chapters_string}", self.bot)
+            if cw.additional_sections:
+                chapters_string = self.gpt.ask(ADD_CHAPTERS.format(chapters_string, cw.additional_sections))
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
                 chapter_name = self._strip_chapter(chapter)
                 if chapter_name:
                     cw.chapters.append(chapter_name)
-            if len(cw.chapters) >= 5:
+            if len(cw.chapters) >= 7:
                 break
         else:
             log(f"!!!There is a problem with {cw.name}!!!", self.bot)
@@ -334,7 +337,7 @@ class CourseWorkFactory:
         work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
         name, additional_sections = self._process_name(name)
         log(f"Generating coursework {name}...", self.bot)
-        cw = CourseWork(name, bot=self.bot, work_type=work_type)
+        cw = CourseWork(name, bot=self.bot, work_type=work_type, additional_sections=additional_sections)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot)
             cw.delete()
