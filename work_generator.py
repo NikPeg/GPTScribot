@@ -40,7 +40,7 @@ class CourseWork:
         try:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
                 result_file.write(self.text(free))
-            self.bot.send_document(config.ADMIN, open(cw.file_name("tex"), 'rb'))
+            self.bot.send_document(config.ADMIN, open(self.file_name("tex"), 'rb'))
         except Exception as e:
             log(f"Exception while saving tex: {e}", self.bot)
             return False
