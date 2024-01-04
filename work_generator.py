@@ -16,12 +16,18 @@ from google_images_search import GoogleImagesSearch
 import shutil
 
 
+class CourseWorkType(enum.StrEnum):
+    DIPLOMA = "Дипломная работа"
+    COURSE_WORK = "Курсовая работа"
+
+
 class CourseWork:
-    def __init__(self, name, bot=None):
+    def __init__(self, name, bot=None, work_type=CourseWorkType.COURSE_WORK):
         self.name = name
         self.chapters = []
         self.chapters_text = []
         self.bot = bot
+        self.work_type = work_type
 
     def print(self):
         print(self.text)
@@ -71,7 +77,7 @@ class CourseWork:
             with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
                 res += template.read()
             if i < 3:
-                res += self.upper_name
+                res += f"{self.upper_name}\n~\\~\\\n{self.work_type}\\"
         with io.open(f"templateFree.tex", mode="r", encoding="utf-8") as template:
             free_text = template.read().format(price=config.PRICE)
         if free:
@@ -115,10 +121,6 @@ class CourseWork:
             except:
                 pass
 
-
-class CourseWorkType(enum.StrEnum):
-    DIPLOMA = "Дипломная работа"
-    COURSE_WORK = "Курсовая работа"
 
 class CourseWorkFactory:
     def __init__(self, model="gpt-3.5-turbo", bot=None):
@@ -314,13 +316,13 @@ class CourseWorkFactory:
         while res and res[-1] in NAME_USELESS_SYMBOLS:
             res = res[:-1]
         res = res.strip()
-        self.work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
         return res
 
     def generate_coursework(self, name):
+        work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
         name = self._process_name(name)
         log(f"Generating coursework {name}...", self.bot)
-        cw = CourseWork(name, bot=self.bot)
+        cw = CourseWork(name, bot=self.bot, work_type=work_type)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot)
             cw.delete()
