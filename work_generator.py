@@ -316,6 +316,7 @@ class CourseWorkFactory:
 
     def _process_name(self, name):
         res = name
+        res = self.gpt.ask(WORK_NAME.format(res))
         while res and res[0] in NAME_USELESS_SYMBOLS:
             res = res[1:]
         while res and res[-1] in NAME_USELESS_SYMBOLS:
