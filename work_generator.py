@@ -204,6 +204,8 @@ class CourseWorkFactory:
             res = res.replace(f"\\\\{c}", f"\\{c}")
         for c in SYMBOLS_TO_ASK:
             res = re.sub(c, self._ask_to_replace, res)
+            res = res.replace(f"\\\\{c}", f"\\{c}")
+            res = res.replace(f"\\\\\\{c}", f"\\{c}")
         for seq in USELESS_SEQUENCES:
             res = res.replace(seq, "")
         if name in BIBLIOGRAPHIES:
