@@ -151,7 +151,9 @@ class CourseWorkFactory:
             chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
             log(f"GPT's response: {chapters_string}", self.bot)
             if cw.additional_sections:
-                chapters_string = self.gpt.ask(ADD_CHAPTERS.format(chapters_string, cw.additional_sections))
+                log("Ask GPT to add sections...", self.bot)
+                chapters_string = self.gpt.ask(ADD_SECTIONS.format(chapters_string, cw.additional_sections))
+                log(f"GPT's response: {chapters_string}", self.bot)
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
                 chapter_name = self._strip_chapter(chapter)
@@ -164,7 +166,6 @@ class CourseWorkFactory:
 
         if cw.chapters[-1] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
-        # cw.chapters.append("Введение")
         log(f"Chapters: {cw.chapters}", self.bot)
 
     def _next_bibitem(self, match):
