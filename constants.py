@@ -10,7 +10,7 @@ BIBLIOGRAPHIES = {"Библиография", "Список использова
                   "Список используемой литературы и источников информации", "Список использованной литературы"}
 NEW_LINE = "\\\\\n"
 BLANK_LINE = "\\\\\n~\\\\\n"
-BIG_INDENT = "\\\\\n~\\\\\n~\\\\\n~\\\\\n"
+BIG_INDENT = "~\\\\\n~\\\\\n~\\\\\n"
 BLANK_LINE_LEN = len(BLANK_LINE)
 NEW_PAGE = "\n\\newpage\n"
 END_DOCUMENT = "\n\\end{document}"
