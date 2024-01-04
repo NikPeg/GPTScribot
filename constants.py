@@ -20,7 +20,7 @@ SYMBOLS_TO_REPLACE = {
 }
 SYMBOLS_TO_ASK = {
     '&': AMPERSAND_QUESTION,
-    '\$': DOLLAR_QUESTION,
+    '\\$': DOLLAR_QUESTION,
 }
 RUSSIAN_SECTION = "Раздел"
 BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\subsubsection", "\\item", "\\bibitem", }
