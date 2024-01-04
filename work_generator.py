@@ -79,7 +79,7 @@ class CourseWork:
             with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
                 res += template.read()
             if i < 3:
-                res += f"{self.upper_name}{BLANK_LINE}{BLANK_LINE}{self.work_type}{NEW_LINE}"
+                res += f"{self.upper_name}{BLANK_LINE}{self.work_type}{NEW_LINE}"
         with io.open(f"templateFree.tex", mode="r", encoding="utf-8") as template:
             free_text = template.read().format(price=config.PRICE)
         if free:
