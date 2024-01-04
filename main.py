@@ -192,8 +192,7 @@ def remove_work(work_name):
 def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-    for type in ["pdf", "tex"]:
-        bot.send_document(moderator, open(cw.file_name(type), 'rb'))
+    bot.send_document(moderator, open(cw.file_name("pdf"), 'rb'))
     bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
     if free:
         btn2 = types.InlineKeyboardButton(text='Я оплатил✅', callback_data='paid')
