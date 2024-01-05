@@ -20,9 +20,9 @@ def start(message):
         users_works_count[message.from_user.id] = 0
         bot.send_message(ADMIN, f"User @{message.from_user.username} started a bot.")
     markup = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton(text='Сгенерировать работу', callback_data='generate')
-    btn2 = types.InlineKeyboardButton(text='Узнать о Scribo', callback_data='info')
-    btn4 = types.InlineKeyboardButton(text='Отправить донат', url=DONATE_URL)
+    btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
+    btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
+    btn4 = types.InlineKeyboardButton(text='💰Поддержать проект', url=DONATE_URL)
     markup.add(btn1)
     markup.add(btn2, btn4)
     if message.from_user.id in MODERATORS:
@@ -41,7 +41,7 @@ def callback_query(call):
             text='Отзывы о боте',
             url='https://docs.google.com/spreadsheets/d/1lnW0Rm5TsFEAM__c05odcggWyXn38gFtD1lvw8pQTBw/edit?usp=sharing'
         )
-        btn3 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        btn3 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1, btn2)
         markup.add(btn3)
         bot.edit_message_text(
@@ -63,9 +63,9 @@ def callback_query(call):
         )
         log(f"User {call.message.chat.id} pressed generate button", bot)
     elif req[0] == 'menu':
-        btn1 = types.InlineKeyboardButton(text='Сгенерировать работу', callback_data='generate')
-        btn2 = types.InlineKeyboardButton(text='Узнать о Scribo', callback_data='info')
-        btn4 = types.InlineKeyboardButton(text='Отправить донат', url=DONATE_URL)
+        btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
+        btn2 = types.InlineKeyboardButton(text='ℹ️Узнать о Scribo', callback_data='info')
+        btn4 = types.InlineKeyboardButton(text='💰Поддержать проект', url=DONATE_URL)
         markup.add(btn1)
         markup.add(btn2, btn4)
         if call.message.chat.id in MODERATORS:
@@ -80,7 +80,7 @@ def callback_query(call):
         )
         log(f"User {call.message.chat.id} pressed menu button", bot)
     elif req[0] == 'work':
-        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         if call.message.chat.id not in decorating:
             bot.edit_message_text(
@@ -103,7 +103,7 @@ def callback_query(call):
             )
         log(f"Moderator {call.message.chat.id} pressed work button", bot)
     elif req[0] == 'list':
-        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         if len(current_works):
             bot.edit_message_text(
@@ -123,7 +123,7 @@ def callback_query(call):
             )
         log(f"Moderator {call.message.chat.id} pressed work button", bot)
     elif req[0] == 'paid':
-        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         bot.edit_message_text(
             FREE_MESSAGE.format(price=config.PRICE),
@@ -158,7 +158,7 @@ def get_document(message):
         if message.from_user.id in decorating:
             moderator_id = message.from_user.id
             markup = types.InlineKeyboardMarkup()
-            btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+            btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
             markup.add(btn1)
             bot.send_message(moderator_id, GOOD_WORK_MESSAGE, reply_markup=markup)
             bot.copy_message(decorating[moderator_id], moderator_id, message.id)
@@ -180,11 +180,11 @@ def remove_work(work_name):
 
 def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
     markup = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+    btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     bot.send_document(moderator, open(cw.file_name("pdf"), 'rb'))
     bot.send_document(user, open(cw.file_name("pdf"), 'rb'))
     if free:
-        btn2 = types.InlineKeyboardButton(text='Я оплатил✅', callback_data='paid')
+        btn2 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
         markup.add(btn1)
         bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
         markup = types.InlineKeyboardMarkup()
@@ -199,7 +199,7 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
 
 def send_problem(moderator: int, user: int) -> None:
     markup = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+    btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     markup.add(btn1)
     bot.send_message(moderator, PAID_PROBLEM_MESSAGE, reply_markup=markup)
     bot.send_message(user, PAID_PROBLEM_MESSAGE, reply_markup=markup)
@@ -208,7 +208,7 @@ def send_problem(moderator: int, user: int) -> None:
 @bot.message_handler(content_types=['text'])
 def get_message(message):
     markup = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+    btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     markup.add(btn1)
     if message.from_user.id in MODERATORS and message.text.lower() == "беру":
         if message.from_user.id in decorating:
@@ -255,7 +255,7 @@ def get_message(message):
         log(f"User {message.from_user.id} sent work: {message.text}", bot)
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
-        btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
