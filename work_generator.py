@@ -219,8 +219,6 @@ class CourseWorkFactory:
         else:
             self.cite_index = 1
             res = re.sub(r'\\cite\{.*?\}', self._next_cite, res)
-        res = res.replace("\\begin{document}", "")
-        res = res.replace("\\end{document}", "")
         if work_type == CourseWorkType.COURSE_WORK:
             res = res.replace("дипломн", "курсов")
             res = res.replace("Дипломн", "Курсов")

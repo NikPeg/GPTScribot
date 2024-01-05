@@ -5,7 +5,7 @@ SECTION = "\\section"
 BIBLIOGRAPHY_SECTION = "\\section"
 SPECIAL_SYMBOLS = {"%"}
 BIBLIOGRAPHY_SPECIAL_SYMBOLS = {"$", "&", "_", "%"}
-USELESS_SEQUENCES = {"\\url", "[label={[\\arabic*]}]"}
+USELESS_SEQUENCES = {"\\url", "[label={[\\arabic*]}]", "\\begin{document}", "\\end{document}", "\\newpage"}
 BIBLIOGRAPHIES = {"Библиография", "Список использованных источников", "Источники", "Материалы", "Список литературы",
                   "Список используемой литературы и источников информации", "Список использованной литературы"}
 NEW_LINE = "\\\\\n"
