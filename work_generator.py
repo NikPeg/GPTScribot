@@ -269,6 +269,7 @@ class CourseWorkFactory:
                 log(f"Filename: {filename}, full filename: {full_filename}, description: {description}", self.bot)
                 _search_params = {
                     "q": description,
+                    "fileType": "png",
                     "num": 1
                 }
                 try:
