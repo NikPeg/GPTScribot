@@ -49,6 +49,7 @@ def callback_query(call):
             reply_markup=markup,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
+            disable_web_page_preview=True
         )
         log(f"User {call.message.chat.id} pressed info button", bot)
     elif req[0] == 'generate':
