@@ -194,7 +194,7 @@ class CourseWorkFactory:
         else:
             return symbol
 
-    def _replace_special_symbols(self, text, name):
+    def _replace_special_symbols(self, text, name, work_type):
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = ""
         for c in text:
@@ -221,8 +221,9 @@ class CourseWorkFactory:
             res = re.sub(r'\\cite\{.*?\}', self._next_cite, res)
         res = res.replace("\\begin{document}", "")
         res = res.replace("\\end{document}", "")
-        res = res.replace("дипломн", "курсов")
-        res = res.replace("Дипломн", "Курсов")
+        if work_type == CourseWorkType.COURSE_WORK:
+            res = res.replace("дипломн", "курсов")
+            res = res.replace("Дипломн", "Курсов")
         return res
 
     @staticmethod
@@ -241,7 +242,7 @@ class CourseWorkFactory:
     def _reorder_section(text, section):
         return f"\n{section}{text.partition(SECTION)[2]}"
 
-    def _validate_chapter(self, text, name):
+    def _validate_chapter(self, text, name, work_type):
         res = text
         if name in BIBLIOGRAPHIES:
             section = BIBLIOGRAPHY_SECTION
@@ -251,7 +252,7 @@ class CourseWorkFactory:
             res = self._add_section(text, name, section)
         elif not text.startswith(SECTION):
             res = self._reorder_section(text, section)
-        return self._replace_special_symbols(res, name)
+        return self._replace_special_symbols(res, name, work_type)
 
     def _add_photos(self, text):
         photo_index = 0
@@ -311,7 +312,7 @@ class CourseWorkFactory:
             else:
                 chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             log(f"GPT's response: {chapter_text}", self.bot)
-            chapter_text = self._validate_chapter(chapter_text, chapter)
+            chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
             self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
