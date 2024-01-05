@@ -22,10 +22,9 @@ def start(message):
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='Узнать о Scribo', callback_data='info')
-    btn3 = types.InlineKeyboardButton(text='Связаться с командой', callback_data='connect')
     btn4 = types.InlineKeyboardButton(text='Отправить донат', url=DONATE_URL)
-    markup.add(btn1, btn2)
-    markup.add(btn3, btn4)
+    markup.add(btn1)
+    markup.add(btn2, btn4)
     if message.from_user.id in MODERATORS:
         btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
         markup.add(btn5)
@@ -66,10 +65,9 @@ def callback_query(call):
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='Сгенерировать работу', callback_data='generate')
         btn2 = types.InlineKeyboardButton(text='Узнать о Scribo', callback_data='info')
-        btn3 = types.InlineKeyboardButton(text='Связаться с командой', callback_data='connect')
         btn4 = types.InlineKeyboardButton(text='Отправить донат', url=DONATE_URL)
-        markup.add(btn1, btn2)
-        markup.add(btn3, btn4)
+        markup.add(btn1)
+        markup.add(btn2, btn4)
         if call.message.chat.id in MODERATORS:
             btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
             markup.add(btn5)
@@ -81,19 +79,6 @@ def callback_query(call):
             parse_mode='html',
         )
         log(f"User {call.message.chat.id} pressed menu button", bot)
-    elif req[0] == 'connect':
-        btn1 = types.InlineKeyboardButton(text='Представитель Scribo', url='https://t.me/nikpeg')
-        btn2 = types.InlineKeyboardButton(text='Канал проекта', url='https://t.me/scribo_project')
-        btn3 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-        markup.add(btn1, btn2)
-        markup.add(btn3)
-        bot.edit_message_text(
-            CONNECT_MESSAGE,
-            reply_markup=markup,
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-        )
-        log(f"User {call.message.chat.id} pressed connect button", bot)
     elif req[0] == 'work':
         btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
         markup.add(btn1)
