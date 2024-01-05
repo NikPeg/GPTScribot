@@ -280,6 +280,7 @@ class CourseWorkFactory:
             else:
                 log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
             photo_index += len(PICTURE_SUBSTRING)
+        return text
 
     @staticmethod
     def _delete_blank_line(text):
@@ -314,7 +315,7 @@ class CourseWorkFactory:
                 chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
             log(f"GPT's response: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
-            self._add_photos(chapter_text)
+            chapter_text = self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text, self.bot)
