@@ -38,9 +38,13 @@ def callback_query(call):
     markup = types.InlineKeyboardMarkup()
     if req[0] == 'info':
         btn1 = types.InlineKeyboardButton(text='Канал проекта', url='https://t.me/scribo_project')
-        btn2 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
-        markup.add(btn1)
-        markup.add(btn2)
+        btn2 = types.InlineKeyboardButton(
+            text='Отзывы о боте',
+            url='https://docs.google.com/spreadsheets/d/1lnW0Rm5TsFEAM__c05odcggWyXn38gFtD1lvw8pQTBw/edit?usp=sharing'
+        )
+        btn3 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        markup.add(btn1, btn2)
+        markup.add(btn3)
         bot.edit_message_text(
             ABOUT_MESSAGE,
             reply_markup=markup,
