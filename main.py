@@ -36,9 +36,9 @@ def callback_query(call):
     req = call.data.split('_')
     markup = types.InlineKeyboardMarkup()
     if req[0] == 'info':
-        btn1 = types.InlineKeyboardButton(text='Канал проекта', url='https://t.me/scribo_project')
+        btn1 = types.InlineKeyboardButton(text='📢Канал проекта', url='https://t.me/scribo_project')
         btn2 = types.InlineKeyboardButton(
-            text='Отзывы о боте',
+            text='📝Отзывы о боте',
             url='https://docs.google.com/spreadsheets/d/1lnW0Rm5TsFEAM__c05odcggWyXn38gFtD1lvw8pQTBw/edit?usp=sharing'
         )
         btn3 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
@@ -52,7 +52,7 @@ def callback_query(call):
         )
         log(f"User {call.message.chat.id} pressed info button", bot)
     elif req[0] == 'generate':
-        btn1 = types.InlineKeyboardButton(text='Главное меню', callback_data='menu')
+        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         bot.edit_message_text(
             GENERATE_MESSAGE,
