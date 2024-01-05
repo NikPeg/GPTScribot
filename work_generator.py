@@ -260,17 +260,20 @@ class CourseWorkFactory:
                 break
             log(f"Photo index: {photo_index}", self.bot)
             filename_match = re.compile(r'\\includegraphics.*\{(.+?)\..*\}').search(text[photo_index:])
+            full_filename_match = re.compile(r'\\includegraphics.*\{(.+?)\}').search(text[photo_index:])
             description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
-            if filename_match and description_match:
+            if filename_match and full_filename_match and description_match:
                 filename = filename_match.group(1)
+                full_filename = full_filename_match.group(1)
                 description = description_match.group(1)
-                log(f"Filename: {filename}, description: {description}", self.bot)
+                log(f"Filename: {filename}, full filename: {full_filename}, description: {description}", self.bot)
                 _search_params = {
                     "q": description,
                     "num": 1
                 }
                 try:
                     self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=filename)
+                    text = text.replace(full_filename, filename)
                 except Exception as e:
                     log(f"Exception while loading picture: {e}", self.bot)
                     shutil.copy("pictures/sample.png", f"pictures/{filename}.png")
