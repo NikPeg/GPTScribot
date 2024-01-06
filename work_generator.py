@@ -194,21 +194,22 @@ class CourseWorkFactory:
         else:
             return symbol
 
-    @staticmethod
-    def _replace_ampersand(text):
+    def _replace_ampersand(self, text):
         opened_table = False
         i = 0
         while i < len(text):
             if text[i:i + len(TABLE_OPEN_SUBSTRING)] == TABLE_OPEN_SUBSTRING:
                 opened_table = True
                 i += len(TABLE_OPEN_SUBSTRING)
+                log(f"Fount table in position {i}", self.bot)
             elif text[i:i + len(TABLE_CLOSE_SUBSTRING)] == TABLE_CLOSE_SUBSTRING:
                 opened_table = False
                 i += len(TABLE_CLOSE_SUBSTRING)
-            elif text[i] == "&":
-                if not opened_table and (i == 0 or text[i - 1] != "\\"):
-                    text = text[:i] + "\\" + text[i:]
-                    i += 2
+                log(f"Table closed in position {i}", self.bot)
+            elif text[i] == "&" and not opened_table and (i == 0 or text[i - 1] != "\\"):
+                log(f"Fount & in position {i} not in table", self.bot)
+                text = text[:i] + "\\" + text[i:]
+                i += 3
             else:
                 i += 1
         return text.replace("\\\\&", "\\&")
