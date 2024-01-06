@@ -1,4 +1,4 @@
-from gpt_messages import AMPERSAND_QUESTION, DOLLAR_QUESTION
+from gpt_messages import DOLLAR_QUESTION
 
 USELESS_SYMBOLS = {'-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' ', 'Глава', 'глава'}
 SECTION = "\\section"
