@@ -206,7 +206,7 @@ class CourseWorkFactory:
                 opened_table = False
                 i += len(TABLE_CLOSE_SUBSTRING)
             elif text[i] == "&":
-                if not opened_table and i > 0 and text[i - 1] != "\\":
+                if not opened_table and (i == 0 or text[i - 1] != "\\"):
                     text = text[:i] + "\\" + text[i:]
                     i += 2
             else:
