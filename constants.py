@@ -27,3 +27,5 @@ ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline", "\\centering", "&"}
 RUSSIAN = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
 PICTURE_SUBSTRING = "\\begin{figure}"
 DIPLOMA_SUBSTRING = "иплом"
+TABLE_OPEN_SUBSTRING = "\\begin{table}"
+TABLE_CLOSE_SUBSTRING = "\\end{table}"

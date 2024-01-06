@@ -194,6 +194,25 @@ class CourseWorkFactory:
         else:
             return symbol
 
+    @staticmethod
+    def _replace_ampersand(text):
+        opened_table = False
+        i = 0
+        while i < len(text):
+            if text[i:i + len(TABLE_OPEN_SUBSTRING)] == TABLE_OPEN_SUBSTRING:
+                opened_table = True
+                i += len(TABLE_OPEN_SUBSTRING)
+            elif text[i:i + len(TABLE_CLOSE_SUBSTRING)] == TABLE_CLOSE_SUBSTRING:
+                opened_table = False
+                i += len(TABLE_CLOSE_SUBSTRING)
+            elif text[i] == "&":
+                if not opened_table and i > 0 and text[i - 1] != "\\":
+                    text = text[:i] + "\\" + text[i:]
+                    i += 2
+            else:
+                i += 1
+        return text.replace("\\\\&", "\\&")
+
     def _replace_special_symbols(self, text, name, work_type):
         symbols = BIBLIOGRAPHY_SPECIAL_SYMBOLS if name in BIBLIOGRAPHIES else SPECIAL_SYMBOLS
         res = ""
@@ -212,6 +231,7 @@ class CourseWorkFactory:
         for seq in USELESS_SEQUENCES:
             res = res.replace(seq, "")
             res = res.replace(seq, "")
+        res = self._replace_ampersand(res)
         if name in BIBLIOGRAPHIES:
             self.ref_index = 1
             res = re.sub(r'\\bibitem\{.*?\}', self._next_bibitem, res)
