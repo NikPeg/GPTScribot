@@ -187,9 +187,9 @@ class CourseWorkFactory:
         log(f"Len of string: {len(s)}, symbol index: {match.span()[0]}", self.bot)
         substring = s[max(0, match.span()[0] - 100):min(len(s), match.span()[0] + 100)]
         log(f"Substring to ask: {substring}", self.bot)
-        gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol][0].format(substring))
+        gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol].format(substring))
         log(f"GPT's answer: {gpt_answer}", self.bot)
-        if gpt_answer.lower().startswith(SYMBOLS_TO_ASK[symbol][1]):
+        if gpt_answer.lower().startswith('нет'):
             return f"\\{symbol}"
         else:
             return symbol
