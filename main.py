@@ -53,13 +53,13 @@ def callback_query(call):
         )
         log(f"User {call.message.chat.id} pressed info button", bot)
     elif req[0] == 'generate':
-        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
-        markup.add(btn1)
-        bot.edit_message_text(
+        reply_markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton(text='🏠Главное меню')
+        reply_markup.add(btn1)
+        bot.send_message(
+            call.message.chat.id,
             GENERATE_MESSAGE,
-            reply_markup=markup,
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
+            reply_markup=reply_markup,
             parse_mode='Markdown',
         )
         log(f"User {call.message.chat.id} pressed generate button", bot)
