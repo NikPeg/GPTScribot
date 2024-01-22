@@ -53,10 +53,10 @@ def callback_query(call):
         )
         log(f"User {call.message.chat.id} pressed info button", bot)
     elif req[0] == 'generate':
-        bot.send_message(
-            call.message.chat.id,
+        bot.edit_message_text(
             GENERATE_MESSAGE,
-            parse_mode='Markdown',
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id
         )
         log(f"User {call.message.chat.id} pressed generate button", bot)
     elif req[0] == 'menu':
