@@ -25,7 +25,7 @@ def start(message):
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
-    btn4 = types.InlineKeyboardButton(text='💰Поддержать проект', url=DONATE_URL)
+    btn4 = types.InlineKeyboardButton(text='💰Поддержать', url=DONATE_URL)
     markup.add(btn1)
     markup.add(btn2, btn4)
     if message.from_user.id in MODERATORS:
@@ -42,7 +42,7 @@ def menu(message):
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
-    btn4 = types.InlineKeyboardButton(text='💰Поддержать проект', url=DONATE_URL)
+    btn4 = types.InlineKeyboardButton(text='💰Поддержать', url=DONATE_URL)
     markup.add(btn1)
     markup.add(btn2, btn4)
     if message.from_user.id in MODERATORS:
@@ -83,7 +83,7 @@ def callback_query(call):
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
         btn2 = types.InlineKeyboardButton(text='ℹ️Узнать о Scribo', callback_data='info')
-        btn4 = types.InlineKeyboardButton(text='💰Поддержать проект', url=DONATE_URL)
+        btn4 = types.InlineKeyboardButton(text='💰Поддержать', url=DONATE_URL)
         markup.add(btn1)
         markup.add(btn2, btn4)
         if call.message.chat.id in MODERATORS:
