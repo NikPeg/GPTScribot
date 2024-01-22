@@ -56,7 +56,8 @@ def callback_query(call):
         bot.edit_message_text(
             GENERATE_MESSAGE,
             chat_id=call.message.chat.id,
-            message_id=call.message.message_id
+            message_id=call.message.message_id,
+            parse_mode='Markdown',
         )
         log(f"User {call.message.chat.id} pressed generate button", bot)
     elif req[0] == 'menu':
