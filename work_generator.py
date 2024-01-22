@@ -350,7 +350,11 @@ class CourseWorkFactory:
             log("Asking GPT about additional topics list...", self.bot)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
             log(f"Additional topics list: {additional_sections}", self.bot)
-        res = self.gpt.ask(WORK_NAME.format(res))
+        log(f"Asking GPT about name...", self.bot)
+        gpt_work_name = self.gpt.ask(WORK_NAME.format(res))
+        log(f"GPT's answer: {gpt_work_name}", self.bot)
+        if REGRET_SUBSTRING not in gpt_work_name:
+            res = gpt_work_name
         if res.startswith(USELESS_START_STRING):
             res = res[len(USELESS_START_STRING):]
         while res and res[0] in NAME_USELESS_SYMBOLS:
