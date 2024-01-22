@@ -14,7 +14,7 @@ factory = CourseWorkFactory(bot=bot)
 cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start', 'help', 'cancel'])
 def start(message):
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
