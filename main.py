@@ -1,4 +1,7 @@
+import random
+
 import config
+import constants
 from config import *
 from messages import *
 from work_generator import CourseWorkFactory, CourseWork
@@ -54,7 +57,7 @@ def callback_query(call):
         log(f"User {call.message.chat.id} pressed info button", bot)
     elif req[0] == 'generate':
         bot.edit_message_text(
-            GENERATE_MESSAGE,
+            GENERATE_MESSAGE.format(random.choice(constants.SAMPLE_WORKS)),
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             parse_mode='html',
