@@ -17,7 +17,7 @@ factory = CourseWorkFactory(bot=bot)
 cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 
 
-@bot.message_handler(commands=['start', 'help', 'cancel'])
+@bot.message_handler(commands=['start'])
 def start(message):
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
@@ -32,6 +32,23 @@ def start(message):
         btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
         markup.add(btn5)
     bot.send_message(message.from_user.id, START_MESSAGE, reply_markup=markup, parse_mode='html')
+
+
+@bot.message_handler(commands=['menu', 'help', 'cancel'])
+def menu(message):
+    if message.from_user.id not in users_works_count:
+        users_works_count[message.from_user.id] = 0
+        bot.send_message(ADMIN, f"User @{message.from_user.username} started a bot.")
+    markup = types.InlineKeyboardMarkup()
+    btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
+    btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
+    btn4 = types.InlineKeyboardButton(text='💰Поддержать проект', url=DONATE_URL)
+    markup.add(btn1)
+    markup.add(btn2, btn4)
+    if message.from_user.id in MODERATORS:
+        btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
+        markup.add(btn5)
+    bot.send_message(message.from_user.id, MENU_MESSAGE, reply_markup=markup, parse_mode='html')
 
 
 @bot.callback_query_handler(func=lambda call: True)
