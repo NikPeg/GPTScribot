@@ -137,6 +137,8 @@ class CourseWorkFactory:
     @staticmethod
     def _strip_chapter(text):
         res = text.strip()
+        if USELESS_SUBSTRING in res.lower():
+            return None
         while res and res[0] in USELESS_SYMBOLS:
             res = res[1:]
         while res and res[-1] in USELESS_SYMBOLS:
