@@ -1,7 +1,9 @@
 import enum
 import io
 import os
+import random
 import re
+import string
 from functools import cached_property
 
 import config
@@ -294,12 +296,13 @@ class CourseWorkFactory:
                     "fileType": "png",
                     "num": 1
                 }
+                new_filename = f"{filename}-{''.join(random.choices(string.ascii_lowercase + string.digits, k=9))}"
+                text = text.replace(full_filename, new_filename)
                 try:
-                    self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=filename)
-                    text = text.replace(full_filename, filename)
+                    self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=new_filename)
                 except Exception as e:
                     log(f"Exception while loading picture: {e}", self.bot)
-                    shutil.copy("pictures/sample.png", f"pictures/{filename}.png")
+                    shutil.copy("pictures/sample.png", f"pictures/{new_filename}.png")
             else:
                 log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
             photo_index += len(PICTURE_SUBSTRING)
