@@ -290,13 +290,17 @@ class CourseWorkFactory:
                 filename = filename_match.group(1)
                 full_filename = full_filename_match.group(1)
                 description = description_match.group(1)
-                log(f"Filename: {filename}, full filename: {full_filename}, description: {description}", self.bot)
+                new_filename = f"{filename}-{''.join(random.choices(string.ascii_lowercase + string.digits, k=9))}"
+                log(
+                    f"Filename: {filename}, full filename: {full_filename}, new filename: {new_filename}, "
+                    f"description: {description}",
+                    self.bot
+                )
                 _search_params = {
                     "q": description,
                     "fileType": "png",
                     "num": 1
                 }
-                new_filename = f"{filename}-{''.join(random.choices(string.ascii_lowercase + string.digits, k=9))}"
                 text = text.replace(full_filename, new_filename)
                 try:
                     self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=new_filename)

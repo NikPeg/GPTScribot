@@ -240,6 +240,7 @@ def get_message(message):
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
         log(f"Moderator {message.from_user.id} sent беру", bot)
     if message.from_user.id in MODERATORS and message.text.lower() == "сгенерировать":
+        log(f"Moderator {message.from_user.id} sent сгенерировать", bot)
         if message.reply_to_message:
             bot.send_message(message.from_user.id, GENERATING_MESSAGE, reply_markup=markup)
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
@@ -262,7 +263,6 @@ def get_message(message):
                                  reply_markup=markup)
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
-        log(f"Moderator {message.from_user.id} sent сгенерировать", bot)
     elif message.from_user.id not in MODERATORS:
         bot.send_message(
             message.from_user.id,
