@@ -168,7 +168,7 @@ class CourseWorkFactory:
         else:
             log(f"!!!There is a problem with {cw.name}!!!", self.bot)
 
-        if cw.chapters[-1] not in BIBLIOGRAPHIES:
+        if cw.chapters[-1] not in BIBLIOGRAPHIES and cw.chapters[-2] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}", self.bot)
 
