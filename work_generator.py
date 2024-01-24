@@ -102,17 +102,17 @@ class CourseWork:
 
     def file_name(self, type="tex"):
         translit_name = translit(self.name, language_code='ru', reversed=True)
-        splitted_name = translit_name.split()
+        ascii_name = ""
+        for c in translit_name:
+            if c in ascii_letters + digits + " ":
+                ascii_name += c
+        splitted_name = ascii_name.split()
         res = ""
         for word in splitted_name:
             res += " " + word if res else word
             if len(res) >= 60:
                 break
-        ascii_res = ""
-        for c in res:
-            if c in ascii_letters + digits + " \t\n":
-                ascii_res += c
-        return f"{ascii_res}.{type}"
+        return f"{res}.{type}"
 
     def delete(self, delete_tex: bool = True):
         for file_type in "aux", "log", "pdf", "toc":
