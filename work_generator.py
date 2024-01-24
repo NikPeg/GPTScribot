@@ -4,23 +4,29 @@ import os
 import random
 import re
 import string
+import subprocess
 from functools import cached_property
+from string import ascii_letters, digits, punctuation
+
+from google_images_search import GoogleImagesSearch
+from transliterate import translit
 
 import config
-from proxy import GPTProxy
 from constants import *
 from gpt_messages import *
+from proxy import GPTProxy
 from utils import log
-from transliterate import translit
-from string import ascii_letters, digits, printable, punctuation
-import subprocess
-from google_images_search import GoogleImagesSearch
-import shutil
 
 
 class CourseWorkType(enum.StrEnum):
     DIPLOMA = "Дипломная работа"
     COURSE_WORK = "Курсовая работа"
+
+
+SUBSTRING_BY_TYPE = {
+    CourseWorkType.DIPLOMA: "дипломной",
+    CourseWorkType.COURSE_WORK: "курсовой",
+}
 
 
 class CourseWork:
@@ -51,7 +57,8 @@ class CourseWork:
         try:
             log("Try to run pdflatex...", self.bot)
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                    text=True)
             log(result.stdout, bot=self.bot)
             log(result.stderr, bot=self.bot)
             return result.returncode == 0
@@ -152,11 +159,12 @@ class CourseWorkFactory:
 
         for i in range(10):
             cw.chapters = []
-            chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name))
+            chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
             log(f"GPT's response: {chapters_string}", self.bot)
             if cw.additional_sections:
                 log("Ask GPT to add sections...", self.bot)
-                chapters_string = self.gpt.ask(ADD_SECTIONS.format(chapters_string, cw.additional_sections))
+                chapters_string = self.gpt.ask(
+                    ADD_SECTIONS.format(chapters_string, cw.additional_sections, SUBSTRING_BY_TYPE[cw.work_type]))
                 log(f"GPT's response: {chapters_string}", self.bot)
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
@@ -176,7 +184,8 @@ class CourseWorkFactory:
         log("Generating subchapters...", self.bot)
 
         subchapters = []
-        subchapters_string = self.gpt.ask(GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name))
+        subchapters_string = self.gpt.ask(
+            GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
         log(f"GPT's response: {subchapters_string}", self.bot)
         subchapters_list = subchapters_string.split("\n")
         for subchapter in subchapters_list[:3]:
@@ -325,7 +334,8 @@ class CourseWorkFactory:
                     "num": 1
                 }
                 try:
-                    self.gis.search(search_params=_search_params, path_to_dir='pictures/', custom_image_name=new_filename)
+                    self.gis.search(search_params=_search_params, path_to_dir='pictures/',
+                                    custom_image_name=new_filename)
                     text = text.replace(full_filename, new_filename)
                 except Exception as e:
                     log(f"Exception while loading picture: {e}", self.bot)
@@ -364,12 +374,14 @@ class CourseWorkFactory:
         for chapter in cw.chapters:
             log(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
-                chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name))
+                chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
             else:
-                chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name)) + "\n"
+                chapter_text = self.gpt.ask(
+                    GENERATE_CHAPTER.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type])) + "\n"
                 for subchapter in self._generate_subchapters(chapter, cw):
                     log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
-                    subchapter_text = self.gpt.ask(GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name))
+                    subchapter_text = self.gpt.ask(
+                        GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
                     log(f"GPT's answer: {subchapter_text}", self.bot)
                     subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
                     log(f"Subchapter's text: {subchapter_text}", self.bot)
@@ -391,7 +403,7 @@ class CourseWorkFactory:
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
             log(f"Additional topics list: {additional_sections}", self.bot)
         log(f"Asking GPT about name...", self.bot)
-        gpt_work_name = self.gpt.ask(WORK_NAME.format(res))
+        gpt_work_name = self.gpt.ask(WORK_NAME.format(res, SUBSTRING_BY_TYPE[cw.work_type]))
         log(f"GPT's answer: {gpt_work_name}", self.bot)
         if REGRET_SUBSTRING not in gpt_work_name:
             res = gpt_work_name
