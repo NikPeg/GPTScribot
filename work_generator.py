@@ -172,6 +172,20 @@ class CourseWorkFactory:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}", self.bot)
 
+    def _generate_subchapters(self, subchapter, cw):
+        log("Generating subchapters...", self.bot)
+
+        subchapters = []
+        subchapters_string = self.gpt.ask(GENERATE_SUBCHAPTERS_LIST.format(subchapter, cw.name))
+        log(f"GPT's response: {subchapters_string}", self.bot)
+        subchapters_list = subchapters_string.split("\n")
+        for subchapter in subchapters_list:
+            subchapter_name = self._strip_chapter(subchapter)
+            if subchapter_name:
+                subchapters.append(subchapter_name)
+        log(f"Subchapters: {subchapters}", self.bot)
+        return subchapters
+
     def _next_bibitem(self, match):
         result = f'\\bibitem{{ref{self.ref_index}}}'
         self.ref_index += 1
@@ -276,6 +290,15 @@ class CourseWorkFactory:
             res = self._reorder_section(text, section)
         return self._replace_special_symbols(res, name, work_type)
 
+    def _validate_subchapter(self, text, name, work_type):
+        res = text
+        section = SUBSECTION
+        if SECTION not in text:
+            res = self._add_section(text, name, section)
+        elif not text.startswith(SECTION):
+            res = self._reorder_section(text, section)
+        return self._replace_special_symbols(res, name, work_type)
+
     def _add_photos(self, text):
         photo_index = 0
         while photo_index < len(text):
@@ -343,8 +366,13 @@ class CourseWorkFactory:
             if chapter in BIBLIOGRAPHIES:
                 chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name))
             else:
-                chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name))
-            log(f"GPT's response: {chapter_text}", self.bot)
+                chapter_text = f"\n{SECTION}{{{chapter}}}\n"
+                for subchapter in self._generate_subchapters(chapter, cw):
+                    subchapter_text = self.gpt.ask(GENERATE_SUBCHAPTER.format(subchapter, cw.name))
+                    subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
+                    log(f"Subchapter's text: {subchapter_text}", self.bot)
+                    chapter_text += subchapter_text
+            log(f"Chapter's text: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
             chapter_text = self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:

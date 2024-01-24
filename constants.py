@@ -4,6 +4,7 @@ USELESS_SYMBOLS = {
     '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' ', 'Глава', 'глава', '(дополнительная глава)'
 }
 SECTION = "\\section"
+SUBSECTION = "\\subsection"
 BIBLIOGRAPHY_SECTION = "\\section"
 SPECIAL_SYMBOLS = {"%"}
 BIBLIOGRAPHY_SPECIAL_SYMBOLS = {"$", "&", "_", "%"}
