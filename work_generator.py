@@ -375,7 +375,7 @@ class CourseWorkFactory:
                     log(f"GPT's answer: {subchapter_text}", self.bot)
                     subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
                     log(f"Subchapter's text: {subchapter_text}", self.bot)
-                    chapter_text += subchapter_text
+                    chapter_text += subchapter_text + "\n"
             log(f"Chapter's text: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
             chapter_text = self._add_photos(chapter_text)
