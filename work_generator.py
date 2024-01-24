@@ -368,10 +368,10 @@ class CourseWorkFactory:
             if chapter in BIBLIOGRAPHIES:
                 chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name))
             else:
-                chapter_text = f"\n{SECTION}{{{chapter}}}\n"
+                chapter_text = self.gpt.ask(GENERATE_CHAPTER.format(chapter, cw.name)) + "\n"
                 for subchapter in self._generate_subchapters(chapter, cw):
                     log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
-                    subchapter_text = self.gpt.ask(GENERATE_SUBCHAPTER.format(subchapter, cw.name))
+                    subchapter_text = self.gpt.ask(GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name))
                     log(f"GPT's answer: {subchapter_text}", self.bot)
                     subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
                     log(f"Subchapter's text: {subchapter_text}", self.bot)
