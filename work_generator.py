@@ -292,8 +292,6 @@ class CourseWorkFactory:
 
     def _validate_subchapter(self, text, name, work_type):
         res = text
-        res = res.replace(SUBSECTION, SUBSUBSECTION)
-        res = res.replace(SECTION, SUBSECTION)
         section = SUBSECTION
         if section not in text:
             res = self._add_section(text, name, section)
