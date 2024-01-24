@@ -276,7 +276,7 @@ class CourseWorkFactory:
 
     @staticmethod
     def _reorder_section(text, section):
-        return f"\n{section}{text.partition(SECTION)[2]}"
+        return f"\n{section}{text.partition(section)[2]}"
 
     def _validate_chapter(self, text, name, work_type):
         res = text
