@@ -172,14 +172,14 @@ class CourseWorkFactory:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}", self.bot)
 
-    def _generate_subchapters(self, subchapter, cw):
+    def _generate_subchapters(self, chapter, cw):
         log("Generating subchapters...", self.bot)
 
         subchapters = []
-        subchapters_string = self.gpt.ask(GENERATE_SUBCHAPTERS_LIST.format(subchapter, cw.name))
+        subchapters_string = self.gpt.ask(GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name))
         log(f"GPT's response: {subchapters_string}", self.bot)
         subchapters_list = subchapters_string.split("\n")
-        for subchapter in subchapters_list:
+        for subchapter in subchapters_list[:3]:
             subchapter_name = self._strip_chapter(subchapter)
             if subchapter_name:
                 subchapters.append(subchapter_name)
