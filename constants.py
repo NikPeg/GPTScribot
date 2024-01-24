@@ -5,6 +5,7 @@ USELESS_SYMBOLS = {
 }
 SECTION = "\\section"
 SUBSECTION = "\\subsection"
+SUBSUBSECTION = "\\subsubsection"
 BIBLIOGRAPHY_SECTION = "\\section"
 SPECIAL_SYMBOLS = {"%"}
 BIBLIOGRAPHY_SPECIAL_SYMBOLS = {"$", "&", "_", "%"}

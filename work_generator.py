@@ -292,10 +292,12 @@ class CourseWorkFactory:
 
     def _validate_subchapter(self, text, name, work_type):
         res = text
+        res = res.replace(SUBSECTION, SUBSUBSECTION)
+        res = res.replace(SECTION, SUBSECTION)
         section = SUBSECTION
-        if SECTION not in text:
+        if section not in text:
             res = self._add_section(text, name, section)
-        elif not text.startswith(SECTION):
+        elif not text.startswith(section):
             res = self._reorder_section(text, section)
         return self._replace_special_symbols(res, name, work_type)
 
