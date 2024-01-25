@@ -188,9 +188,9 @@ class CourseWorkFactory:
             GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
         log(f"GPT's response: {subchapters_string}", self.bot)
         subchapters_list = subchapters_string.split("\n")
-        for subchapter in subchapters_list[:3]:
+        for subchapter in subchapters_list:
             subchapter_name = self._strip_chapter(subchapter)
-            if subchapter_name:
+            if subchapter_name and subchapter_name.lower() != INTRODUCTION:
                 subchapters.append(subchapter_name)
         log(f"Subchapters: {subchapters}", self.bot)
         return subchapters

@@ -27,6 +27,7 @@ SYMBOLS_TO_ASK = {
     '\\$': DOLLAR_QUESTION,
 }
 RUSSIAN_SECTION = "Раздел"
+INTRODUCTION = "введение"
 BEGINS_WITHOUT_NEW_LINES = {"\\begin", "\\end", "\\subsection", "\\subsubsection", "\\item", "\\bibitem", }
 ENDS_WITHOUT_NEW_LINES = {"\\", "}", "]", "\\hline", "\\centering", "&"}
 RUSSIAN = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
