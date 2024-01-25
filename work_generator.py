@@ -404,10 +404,6 @@ class CourseWorkFactory:
             log(f"Additional topics list: {additional_sections}", self.bot)
         log(f"Asking GPT about name...", self.bot)
         work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
-        gpt_work_name = self.gpt.ask(WORK_NAME.format(res, SUBSTRING_BY_TYPE[work_type]))
-        log(f"GPT's answer: {gpt_work_name}", self.bot)
-        if REGRET_SUBSTRING not in gpt_work_name:
-            res = gpt_work_name
         if res.startswith(USELESS_START_STRING):
             res = res[len(USELESS_START_STRING):]
         while res and res[0] in NAME_USELESS_SYMBOLS:
