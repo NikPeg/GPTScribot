@@ -192,6 +192,7 @@ class CourseWorkFactory:
             subchapter_name = self._strip_chapter(subchapter)
             if subchapter_name and subchapter_name.lower() != INTRODUCTION:
                 subchapters.append(subchapter_name)
+        subchapters = subchapters[:3]
         log(f"Subchapters: {subchapters}", self.bot)
         return subchapters
 
