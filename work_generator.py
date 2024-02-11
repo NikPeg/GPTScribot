@@ -20,7 +20,7 @@ from proxy import GPTProxy
 from utils import log
 
 
-class CourseWorkType(enum.StrEnum):
+class CourseWorkType(enum.Enum):
     DIPLOMA = "Дипломная работа"
     COURSE_WORK = "Курсовая работа"
 
