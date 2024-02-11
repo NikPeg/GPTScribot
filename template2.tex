@@ -1,27 +1,55 @@
-~\\
-~\\
-~\\
-RU.17701729.10.03-01 01-1-ЛУ}\\
-\vspace*{\fill}
-\end{center}
-\zz{~}Исполнитель
-\zz{~}Студент группы \noindent\rule{0.5cm}{0.4pt}
-\zz{~}образовательной программы
-\zz{~}«Название программы»
-\zz{~}ФИО
-\zz{~}\noindent\rule{3cm}{0.4pt} ФИО
-\zz{~}«\noindent\rule{1cm}{0.4pt}»\noindent\rule{2cm}{0.4pt}20\noindent\rule{0.5cm}{0.4pt}г.
+\documentclass{article}
+\usepackage{cmap}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
+\usepackage{tikz}
+\usepackage{tabto}
+\usepackage{epstopdf}
+\usepackage{setspace,amsmath}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{lipsum}
+\usepackage[usestackEOL]{stackengine}
+\usepackage{kantlipsum}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{zref-totpages}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage\\ RU.17701729.10.03-01 01-1}
+\renewcommand{\headrulewidth}{0pt}
+\captionsetup[table]{justification=centering}
+\usetikzlibrary{positioning}
+\graphicspath{ {./pictures/} }
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\newcommand\zz[1]{\par{\normalsize\strut #1} \hfill\ignorespaces}
+\addto\captionsrussian{\def\refname{}}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\Large#1\end{center}
+  }%
+}
+\newcommand{\subsubtitle}[1]{%
+  \preauthor{%
+    \begin{center}
+    \large #1 \vskip0.5em
+    \begin{tabular}[t]{c}
+  }%
+}
+\begin{document}
+\fontsize{14}{16}\selectfont
+\thispagestyle{empty}
 \begin{center}
-\vspace*{\fill}{
-  Город \the\year{}}
-\end{center}
-\newpage
 \clearpage
 \pagenumbering{arabic}
-\begin{textbf}\\
-УТВЕРЖДЕН\\
-RU.17701729.10.03-01 01-1-ЛУ\\
-\end{textbf}
 \bigskip
 \begin{center}
 \topskip=0pt

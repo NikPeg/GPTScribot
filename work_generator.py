@@ -85,7 +85,7 @@ class CourseWork:
 
     def text(self, free=True):
         res = ""
-        for i in range(1, 4):
+        for i in range(2, 4):
             with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
                 res += template.read()
             if i < 3:
