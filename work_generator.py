@@ -13,6 +13,7 @@ from pdf2docx import Converter
 from transliterate import translit
 
 import config
+import constants
 from constants import *
 from gpt_messages import *
 from proxy import GPTProxy
@@ -134,7 +135,7 @@ class CourseWork:
         return f"{res}.{type}"
 
     def delete(self, delete_tex: bool = True):
-        for file_type in "aux", "log", "pdf", "toc":
+        for file_type in constants.ALL_FILE_TYPES:
             try:
                 os.remove(self.file_name(file_type))
             except:
@@ -417,8 +418,9 @@ class CourseWorkFactory:
             log(f"Additional topics list: {additional_sections}", self.bot)
         log(f"Asking GPT about name...", self.bot)
         work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
-        if res.startswith(USELESS_START_STRING):
-            res = res[len(USELESS_START_STRING):]
+        for useless_string in USELESS_START_STRINGS:
+            if res.startswith(useless_string):
+                res = res[len(useless_string):]
         while res and res[0] in NAME_USELESS_SYMBOLS:
             res = res[1:]
         while res and res[-1] in NAME_USELESS_SYMBOLS:

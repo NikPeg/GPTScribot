@@ -19,7 +19,7 @@ BLANK_LINE_LEN = len(BLANK_LINE)
 NEW_PAGE = "\n\\newpage\n"
 END_DOCUMENT = "\n\\end{document}"
 NAME_USELESS_SYMBOLS = {'.', '"', "'", "?", ":", " "}
-USELESS_START_STRING = "Название работы"
+USELESS_START_STRINGS = ["название работы", "тема работы", "тема реферата", "тема", "название курсовой", "название"]
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
@@ -53,3 +53,4 @@ SAMPLE_WORKS = [
 ]
 USELESS_SUBSTRING = "список глав"
 WORK_TYPES = ["pdf", "docx"]
+ALL_FILE_TYPES = ["docx", "aux", "log", "pdf", "toc"]

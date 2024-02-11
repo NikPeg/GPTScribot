@@ -23,6 +23,7 @@ class GPTProxy:
             )
 
             return completion.choices[0].message.content
+            # return "Введение\nРанние годы\nПервая ошибка\nНикита\nЗаключение"
         except Exception as e:
             print(e)
             raise e
