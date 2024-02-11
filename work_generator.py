@@ -7,6 +7,7 @@ import string
 import subprocess
 from functools import cached_property
 from string import ascii_letters, digits, punctuation
+from pdf2docx import Converter
 
 # from google_images_search import GoogleImagesSearch
 from transliterate import translit
@@ -62,10 +63,20 @@ class CourseWork:
                                     text=True)
             log(result.stdout, bot=self.bot)
             log(result.stderr, bot=self.bot)
-            return result.returncode == 0
         except Exception as e:
             log(f"Exception while running pdflatex: {e}", self.bot)
             return False
+
+        try:
+            log("Try to convert pdf to docx...", self.bot)
+            cv = Converter(self.file_name("pdf"))
+            cv.convert(self.file_name("docx"), start=0, end=None)
+            cv.close()
+        except Exception as e:
+            log(f"Exception while converting pdf to docx: {e}", self.bot)
+            return False
+
+        return True
 
     @cached_property
     def upper_name(self):
