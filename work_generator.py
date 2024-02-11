@@ -8,7 +8,7 @@ import subprocess
 from functools import cached_property
 from string import ascii_letters, digits, punctuation
 
-from google_images_search import GoogleImagesSearch
+# from google_images_search import GoogleImagesSearch
 from transliterate import translit
 
 import config
@@ -49,7 +49,8 @@ class CourseWork:
         try:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
                 result_file.write(self.text(free))
-            self.bot.send_document(config.ADMIN, open(self.file_name("tex"), 'rb'))
+            if self.bot:
+                self.bot.send_document(config.ADMIN, open(self.file_name("tex"), 'rb'))
         except Exception as e:
             log(f"Exception while saving tex: {e}", self.bot)
             return False
@@ -141,7 +142,7 @@ class CourseWorkFactory:
         self.ref_index = 1
         self.cite_index = 1
         self.bot = bot
-        self.gis = GoogleImagesSearch(config.GOOGLE_DEVELOPER_KEY, config.GOOGLE_CUSTOM_SEARCH_CX)
+        # self.gis = GoogleImagesSearch(config.GOOGLE_DEVELOPER_KEY, config.GOOGLE_CUSTOM_SEARCH_CX)
 
     @staticmethod
     def _strip_chapter(text):
