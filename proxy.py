@@ -22,7 +22,7 @@ class GPTProxy:
                 temperature=0
             )
 
-            return completion.choices[0].message.content
+            return completion.choices[0].message.content.encode('utf-8').decode('unicode-escape')
             # return "Введение\nРанние годы\nПервая ошибка\nНикита\nЗаключение"
         except Exception as e:
             print(e)
