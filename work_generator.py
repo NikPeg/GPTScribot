@@ -57,15 +57,19 @@ class CourseWork:
             log(f"Exception while saving tex: {e}", self.bot)
             return False
 
+        log("Try to run pdflatex...", self.bot)
         try:
-            log("Try to run pdflatex...", self.bot)
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    text=True)
-            log(result.stdout, bot=self.bot)
-            log(result.stderr, bot=self.bot)
         except Exception as e:
             log(f"Exception while running pdflatex: {e}", self.bot)
+        try:
+            subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        except Exception as e:
+            log(f"Second exception while running pdflatex: {e}", self.bot)
+
+        if not os.path.isfile(self.file_name("pdf")):
+            log(f"No pdf file fount: {self.file_name('pdf')}", self.bot)
+            return False
 
         try:
             log("Try to convert pdf to docx...", self.bot)
