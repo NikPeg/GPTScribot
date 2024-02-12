@@ -66,7 +66,6 @@ class CourseWork:
             log(result.stderr, bot=self.bot)
         except Exception as e:
             log(f"Exception while running pdflatex: {e}", self.bot)
-            return False
 
         try:
             log("Try to convert pdf to docx...", self.bot)
@@ -75,7 +74,6 @@ class CourseWork:
             cv.close()
         except Exception as e:
             log(f"Exception while converting pdf to docx: {e}", self.bot)
-            return False
 
         return True
 

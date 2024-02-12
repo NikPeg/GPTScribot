@@ -200,16 +200,22 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     for work_type in constants.WORK_TYPES:
-        bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
-        bot.send_document(user, open(cw.file_name(work_type), 'rb'))
+        try:
+            bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
+            bot.send_document(user, open(cw.file_name(work_type), 'rb'))
+        except Exception as e:
+            log(f"Can't send a document: {e}", bot)
     if free:
-        btn2 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
-        markup.add(btn1)
-        bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
-        markup = types.InlineKeyboardMarkup()
-        markup.add(btn2)
-        markup.add(btn1)
-        bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+        try:
+            btn2 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
+            markup.add(btn1)
+            bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+            markup = types.InlineKeyboardMarkup()
+            markup.add(btn2)
+            markup.add(btn1)
+            bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+        except Exception as e:
+            log(f"Can't send a document: {e}", bot)
     else:
         markup.add(btn1)
         bot.send_message(moderator, READY_MESSAGE, reply_markup=markup)
