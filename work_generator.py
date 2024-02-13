@@ -63,7 +63,8 @@ class CourseWork:
         except Exception as e:
             log(f"Exception while running pdflatex: {e}", self.bot)
         try:
-            subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            log(result.stderr, self.bot)
         except Exception as e:
             log(f"Second exception while running pdflatex: {e}", self.bot)
 
