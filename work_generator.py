@@ -9,7 +9,7 @@ from functools import cached_property
 from string import ascii_letters, digits, punctuation
 from pdf2docx import Converter
 
-# from google_images_search import GoogleImagesSearch
+from google_images_search import GoogleImagesSearch
 from transliterate import translit
 
 import config
@@ -157,7 +157,7 @@ class CourseWorkFactory:
         self.ref_index = 1
         self.cite_index = 1
         self.bot = bot
-        # self.gis = GoogleImagesSearch(config.GOOGLE_DEVELOPER_KEY, config.GOOGLE_CUSTOM_SEARCH_CX)
+        self.gis = GoogleImagesSearch(config.GOOGLE_DEVELOPER_KEY, config.GOOGLE_CUSTOM_SEARCH_CX)
 
     @staticmethod
     def _strip_chapter(text):
