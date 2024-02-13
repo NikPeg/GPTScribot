@@ -398,9 +398,7 @@ class CourseWorkFactory:
                     log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
                     subchapter_text = self.gpt.ask(
                         GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
-                    log(f"GPT's answer: {subchapter_text}", self.bot)
                     subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
-                    log(f"Subchapter's text: {subchapter_text}", self.bot)
                     chapter_text += subchapter_text + "\n"
             log(f"Chapter's text: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
