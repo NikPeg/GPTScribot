@@ -18,8 +18,8 @@ BIG_INDENT = "~\\\\\n~\\\\\n~\\\\\n"
 BLANK_LINE_LEN = len(BLANK_LINE)
 NEW_PAGE = "\n\\newpage\n"
 END_DOCUMENT = "\n\\end{document}"
-NAME_USELESS_SYMBOLS = {'.', '"', "'", "?", ":", " "}
-USELESS_START_STRINGS = ["название работы", "тема работы", "тема реферата", "тема", "название курсовой", "название"]
+NAME_USELESS_SYMBOLS = {'.', '"', "'", "?", ":", " ", "«", "»"}
+USELESS_START_STRINGS = ["название работы", "тема работы", "тема реферата", "тема", "название курсовой", "название", "курсовая на тему", "диплом на тему"]
 SYMBOLS_TO_REPLACE = {
     '"': '"{}',
 }
