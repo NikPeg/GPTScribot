@@ -249,7 +249,7 @@ def get_message(message):
     if message.from_user.id in MODERATORS and message.text.lower() == "сгенерировать":
         log(f"Moderator {message.from_user.id} sent сгенерировать", bot)
         if message.reply_to_message:
-            bot.send_message(message.from_user.id, GENERATING_MESSAGE, reply_markup=markup)
+            bot.send_message(message.from_user.id, GENERATING_MESSAGE.format(message.reply_to_message.text.split("\n")[1]), reply_markup=markup)
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             for i in range(TRIES_COUNT):
                 bot.send_message(message.from_user.id, ATTEMPT_MESSAGE.format(i), reply_markup=markup)
@@ -288,6 +288,7 @@ def get_message(message):
                 bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
+        bot.send_message(ADMIN, GENERATING_MESSAGE.format(message.text))
 
         for i in range(TRIES_COUNT):
             bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
