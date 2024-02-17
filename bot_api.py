@@ -1,0 +1,19 @@
+from messages import *
+from constants import *
+from telebot import types
+
+
+def edit_status_message(message, bot, ready_chapters=0, chapters_count=10):
+    if not message:
+        return
+    markup = types.InlineKeyboardMarkup()
+    btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+    markup.add(btn1)
+    ready_count = round(ready_chapters / chapters_count * 10)
+    bot.edit_message_text(
+        STATUS_MESSAGE.format(ready_count * READY_SYMBOL + UNREADY_SYMBOL * (10 - ready_count)),
+        reply_markup=markup,
+        parse_mode='Markdown',
+        chat_id=message.chat.id,
+        message_id=message.message_id
+    )

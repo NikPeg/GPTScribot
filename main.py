@@ -253,7 +253,7 @@ def get_message(message):
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             status_message = bot.send_message(
                 reply_chat_id,
-                WORK_DOWNLOADED_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
+                STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
                 parse_mode='Markdown',
                 reply_markup=markup,
             )
@@ -279,7 +279,7 @@ def get_message(message):
     elif message.from_user.id not in MODERATORS:
         status_message = bot.send_message(
             message.from_user.id,
-            WORK_DOWNLOADED_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
+            STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
             parse_mode='Markdown',
             reply_markup=markup,
         )
