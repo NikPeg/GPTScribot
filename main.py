@@ -251,9 +251,15 @@ def get_message(message):
         if message.reply_to_message:
             bot.send_message(message.from_user.id, GENERATING_MESSAGE.format(message.reply_to_message.text.split("\n")[1]), reply_markup=markup)
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
+            status_message = bot.send_message(
+                reply_chat_id,
+                WORK_DOWNLOADED_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
+                parse_mode='Markdown',
+                reply_markup=markup,
+            )
             for i in range(TRIES_COUNT):
                 bot.send_message(message.from_user.id, ATTEMPT_MESSAGE.format(i), reply_markup=markup)
-                cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1])
+                cw = factory.generate_coursework(message.reply_to_message.text.split("\n")[1], status_message)
                 try:
                     if cw.save():
                         send_work(cw, message.from_user.id, reply_chat_id)
@@ -271,7 +277,7 @@ def get_message(message):
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
-        bot.send_message(
+        status_message = bot.send_message(
             message.from_user.id,
             WORK_DOWNLOADED_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
             parse_mode='Markdown',
@@ -292,7 +298,7 @@ def get_message(message):
 
         for i in range(TRIES_COUNT):
             bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
-            cw = factory.generate_coursework(message.text)
+            cw = factory.generate_coursework(message.text, status_message)
             try:
                 if cw.save():
                     send_work(cw, ADMIN, message.from_user.id)

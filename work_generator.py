@@ -14,6 +14,7 @@ from transliterate import translit
 
 import config
 import constants
+from bot_api import edit_status_message
 from constants import *
 from gpt_messages import *
 from proxy import GPTProxy
@@ -387,9 +388,9 @@ class CourseWorkFactory:
                     res += f"{line}{BLANK_LINE}"
         return res
 
-    def _generate_chapters_text(self, cw):
+    def _generate_chapters_text(self, cw, status_message):
         log("\n\n\nGenerating chapters\' text...", self.bot)
-        for chapter in cw.chapters:
+        for i, chapter in enumerate(cw.chapters):
             log(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
                 chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
@@ -409,6 +410,7 @@ class CourseWorkFactory:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
             log(chapter_text, self.bot)
             cw.chapters_text.append(chapter_text)
+            edit_status_message(status_message, self.bot, i, len(cw.chapters))
 
     def _process_name(self, name):
         res = name
@@ -430,7 +432,7 @@ class CourseWorkFactory:
         res = res.strip()
         return res, additional_sections, work_type
 
-    def generate_coursework(self, name):
+    def generate_coursework(self, name, status_message):
         name, additional_sections, work_type = self._process_name(name)
         log(f"Generating coursework {name}...", self.bot)
         cw = CourseWork(name, bot=self.bot, work_type=work_type, additional_sections=additional_sections)
@@ -438,7 +440,7 @@ class CourseWorkFactory:
             log("The file is already exist!", self.bot)
             cw.delete()
         self._generate_chapters(cw)
-        self._generate_chapters_text(cw)
+        self._generate_chapters_text(cw, status_message)
         return cw
 
 
@@ -446,6 +448,6 @@ if __name__ == "__main__":
     # name = "История программы-примера Hello world и её влияние на мировую культуру"
     name = input(ENTER_NAME)
     factory = CourseWorkFactory()
-    cw = factory.generate_coursework(name)
+    cw = factory.generate_coursework(name, None)
     cw.save()
     log(f"Курсовая работа\n{cw.name} сгенерирована!")
