@@ -1,0 +1,25 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {1}Введение}{3}{}%
+\contentsline {section}{\numberline {2}Обзор литературы}{4}{}%
+\contentsline {subsection}{\numberline {2.1}Исследование многочлена}{4}{}%
+\contentsline {subsection}{\numberline {2.2}Методы и подходы}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Заключение}{4}{}%
+\contentsline {section}{\numberline {3}Методология исследования}{6}{}%
+\contentsline {section}{\numberline {4}Анализ свойств многочленов}{7}{}%
+\contentsline {section}{\numberline {5}Исследование корней многочлена}{8}{}%
+\contentsline {subsection}{\numberline {5.1}Определение корня многочлена}{8}{}%
+\contentsline {subsection}{\numberline {5.2}Методы нахождения корней многочлена}{8}{}%
+\contentsline {subsubsection}{\numberline {5.2.1}Метод подстановки}{8}{}%
+\contentsline {subsubsection}{\numberline {5.2.2}Метод деления с остатком}{8}{}%
+\contentsline {subsubsection}{\numberline {5.2.3}Метод Горнера}{8}{}%
+\contentsline {subsubsection}{\numberline {5.2.4}Метод Ньютона}{9}{}%
+\contentsline {subsection}{\numberline {5.3}Анализ корней многочлена}{9}{}%
+\contentsline {subsubsection}{\numberline {5.3.1}Кратность корня}{9}{}%
+\contentsline {subsubsection}{\numberline {5.3.2}Вещественность и мнимость корней}{9}{}%
+\contentsline {subsubsection}{\numberline {5.3.3}Расположение корней на комплексной плоскости}{9}{}%
+\contentsline {subsection}{\numberline {5.4}Заключение}{9}{}%
+\contentsline {section}{\numberline {6}Исследование экстремумов многочлена}{10}{}%
+\contentsline {section}{\numberline {7}Исследование асимптотического поведения многочлена}{12}{}%
+\contentsline {section}{\numberline {8}Практическое применение исследования многочлена}{14}{}%
+\contentsline {section}{\numberline {9}Заключение}{16}{}%
+\contentsline {section}{\numberline {10}Список использованных источников}{18}{}%

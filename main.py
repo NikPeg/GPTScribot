@@ -273,7 +273,7 @@ def get_message(message):
     elif message.from_user.id not in MODERATORS:
         bot.send_message(
             message.from_user.id,
-            WORK_DOWNLOADED_MESSAGE,
+            WORK_DOWNLOADED_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
             parse_mode='Markdown',
             reply_markup=markup,
         )

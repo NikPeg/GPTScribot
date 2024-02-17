@@ -1,0 +1,15 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {1}Введение}{3}{}%
+\contentsline {section}{\numberline {2}Биография Николая Пирогова}{4}{}%
+\contentsline {section}{\numberline {3}Исторический контекст медицинской деятельности Пирогова}{6}{}%
+\contentsline {section}{\numberline {4}Основные принципы и методы медицинской практики Пирогова}{7}{}%
+\contentsline {section}{\numberline {5}Вклад Пирогова в развитие хирургии}{9}{}%
+\contentsline {section}{\numberline {6}Вклад Пирогова в развитие анатомии}{10}{}%
+\contentsline {section}{\numberline {7}Вклад Пирогова в развитие медицинского образования}{11}{}%
+\contentsline {section}{\numberline {8}Оценка значимости и влияния медицинской деятельности Пирогова}{12}{}%
+\contentsline {subsection}{\numberline {8.1}Вклад в развитие хирургии}{12}{}%
+\contentsline {subsection}{\numberline {8.2}Влияние на образование и науку}{12}{}%
+\contentsline {subsection}{\numberline {8.3}Воздействие на медицинскую практику}{12}{}%
+\contentsline {subsection}{\numberline {8.4}График "{}Уровень смертности после операций до и после внедрения метода антисептики Пирогова"{}}{12}{}%
+\contentsline {section}{\numberline {9}Заключение}{14}{}%
+\contentsline {section}{\numberline {10}Список использованных источников}{15}{}%

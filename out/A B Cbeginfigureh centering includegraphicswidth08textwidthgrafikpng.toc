@@ -1,0 +1,5 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {1}А}{3}{}%
+\contentsline {section}{\numberline {2}B}{4}{}%
+\contentsline {section}{\numberline {3}C\begin {figure}[h]}{5}{}%
+\contentsline {section}{\numberline {4}Список использованных источников}{15}{}%

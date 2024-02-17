@@ -54,3 +54,5 @@ SAMPLE_WORKS = [
 USELESS_SUBSTRING = "список глав"
 WORK_TYPES = ["pdf", "docx"]
 ALL_FILE_TYPES = ["docx", "aux", "log", "pdf", "toc"]
+READY_SYMBOL = "🟦"
+UNREADY_SYMBOL = "⬜️"

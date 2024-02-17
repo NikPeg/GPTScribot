@@ -1,0 +1,20 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {1}Введение}{3}{}%
+\contentsline {section}{\numberline {2}Обзор литературы}{4}{}%
+\contentsline {subsection}{\numberline {2.1}Оптимизация управления запасами}{4}{}%
+\contentsline {subsection}{\numberline {2.2}Логистика продажи парфюмерных товаров}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Исследования в области оптимизации управления запасами и логистики продажи парфюмерных товаров}{4}{}%
+\contentsline {section}{\numberline {3}Теоретические основы управления запасами}{6}{}%
+\contentsline {section}{\numberline {4}Теоретические основы логистики продажи парфюмерных товаров}{8}{}%
+\contentsline {subsection}{\numberline {4.1}Определение логистики продажи парфюмерных товаров}{8}{}%
+\contentsline {subsection}{\numberline {4.2}Цели и задачи логистики продажи парфюмерных товаров}{8}{}%
+\contentsline {subsection}{\numberline {4.3}Основные принципы логистики продажи парфюмерных товаров}{9}{}%
+\contentsline {section}{\numberline {5}Анализ текущего состояния управления запасами и логистики продажи парфюмерных товаров}{10}{}%
+\contentsline {section}{\numberline {6}Методы оптимизации управления запасами и логистики продажи парфюмерных товаров}{12}{}%
+\contentsline {section}{\numberline {7}Разработка модели оптимизации управления запасами и логистики продажи парфюмерных товаров}{14}{}%
+\contentsline {section}{\numberline {8}Экспериментальное исследование модели оптимизации}{16}{}%
+\contentsline {section}{\numberline {9}Результаты и обсуждение}{18}{}%
+\contentsline {section}{\numberline {10}Выводы и рекомендации}{20}{}%
+\contentsline {section}{\numberline {11}Управление запасами}{22}{}%
+\contentsline {section}{\numberline {12}Логистика продажи парфюмерных товаров}{24}{}%
+\contentsline {section}{\numberline {13}Список использованных источников}{26}{}%

@@ -1,0 +1,10 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {1}Введение}{3}{}%
+\contentsline {section}{\numberline {2}История знака доллара}{4}{}%
+\contentsline {section}{\numberline {3}Значение и использование знака доллара}{5}{}%
+\contentsline {section}{\numberline {4}Варианты знака доллара в разных странах}{6}{}%
+\contentsline {section}{\numberline {5}Эволюция знака доллара}{7}{}%
+\contentsline {section}{\numberline {6}Влияние знака доллара на мировую экономику}{8}{}%
+\contentsline {section}{\numberline {7}Проблемы и споры, связанные с знаком доллара}{10}{}%
+\contentsline {section}{\numberline {8}Знак доллара в современном мире}{12}{}%
+\contentsline {section}{\numberline {9}Заключение}{14}{}%

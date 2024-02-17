@@ -1,0 +1,17 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {1}Введение}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Общая характеристика темы работы}{4}{}%
+\contentsline {subsection}{\numberline {1.2}Актуальность выбранной темы}{4}{}%
+\contentsline {subsection}{\numberline {1.3}Цель и задачи работы}{5}{}%
+\contentsline {section}{\numberline {2}Обзор литературы}{6}{}%
+\contentsline {subsection}{\numberline {2.1}Введение в обзор литературы}{6}{}%
+\contentsline {subsection}{\numberline {2.2}Исторический обзор исследований}{7}{}%
+\contentsline {subsection}{\numberline {2.3}Теоретические основы и концепции}{8}{}%
+\contentsline {section}{\numberline {3}Методология исследования}{9}{}%
+\contentsline {subsection}{\numberline {3.1}Введение в методологию исследования}{10}{}%
+\contentsline {subsection}{\numberline {3.2}Определение цели и задач исследования}{10}{}%
+\contentsline {subsection}{\numberline {3.3}Выбор методов исследования}{11}{}%
+\contentsline {section}{\numberline {4}Анализ данных}{12}{}%
+\contentsline {section}{\numberline {5}Результаты и обсуждение}{14}{}%
+\contentsline {section}{\numberline {6}Выводы}{16}{}%
+\contentsline {section}{\numberline {7}Список использованных источников}{18}{}%
