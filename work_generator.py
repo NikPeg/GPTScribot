@@ -390,7 +390,7 @@ class CourseWorkFactory:
 
     def _generate_chapters_text(self, cw, status_message):
         log("\n\n\nGenerating chapters\' text...", self.bot)
-        for i, chapter in enumerate(cw.chapters):
+        for i, chapter in enumerate(cw.chapters, 1):
             log(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
                 chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
