@@ -413,15 +413,14 @@ class CourseWorkFactory:
             cw.chapters_text.append(chapter_text)
             edit_status_message(status_message, self.bot, i, len(cw.chapters))
 
-    def _process_name(self, name):
-        res = name
+    def _process_name(self, cw):
+        res = cw.name
         additional_sections = ""
-        log("Asking GPT about additional topics...", self.bot)
+        log("Asking GPT about additional topics...", self.bot, cw.customer)
         if self.gpt.ask(SECTIONS_QUESTION.format(res)).lower().startswith("да"):
-            log("Asking GPT about additional topics list...", self.bot)
+            log("Asking GPT about additional topics list...", self.bot, cw.customer)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
-            log(f"Additional topics list: {additional_sections}", self.bot)
-        log(f"Asking GPT about name...", self.bot)
+            log(f"Additional topics list: {additional_sections}", self.bot, cw.customer)
         work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
         for useless_string in USELESS_START_STRINGS:
             if res.startswith(useless_string):
@@ -433,10 +432,12 @@ class CourseWorkFactory:
         res = res.strip()
         return res, additional_sections, work_type
 
-    def generate_coursework(self, name, status_message):
-        name, additional_sections, work_type = self._process_name(name)
-        log(f"Generating coursework {name}...", self.bot)
-        cw = CourseWork(name, bot=self.bot, work_type=work_type, additional_sections=additional_sections)
+    def create_coursework(self, name):
+        return CourseWork(name, bot=self.bot)
+
+    def generate_coursework(self, cw, status_message):
+        log(f"Generating coursework {name}...", self.bot, cw.customer)
+        cw.name, cw.additional_sections, cw.work_type = self._process_name(cw.name)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot, cw.customer)
             cw.delete()
