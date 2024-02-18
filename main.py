@@ -295,7 +295,8 @@ def get_message(message):
         log(f"User {message.from_user.id} sent work: {message.text}", bot)
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
-        btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+        btn2 = types.InlineKeyboardButton(text='👀Показать процесс', callback_data='show')
+        markup.add(btn1)
         markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
