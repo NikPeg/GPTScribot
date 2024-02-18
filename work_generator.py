@@ -413,7 +413,7 @@ class CourseWorkFactory:
             cw.chapters_text.append(chapter_text)
             edit_status_message(status_message, self.bot, i, len(cw.chapters))
 
-    def _process_name(self, cw):
+    def _process_name(self, cw: CourseWork):
         res = cw.name
         additional_sections = ""
         log("Asking GPT about additional topics...", self.bot, cw.customer)
@@ -437,7 +437,7 @@ class CourseWorkFactory:
 
     def generate_coursework(self, cw, status_message):
         log(f"Generating coursework {cw.name}...", self.bot, cw.customer)
-        cw.name, cw.additional_sections, cw.work_type = self._process_name(cw.name)
+        cw.name, cw.additional_sections, cw.work_type = self._process_name(cw)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot, cw.customer)
             cw.delete()
