@@ -251,6 +251,10 @@ def get_message(message):
         if message.reply_to_message:
             bot.send_message(message.from_user.id, GENERATING_MESSAGE.format(message.reply_to_message.text.split("\n")[1]), reply_markup=markup)
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
+            markup = types.InlineKeyboardMarkup()
+            btn2 = types.InlineKeyboardButton(text='👀Показать процесс', callback_data='show')
+            markup.add(btn1)
+            markup.add(btn2)
             status_message = bot.send_message(
                 reply_chat_id,
                 STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
