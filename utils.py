@@ -15,7 +15,5 @@ def log(text, bot=None, customer=None):
                 bot.send_message(ADMIN, text[i:i + MAX_MESSAGE_LENGTH])
                 if customer:
                     bot.send_message(customer, text[i:i + MAX_MESSAGE_LENGTH])
-                else:
-                    bot.send_message(ADMIN, "no customer")
     except Exception:
         pass
