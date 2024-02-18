@@ -421,7 +421,7 @@ class CourseWorkFactory:
             log("Asking GPT about additional topics list...", self.bot, cw.customer)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
             log(f"Additional topics list: {additional_sections}", self.bot, cw.customer)
-        work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in name else CourseWorkType.COURSE_WORK
+        work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in cw.name else CourseWorkType.COURSE_WORK
         for useless_string in USELESS_START_STRINGS:
             if res.startswith(useless_string):
                 res = res[len(useless_string):]
