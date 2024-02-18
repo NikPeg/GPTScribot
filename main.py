@@ -286,6 +286,10 @@ def get_message(message):
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
+        markup = types.InlineKeyboardMarkup()
+        btn2 = types.InlineKeyboardButton(text='👀Показать процесс', callback_data='show')
+        markup.add(btn1)
+        markup.add(btn2)
         status_message = bot.send_message(
             message.from_user.id,
             STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
@@ -295,9 +299,7 @@ def get_message(message):
         log(f"User {message.from_user.id} sent work: {message.text}", bot)
         current_works.append((message.from_user.id, message.id, message.text))
         markup = types.InlineKeyboardMarkup()
-        btn2 = types.InlineKeyboardButton(text='👀Показать процесс', callback_data='show')
         markup.add(btn1)
-        markup.add(btn2)
         for moderator_id in MODERATORS:
             try:
                 bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
