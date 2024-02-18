@@ -180,6 +180,7 @@ def callback_query(call):
         )
         log(f"User {call.message.chat.id} pressed show button", bot)
         cw: CourseWork = cw_by_id.get(call.message.chat.id)
+        log(f"Cw by id: {cw}")
         if cw:
             cw.customer = call.message.chat.id
 
