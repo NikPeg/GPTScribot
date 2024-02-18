@@ -169,6 +169,15 @@ def callback_query(call):
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     elif req[0] == 'show':
+        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+        markup.add(btn1)
+        bot.edit_message_text(
+            call.message.text,
+            reply_markup=markup,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            parse_mode='html'
+        )
         log(f"User {call.message.chat.id} pressed show button", bot)
         cw: CourseWork = cw_by_id.get(call.message.chat.id)
         if cw:
@@ -288,8 +297,8 @@ def get_message(message):
     elif message.from_user.id not in MODERATORS:
         markup = types.InlineKeyboardMarkup()
         btn2 = types.InlineKeyboardButton(text='👀Показать процесс', callback_data='show')
-        markup.add(btn1)
         markup.add(btn2)
+        markup.add(btn1)
         status_message = bot.send_message(
             message.from_user.id,
             STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
