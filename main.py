@@ -168,6 +168,11 @@ def callback_query(call):
                 cw.delete(i < TRIES_COUNT - 1)
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
+    elif req[0] == 'show':
+        log(f"User {call.message.chat.id} pressed show button", bot)
+        cw: CourseWork = cw_by_id.get(call.message.chat.id)
+        if cw:
+            cw.customer = call.message.chat.id
 
 
 @bot.message_handler(content_types=['document'])
