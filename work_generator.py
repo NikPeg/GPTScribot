@@ -436,7 +436,7 @@ class CourseWorkFactory:
         return CourseWork(name, bot=self.bot)
 
     def generate_coursework(self, cw, status_message):
-        log(f"Generating coursework {name}...", self.bot, cw.customer)
+        log(f"Generating coursework {cw.name}...", self.bot, cw.customer)
         cw.name, cw.additional_sections, cw.work_type = self._process_name(cw.name)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot, cw.customer)
