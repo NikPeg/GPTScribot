@@ -12,9 +12,7 @@ def edit_status_message(message, bot, ready_chapters=0, chapters_count=10):
         return
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
-    btn2 = types.InlineKeyboardButton(text='👀Показать процесс', callback_data='show')
     markup.add(btn1)
-    markup.add(btn2)
     ready_count = round(ready_chapters / chapters_count * 10)
     text = message.text
     if text.count(READY_SYMBOL) == ready_count:
