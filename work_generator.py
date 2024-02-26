@@ -403,7 +403,6 @@ class CourseWorkFactory:
                         GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
                     subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
                     chapter_text += subchapter_text + "\n"
-            log(f"Chapter's text: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
             chapter_text = self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
