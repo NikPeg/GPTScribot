@@ -168,21 +168,6 @@ def callback_query(call):
                 cw.delete(i < TRIES_COUNT - 1)
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
-    elif req[0] == 'show':
-        btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
-        markup.add(btn1)
-        bot.edit_message_text(
-            call.message.text,
-            reply_markup=markup,
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            parse_mode='html'
-        )
-        log(f"User {call.message.chat.id} pressed show button", bot)
-        cw: CourseWork = cw_by_id.get(call.message.chat.id)
-        log(f"Cw by id: {cw}", bot)
-        if cw:
-            cw.customer = call.message.chat.id
 
 
 @bot.message_handler(content_types=['document'])

@@ -40,7 +40,6 @@ class CourseWork:
         self.bot = bot
         self.work_type = work_type
         self.additional_sections = additional_sections
-        self.customer = None
 
     def print(self):
         print(self.text)
@@ -49,7 +48,7 @@ class CourseWork:
         return f"Курсовая работа {self.name}"
 
     def save(self, free=True) -> bool:
-        log("Saving work...", self.bot, self.customer)
+        log("Saving work...", self.bot)
         try:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
                 result_file.write(self.text(free))
@@ -59,11 +58,11 @@ class CourseWork:
             log(f"Exception while saving tex: {e}", self.bot)
             return False
 
-        log("Starting pdflatex...", self.bot, self.customer)
+        log("Starting pdflatex...", self.bot)
         try:
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         except Exception as e:
-            log(f"Exception while running pdflatex: {e}", self.bot, self.customer)
+            log(f"Exception while running pdflatex: {e}", self.bot)
         try:
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             log(result.stderr, self.bot)
@@ -71,16 +70,16 @@ class CourseWork:
             log(f"Second exception while running pdflatex: {e}", self.bot)
 
         if not os.path.isfile(self.file_name("pdf")):
-            log(f"No pdf file fount: {self.file_name('pdf')}", self.bot, self.customer)
+            log(f"No pdf file fount: {self.file_name('pdf')}", self.bot)
             return False
 
         try:
-            log("Converting pdf to docx...", self.bot, self.customer)
+            log("Converting pdf to docx...", self.bot)
             cv = Converter(self.file_name("pdf"))
             cv.convert(self.file_name("docx"), start=0, end=None)
             cv.close()
         except Exception as e:
-            log(f"Exception while converting pdf to docx: {e}", self.bot, self.customer)
+            log(f"Exception while converting pdf to docx: {e}", self.bot)
 
         return True
 
@@ -173,17 +172,17 @@ class CourseWorkFactory:
         return res.strip()
 
     def _generate_chapters(self, cw):
-        log("Generating chapters...", self.bot, cw.customer)
+        log("Generating chapters...", self.bot)
 
         for i in range(10):
             cw.chapters = []
             chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
-            log(f"GPT's response: {chapters_string}", self.bot, cw.customer)
+            log(f"GPT's response: {chapters_string}", self.bot)
             if cw.additional_sections:
-                log("Ask GPT to add sections...", self.bot, cw.customer)
+                log("Ask GPT to add sections...", self.bot)
                 chapters_string = self.gpt.ask(
                     ADD_SECTIONS.format(chapters_string, cw.additional_sections, SUBSTRING_BY_TYPE[cw.work_type]))
-                log(f"GPT's response: {chapters_string}", self.bot, cw.customer)
+                log(f"GPT's response: {chapters_string}", self.bot)
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
                 chapter_name = self._strip_chapter(chapter)
@@ -192,26 +191,26 @@ class CourseWorkFactory:
             if len(cw.chapters) >= 7:
                 break
         else:
-            log(f"!!!There is a problem with {cw.name}!!!", self.bot, cw.customer)
+            log(f"!!!There is a problem with {cw.name}!!!", self.bot)
         cw.chapters = cw.chapters[:13]
         if cw.chapters[-1] not in BIBLIOGRAPHIES and cw.chapters[-2] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
-        log(f"Chapters: {cw.chapters}", self.bot, cw.customer)
+        log(f"Chapters: {cw.chapters}", self.bot)
 
     def _generate_subchapters(self, chapter, cw):
-        log("Generating subchapters...", self.bot, cw.customer)
+        log("Generating subchapters...", self.bot)
 
         subchapters = []
         subchapters_string = self.gpt.ask(
             GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
-        log(f"GPT's response: {subchapters_string}", self.bot, cw.customer)
+        log(f"GPT's response: {subchapters_string}", self.bot)
         subchapters_list = subchapters_string.split("\n")
         for subchapter in subchapters_list:
             subchapter_name = self._strip_chapter(subchapter)
             if subchapter_name and subchapter_name.lower() != INTRODUCTION:
                 subchapters.append(subchapter_name)
         subchapters = subchapters[:3]
-        log(f"Subchapters: {subchapters}", self.bot, cw.customer)
+        log(f"Subchapters: {subchapters}", self.bot)
         return subchapters
 
     def _next_bibitem(self, match):
@@ -390,37 +389,37 @@ class CourseWorkFactory:
         return res
 
     def _generate_chapters_text(self, cw, status_message):
-        log("\n\n\nGenerating chapters\' text...", self.bot, cw.customer)
+        log("\n\n\nGenerating chapters\' text...", self.bot)
         for i, chapter in enumerate(cw.chapters, 1):
-            log(f"\nGenerating chapter {chapter}...", self.bot, cw.customer)
+            log(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
                 chapter_text = self.gpt.ask(GENERATE_BIBLIOGRAPHY.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
             else:
                 chapter_text = self.gpt.ask(
                     GENERATE_CHAPTER.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type])) + "\n"
                 for subchapter in self._generate_subchapters(chapter, cw):
-                    log(f"Asking GPT about subchapter's {subchapter} text...", self.bot, cw.customer)
+                    log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
                     subchapter_text = self.gpt.ask(
                         GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
                     subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
                     chapter_text += subchapter_text + "\n"
-            log(f"Chapter's text: {chapter_text}", self.bot, cw.customer)
+            log(f"Chapter's text: {chapter_text}", self.bot)
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
             chapter_text = self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
-            log(chapter_text, self.bot, cw.customer)
+            log(chapter_text, self.bot)
             cw.chapters_text.append(chapter_text)
             edit_status_message(status_message, self.bot, i, len(cw.chapters))
 
     def _process_name(self, cw: CourseWork):
         res = cw.name
         additional_sections = ""
-        log("Asking GPT about additional topics...", self.bot, cw.customer)
+        log("Asking GPT about additional topics...", self.bot)
         if self.gpt.ask(SECTIONS_QUESTION.format(res)).lower().startswith("да"):
-            log("Asking GPT about additional topics list...", self.bot, cw.customer)
+            log("Asking GPT about additional topics list...", self.bot)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
-            log(f"Additional topics list: {additional_sections}", self.bot, cw.customer)
+            log(f"Additional topics list: {additional_sections}", self.bot)
         work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in cw.name else CourseWorkType.COURSE_WORK
         for useless_string in USELESS_START_STRINGS:
             if res.startswith(useless_string):
@@ -436,10 +435,10 @@ class CourseWorkFactory:
         return CourseWork(name, bot=self.bot)
 
     def generate_coursework(self, cw, status_message):
-        log(f"Generating coursework {cw.name}...", self.bot, cw.customer)
+        log(f"Generating coursework {cw.name}...", self.bot)
         cw.name, cw.additional_sections, cw.work_type = self._process_name(cw)
         if os.path.exists(cw.file_name()):
-            log("The file is already exist!", self.bot, cw.customer)
+            log("The file is already exist!", self.bot)
             cw.delete()
         self._generate_chapters(cw)
         self._generate_chapters_text(cw, status_message)
