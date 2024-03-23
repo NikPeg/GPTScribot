@@ -156,8 +156,9 @@ def callback_query(call):
         btn2 = types.InlineKeyboardButton(text='❌Нет(', callback_data=f'not_paid_{call.message.chat.id}')
         markup.add(btn1)
         markup.add(btn2)
-        bot.send_message(EMERGENCY_ADMIN, PAID_QUESTION_MESSAGE, reply_markup=markup)
+        bot.send_message(EMERGENCY_ADMIN, PAID_QUESTION_MESSAGE.format(call.message.chat.id), reply_markup=markup)
     elif req[0].startswith("really_paid"):
+        log(f"Emergency admin {call.message.chat.id} pressed really paid button", bot)
         bot.edit_message_text(
             REALLY_PAID_MESSAGE,
             chat_id=call.message.chat.id,
@@ -182,6 +183,7 @@ def callback_query(call):
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     elif req[0].startswith("not_paid"):
+        log(f"Emergency admin {call.message.chat.id} pressed not paid button", bot)
         bot.edit_message_text(
             NOT_PAID_MESSAGE,
             chat_id=call.message.chat.id,
