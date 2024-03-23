@@ -53,8 +53,7 @@ def menu(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    log(call.data, bot)
-    req = call.data.split('_')
+    req = call.data
     markup = types.InlineKeyboardMarkup()
     if req[0] == 'info':
         btn1 = types.InlineKeyboardButton(text='📢Канал проекта', url='https://t.me/scribo_project')
