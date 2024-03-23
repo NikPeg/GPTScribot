@@ -53,7 +53,8 @@ def menu(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    req = call.data
+    log(call.data, bot)
+    req = call.data.split(':')
     markup = types.InlineKeyboardMarkup()
     if req[0] == 'info':
         btn1 = types.InlineKeyboardButton(text='📢Канал проекта', url='https://t.me/scribo_project')
@@ -152,19 +153,19 @@ def callback_query(call):
             parse_mode='html'
         )
         markup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='✅Да!', callback_data=f'really_paid_{call.message.chat.id}')
-        btn2 = types.InlineKeyboardButton(text='❌Нет(', callback_data=f'not_paid_{call.message.chat.id}')
+        btn1 = types.InlineKeyboardButton(text='✅Да!', callback_data=f'really_paid:{call.message.chat.id}')
+        btn2 = types.InlineKeyboardButton(text='❌Нет(', callback_data=f'not_paid:{call.message.chat.id}')
         markup.add(btn1)
         markup.add(btn2)
         bot.send_message(EMERGENCY_ADMIN, PAID_QUESTION_MESSAGE.format(call.message.chat.id), reply_markup=markup)
-    elif req[0].startswith("really_paid"):
+    elif req[0] == "really_paid":
         log(f"Emergency admin {call.message.chat.id} pressed really paid button", bot)
         bot.edit_message_text(
             REALLY_PAID_MESSAGE,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
         )
-        user_id = int(req[0].split("_")[-1])
+        user_id = int(req[1])
         for i in range(TRIES_COUNT):
             cw: CourseWork = cw_by_id.get(user_id)
             if not cw:
@@ -182,14 +183,14 @@ def callback_query(call):
                 cw.delete(i < TRIES_COUNT - 1)
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
-    elif req[0].startswith("not_paid"):
+    elif req[0] == "not_paid":
         log(f"Emergency admin {call.message.chat.id} pressed not paid button", bot)
         bot.edit_message_text(
             NOT_PAID_MESSAGE,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
         )
-        user_id = int(req[0].split("_")[-1])
+        user_id = int(req[1])
         log(f"User {user_id} did't pay!", bot)
         btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
         markup.add(btn1)
