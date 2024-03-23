@@ -141,24 +141,37 @@ def callback_query(call):
             )
         log(f"Moderator {call.message.chat.id} pressed work button", bot)
     elif req[0] == 'paid':
+        log(f"User {call.message.chat.id} pressed paid button", bot)
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         bot.edit_message_text(
-            FREE_MESSAGE.format(price=config.PRICE),
+            WAIT_MESSAGE.format(price=config.PRICE),
             reply_markup=markup,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             parse_mode='html'
         )
-        log(f"User {call.message.chat.id} pressed paid button", bot)
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton(text='✅Да!', callback_data=f'really_paid_{call.message.chat.id}')
+        btn2 = types.InlineKeyboardButton(text='❌Нет(', callback_data=f'not_paid_{call.message.chat.id}')
+        markup.add(btn1)
+        markup.add(btn2)
+        bot.send_message(EMERGENCY_ADMIN, PAID_QUESTION_MESSAGE, reply_markup=markup)
+    elif req[0].startswith("really_paid"):
+        bot.edit_message_text(
+            REALLY_PAID_MESSAGE,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+        )
+        user_id = int(req[0].split("_")[-1])
         for i in range(TRIES_COUNT):
-            cw: CourseWork = cw_by_id.get(call.message.chat.id)
+            cw: CourseWork = cw_by_id.get(user_id)
             if not cw:
-                send_problem(ADMIN, call.message.chat.id)
+                send_problem(ADMIN, user_id)
                 break
             try:
                 if cw.save(free=False):
-                    send_work(cw, ADMIN, call.message.chat.id, free=False)
+                    send_work(cw, ADMIN, user_id, free=False)
                     remove_work(cw.name)
                     cw.delete()
                     break
@@ -168,6 +181,25 @@ def callback_query(call):
                 cw.delete(i < TRIES_COUNT - 1)
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
+    elif req[0].startswith("not_paid"):
+        bot.edit_message_text(
+            NOT_PAID_MESSAGE,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+        )
+        user_id = int(req[0].split("_")[-1])
+        log(f"User {user_id} did't pay!", bot)
+        btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
+        markup.add(btn1)
+        btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+        markup.add(btn2)
+        bot.edit_message_text(
+            WRONG_MESSAGE.format(price=config.PRICE),
+            reply_markup=markup,
+            chat_id=user_id,
+            message_id=call.message.message_id,
+            parse_mode='html'
+        )
 
 
 @bot.message_handler(content_types=['document'])
