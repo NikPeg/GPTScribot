@@ -11,19 +11,19 @@ class GPTProxy:
     @retry(wait=wait_fixed(21), stop=stop_after_attempt(10))
     def ask(self, message):
         try:
-            # completion = self.client.chat.completions.create(
-            #     messages=[
-            #         {
-            #             "role": "user",
-            #             "content": message,
-            #         }
-            #     ],
-            #     model=self.model,
-            #     temperature=0
-            # )
+            completion = self.client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": message,
+                    }
+                ],
+                model=self.model,
+                temperature=0
+            )
 
-            # return completion.choices[0].message.content
-            return "Введение\nРанние годы\nПервая ошибка\nНикита\nЗаключение"
+            return completion.choices[0].message.content
+            # return "Введение\nРанние годы\nПервая ошибка\nНикита\nЗаключение"
         except Exception as e:
             print(e)
             raise e
