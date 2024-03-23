@@ -153,7 +153,10 @@ def callback_query(call):
             parse_mode='html'
         )
         markup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='✅Да!', callback_data=f'really_paid:{call.message.chat.id}')
+        btn1 = types.InlineKeyboardButton(
+            text='✅Да!',
+            callback_data=f'really_paid:{call.message.chat.id}:{call.message.message_id}',
+        )
         btn2 = types.InlineKeyboardButton(
             text='❌Нет(',
             callback_data=f'not_paid:{call.message.chat.id}:{call.message.message_id}',
@@ -169,6 +172,7 @@ def callback_query(call):
             message_id=call.message.message_id,
         )
         user_id = int(req[1])
+        message_id = int(req[2])
         for i in range(TRIES_COUNT):
             cw: CourseWork = cw_by_id.get(user_id)
             if not cw:
@@ -176,6 +180,7 @@ def callback_query(call):
                 break
             try:
                 if cw.save(free=False):
+                    bot.delete_message(user_id, message_id)
                     send_work(cw, ADMIN, user_id, free=False)
                     remove_work(cw.name)
                     cw.delete()
