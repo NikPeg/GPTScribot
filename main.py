@@ -154,7 +154,10 @@ def callback_query(call):
         )
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton(text='✅Да!', callback_data=f'really_paid:{call.message.chat.id}')
-        btn2 = types.InlineKeyboardButton(text='❌Нет(', callback_data=f'not_paid:{call.message.chat.id}')
+        btn2 = types.InlineKeyboardButton(
+            text='❌Нет(',
+            callback_data=f'not_paid:{call.message.chat.id}:{call.message.message_id}',
+        )
         markup.add(btn1)
         markup.add(btn2)
         bot.send_message(EMERGENCY_ADMIN, PAID_QUESTION_MESSAGE.format(call.message.chat.id), reply_markup=markup)
@@ -191,6 +194,7 @@ def callback_query(call):
             message_id=call.message.message_id,
         )
         user_id = int(req[1])
+        message_id = int(req[2])
         log(f"User {user_id} did't pay!", bot)
         btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
         markup.add(btn1)
@@ -200,7 +204,7 @@ def callback_query(call):
             WRONG_MESSAGE.format(price=config.PRICE),
             reply_markup=markup,
             chat_id=user_id,
-            message_id=call.message.message_id,
+            message_id=message_id,
             parse_mode='html'
         )
 
