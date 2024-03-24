@@ -8,8 +8,8 @@ GENERATE_SUBCHAPTER = 'Напиши только подраздел "{0}" раз
                    'Представь, что работа уже написана.'  # Добавь одну или несколько картинок или графиков'
 BIBLIOGRAPHY = "Список использованных источников"
 ENTER_NAME = "Введите название работы:\n"
-BIBLIOGRAPHY_PREFIX = '\\begin{thebibliography}{}\n' \
-                      '\\bibitem{ref1}'
+BIBLIOGRAPHY_PREFIX = '\\begin{{thebibliography}}{{}}\n' \
+                      '\\bibitem{{ref1}}'
 GENERATE_BIBLIOGRAPHY = 'Напиши список использованных источников для {1} работы "{0}" в формате latex.\n' \
                         + BIBLIOGRAPHY_PREFIX
 # 'Представь, что работа уже написана. Используй только русские и английские символы. Придумай имена авторов и названия' \
