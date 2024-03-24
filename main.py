@@ -53,7 +53,6 @@ def menu(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    log(call.data, bot)
     req = call.data.split(':')
     markup = types.InlineKeyboardMarkup()
     if req[0] == 'info':
