@@ -330,7 +330,6 @@ def get_message(message):
             parse_mode='Markdown',
             reply_markup=markup,
         )
-        log(f"User {message.from_user.id} sent work: {message.text}", bot)
         current_works.append((message.from_user.id, message.id, message.text))
         for moderator_id in MODERATORS:
             try:
