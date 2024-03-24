@@ -31,6 +31,14 @@ class GPTProxy:
 
 if __name__ == "__main__":
     proxy = GPTProxy()
+    print("Enter the prefix (n to continue):")
+    question = []
+    line = None
+    while line != "n":
+        line = input()
+        question.append(line)
+    question.pop()
+    prefix = "\n".join(question)
     while True:
         print("\nType your question:")
         line = None
@@ -38,5 +46,6 @@ if __name__ == "__main__":
         while line != "n":
             line = input()
             question.append(line)
-        answer = proxy.ask("\n".join(question))
+        question.pop()
+        answer = proxy.ask(prefix + "\n" + "\n".join(question))
         print(answer)
