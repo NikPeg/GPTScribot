@@ -395,7 +395,7 @@ class CourseWorkFactory:
             if chapter in BIBLIOGRAPHIES:
                 ask_string = GENERATE_BIBLIOGRAPHY.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type])
                 log("Asking GPT: " + ask_string, self.bot)
-                chapter_text = self.gpt.ask(ask_string)
+                chapter_text = BIBLIOGRAPHY_PREFIX + self.gpt.ask(ask_string)
                 log("GPT answer: " + chapter_text, self.bot)
             else:
                 chapter_text = self.gpt.ask(
