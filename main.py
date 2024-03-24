@@ -334,7 +334,6 @@ def get_message(message):
         for moderator_id in MODERATORS:
             try:
                 bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
-                bot.send_message(moderator_id, NEW_WORK_MESSAGE, reply_markup=markup)
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
         bot.send_message(ADMIN, GENERATING_MESSAGE.format(message.text))
