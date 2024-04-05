@@ -177,7 +177,7 @@ class CourseWorkFactory:
     def _generate_chapters(self, cw):
         log("Generating chapters...", self.bot)
         cw.chapters = []
-        for i in range(10):
+        for i in range(config.TRIES_COUNT):
             chapters = []
             chapters_string = self.gpt.ask(
                 GENERATE_CHAPTERS_LIST.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type], cw.size // 3)
