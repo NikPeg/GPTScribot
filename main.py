@@ -408,7 +408,7 @@ def get_message(message):
         bot.send_message(
             message.from_user.id,
             WORK_SIZE_MESSAGE.format(message.text),
-            parse_mode='Markdown',
+            parse_mode='html',
             reply_markup=markup,
         )
 
