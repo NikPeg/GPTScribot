@@ -234,12 +234,12 @@ def callback_query(call):
         username = req[2]
         bot.send_message(
             ADMIN,
-            BUTTON_PRESSED_MESSAGE.format(user_id, username, "any"),
+            BUTTON_PRESSED_MESSAGE.format(user_id, username, req[0]),
         )
         if user_id not in cw_by_id.keys():
             bot.send_message(
                 ADMIN,
-                BUTTON_PRESSED_MESSAGE.format(user_id, username, "any"),
+                GENERATE_AGAIN_MESSAGE,
             )
             bot.send_message(
                 user_id,
