@@ -176,10 +176,12 @@ class CourseWorkFactory:
 
     def _generate_chapters(self, cw):
         log("Generating chapters...", self.bot)
-
+        cw.chapters = []
         for i in range(10):
-            cw.chapters = []
-            chapters_string = self.gpt.ask(GENERATE_CHAPTERS_LIST.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
+            chapters = []
+            chapters_string = self.gpt.ask(
+                GENERATE_CHAPTERS_LIST.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type], cw.size // 3)
+            )
             log(f"GPT's response: {chapters_string}", self.bot)
             if cw.additional_sections:
                 log("Ask GPT to add sections...", self.bot)
@@ -190,16 +192,15 @@ class CourseWorkFactory:
             for chapter in chapters_list:
                 chapter_name = self._strip_chapter(chapter)
                 if chapter_name:
-                    cw.chapters.append(chapter_name)
-            if len(cw.chapters) >= 7:
-                break
-        else:
-            log(f"!!!There is a problem with {cw.name}!!!", self.bot)
+                    chapters.append(chapter_name)
+            if len(chapters) >= len(cw.chapters):
+                cw.chapters = chapters
         cw.chapters = cw.chapters[:cw.size // 2]
         if cw.chapters[-1] not in BIBLIOGRAPHIES and cw.chapters[-2] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}", self.bot)
         cw.symbols_in_chapter = cw.size * SYMBOLS_IN_PAGE // len(cw.chapters)
+        log("Symbols in chapter: ", cw.symbols_in_chapter)
 
     def _generate_subchapters(self, chapter, cw):
         log("Generating subchapters...", self.bot)
@@ -444,7 +445,7 @@ class CourseWorkFactory:
         return CourseWork(name, bot=self.bot)
 
     def generate_coursework(self, cw, status_message):
-        log(f"Generating coursework {cw.name}...", self.bot)
+        log(f"Generating coursework {cw.name} with size {cw.size}...", self.bot)
         cw.name, cw.additional_sections, cw.work_type = self._process_name(cw)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot)
