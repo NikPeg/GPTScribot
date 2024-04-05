@@ -42,6 +42,7 @@ class CourseWork:
         self.work_type = work_type
         self.additional_sections = additional_sections
         self.size = 20
+        self.symbols_in_chapter = None
 
     def print(self):
         print(self.text)
@@ -404,12 +405,15 @@ class CourseWorkFactory:
                 chapter_text = self.gpt.ask(
                     GENERATE_CHAPTER.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type])
                 ) + "\n"
-                for subchapter in self._generate_subchapters(chapter, cw):
-                    log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
-                    subchapter_text = self.gpt.ask(
-                        GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
-                    subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
-                    chapter_text += subchapter_text + "\n"
+                if len(chapter_text) < cw.symbols_in_chapter:
+                    for subchapter in self._generate_subchapters(chapter, cw):
+                        log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
+                        subchapter_text = self.gpt.ask(
+                            GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
+                        subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
+                        chapter_text += subchapter_text + "\n"
+                        if len(chapter_text) > cw.symbols_in_chapter:
+                            break
             chapter_text = self._validate_chapter(chapter_text, chapter, cw.work_type)
             chapter_text = self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
