@@ -57,6 +57,9 @@ def menu(message):
     bot.send_message(message.from_user.id, MENU_MESSAGE, reply_markup=markup, parse_mode='html')
 
 
+WORK_SIZES = {"10", "20", "30", "40", "50", "60"}
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     req = call.data.split(':')
@@ -226,6 +229,46 @@ def callback_query(call):
             message_id=message_id,
             parse_mode='html'
         )
+    elif req[0] == "any" or req[0] in WORK_SIZES:
+        bot.send_message(
+            ADMIN,
+            BUTTON_PRESSED_MESSAGE.format(call.message.from_user.id, call.message.from_user.username, "any"),
+        )
+        if call.message.from_user.id not in cw_by_id.keys():
+            bot.send_message(
+                ADMIN,
+                BUTTON_PRESSED_MESSAGE.format(call.message.from_user.id, call.message.from_user.username, "any"),
+            )
+            bot.send_message(
+                call.message.from_user.id,
+                GENERATE_AGAIN_MESSAGE,
+            )
+            return
+
+        status_message = bot.send_message(
+            call.message.from_user.id,
+            STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
+            parse_mode='Markdown',
+            reply_markup=markup,
+        )
+        cw = cw_by_id[call.message.from_user.id]
+        cw.size = int(req[0]) if req[0] in WORK_SIZES else None
+
+        for i in range(TRIES_COUNT):
+            bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
+            factory.generate_coursework(cw, status_message)
+            try:
+                if cw.save():
+                    send_work(cw, ADMIN, call.message.from_user.id)
+                    remove_work(cw.name)
+                    cw.delete()
+                    break
+            except Exception as e:
+                log(f"Exception while saving: {e}")
+            finally:
+                cw.delete(i < TRIES_COUNT - 1)
+        else:
+            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
 
 
 @bot.message_handler(content_types=['document'])
@@ -338,13 +381,6 @@ def get_message(message):
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
     elif message.from_user.id not in MODERATORS:
-        status_message = bot.send_message(
-            message.from_user.id,
-            STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
-            parse_mode='Markdown',
-            reply_markup=markup,
-        )
-        current_works.append((message.from_user.id, message.id, message.text))
         for moderator_id in MODERATORS:
             try:
                 bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
@@ -354,24 +390,27 @@ def get_message(message):
             ADMIN,
             SENT_WORK_MESSAGE.format(message.from_user.id, message.from_user.username, message.text),
         )
-
-        for i in range(TRIES_COUNT):
-            bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
-            cw = factory.create_coursework(message.text)
-            cw_by_id[message.from_user.id] = cw
-            factory.generate_coursework(cw, status_message)
-            try:
-                if cw.save():
-                    send_work(cw, ADMIN, message.from_user.id)
-                    remove_work(message.text)
-                    cw.delete()
-                    break
-            except Exception as e:
-                log(f"Exception while saving: {e}")
-            finally:
-                cw.delete(i < TRIES_COUNT - 1)
-        else:
-            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
+        current_works.append((message.from_user.id, message.id, message.text))
+        cw = factory.create_coursework(message.text)
+        cw_by_id[message.from_user.id] = cw
+        markup = types.InlineKeyboardMarkup()
+        btn10 = types.InlineKeyboardButton(text='0-10', callback_data='10')
+        btn20 = types.InlineKeyboardButton(text='10-20', callback_data='20')
+        btn30 = types.InlineKeyboardButton(text='20-30', callback_data='30')
+        markup.add(btn10, btn20, btn30)
+        btn40 = types.InlineKeyboardButton(text='30-40', callback_data='40')
+        btn50 = types.InlineKeyboardButton(text='40-50', callback_data='50')
+        btn60 = types.InlineKeyboardButton(text='50-60', callback_data='60')
+        markup.add(btn40, btn50, btn60)
+        btn2 = types.InlineKeyboardButton(text='Любой размер работы', callback_data='any')
+        markup.add(btn1)
+        markup.add(btn2)
+        bot.send_message(
+            message.from_user.id,
+            WORK_SIZE_MESSAGE.format(message.text),
+            parse_mode='html',
+            reply_markup=markup,
+        )
 
 
 log("Bot is running!", bot)
