@@ -234,7 +234,7 @@ def callback_query(call):
             ADMIN,
             BUTTON_PRESSED_MESSAGE.format(call.message.chat.id, call.message.chat.username, req[0]),
         )
-        if user_id not in cw_by_id.keys():
+        if call.message.chat.id not in cw_by_id.keys():
             bot.send_message(
                 ADMIN,
                 GENERATE_AGAIN_MESSAGE,
