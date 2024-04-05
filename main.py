@@ -241,15 +241,17 @@ def callback_query(call):
                 ADMIN,
                 GENERATE_AGAIN_MESSAGE,
             )
-            bot.send_message(
-                user_id,
+            bot.edit_message_text(
                 GENERATE_AGAIN_MESSAGE,
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
             )
             return
 
-        status_message = bot.send_message(
-            user_id,
+        status_message = bot.edit_message_text(
             STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
+            chat_id=user_id,
+            message_id=call.message.message_id,
             parse_mode='Markdown',
             reply_markup=markup,
         )
