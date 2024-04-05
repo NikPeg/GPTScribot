@@ -91,10 +91,13 @@ def callback_query(call):
         log(f"User {call.message.chat.id} @{call.message.chat.username} pressed generate button", bot)
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
-        btn2 = types.InlineKeyboardButton(text='ℹ️Узнать о Scribo', callback_data='info')
+        btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
         btn4 = types.InlineKeyboardButton(text='💰Поддержать', url=DONATE_URL)
+        btn5 = types.InlineKeyboardButton(text='📚Отзывы о боте', url=constants.FEEDBACK_URL)
+        btn6 = types.InlineKeyboardButton(text='🆘Поддержка', url=constants.SOS_URL)
         markup.add(btn1)
         markup.add(btn2, btn4)
+        markup.add(btn5, btn6)
         if call.message.chat.id in MODERATORS:
             btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
             markup.add(btn5)
