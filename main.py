@@ -77,7 +77,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             disable_web_page_preview=True
         )
-        log(f"User {call.message.chat.id} pressed info button", bot)
+        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed info button", bot)
     elif req[0] == 'generate':
         bot.edit_message_text(
             GENERATE_MESSAGE.format(random.choice(constants.SAMPLE_WORKS)),
@@ -85,7 +85,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='html',
         )
-        log(f"User {call.message.chat.id} pressed generate button", bot)
+        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed generate button", bot)
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
         btn2 = types.InlineKeyboardButton(text='ℹ️Узнать о Scribo', callback_data='info')
@@ -102,7 +102,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='html',
         )
-        log(f"User {call.message.chat.id} pressed menu button", bot)
+        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed menu button", bot)
     elif req[0] == 'work':
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -125,7 +125,7 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
-        log(f"Moderator {call.message.chat.id} pressed work button", bot)
+        log(f"Moderator {call.message.chat.id} @{call.message.chat.username} pressed work button", bot)
     elif req[0] == 'list':
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -145,9 +145,9 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
-        log(f"Moderator {call.message.chat.id} pressed work button", bot)
+        log(f"Moderator {call.message.chat.id} @{call.message.chat.username} pressed work button", bot)
     elif req[0] == 'paid':
-        log(f"User {call.message.chat.id} pressed paid button", bot)
+        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed paid button", bot)
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         bot.edit_message_text(
@@ -160,24 +160,32 @@ def callback_query(call):
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton(
             text='✅Да!',
-            callback_data=f'really_paid:{call.message.chat.id}:{call.message.message_id}',
+            callback_data=f'really_paid:{call.message.chat.id}:{call.message.message_id}:{call.message.chat.username}',
         )
         btn2 = types.InlineKeyboardButton(
             text='❌Нет(',
-            callback_data=f'not_paid:{call.message.chat.id}:{call.message.message_id}',
+            callback_data=f'not_paid:{call.message.chat.id}:{call.message.message_id}:{call.message.chat.username}',
         )
         markup.add(btn1)
         markup.add(btn2)
-        bot.send_message(EMERGENCY_ADMIN, PAID_QUESTION_MESSAGE.format(call.message.chat.id), reply_markup=markup)
+        bot.send_message(
+            EMERGENCY_ADMIN,
+            PAID_QUESTION_MESSAGE.format(call.message.chat.id, call.message.chat.username),
+            reply_markup=markup,
+        )
     elif req[0] == "really_paid":
-        log(f"Emergency admin {call.message.chat.id} pressed really paid button", bot)
+        user_id = int(req[1])
+        message_id = int(req[2])
+        username = req[3]
+        log(
+            f"Emergency admin {call.message.chat.id} pressed really paid button for user {user_id} @{username}",
+            bot,
+        )
         bot.edit_message_text(
             REALLY_PAID_MESSAGE,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
         )
-        user_id = int(req[1])
-        message_id = int(req[2])
         for i in range(TRIES_COUNT):
             cw: CourseWork = cw_by_id.get(user_id)
             if not cw:
@@ -197,15 +205,16 @@ def callback_query(call):
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     elif req[0] == "not_paid":
-        log(f"Emergency admin {call.message.chat.id} pressed not paid button", bot)
+        user_id = int(req[1])
+        message_id = int(req[2])
+        username = req[3]
+        log(f"Emergency admin {call.message.chat.id} pressed not paid button for user {user_id} @{username}", bot)
         bot.edit_message_text(
             NOT_PAID_MESSAGE,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
         )
-        user_id = int(req[1])
-        message_id = int(req[2])
-        log(f"User {user_id} did't pay!", bot)
+        log(f"User {user_id} didn't pay!", bot)
         btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
         markup.add(btn1)
         btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
