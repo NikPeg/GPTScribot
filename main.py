@@ -394,7 +394,7 @@ def get_message(message):
         cw = factory.create_coursework(message.text)
         cw_by_id[message.from_user.id] = cw
         markup = types.InlineKeyboardMarkup()
-        btn10 = types.InlineKeyboardButton(text='0-10', callback_data='10')
+        btn10 = types.InlineKeyboardButton(text='5-10', callback_data='10')
         btn20 = types.InlineKeyboardButton(text='10-20', callback_data='20')
         btn30 = types.InlineKeyboardButton(text='20-30', callback_data='30')
         markup.add(btn10, btn20, btn30)
@@ -402,9 +402,9 @@ def get_message(message):
         btn50 = types.InlineKeyboardButton(text='40-50', callback_data='50')
         btn60 = types.InlineKeyboardButton(text='50-60', callback_data='60')
         markup.add(btn40, btn50, btn60)
-        btn2 = types.InlineKeyboardButton(text='Любой размер работы', callback_data='any')
-        markup.add(btn1)
+        btn2 = types.InlineKeyboardButton(text='🤷‍♂️Любой размер работы', callback_data='any')
         markup.add(btn2)
+        markup.add(btn1)
         bot.send_message(
             message.from_user.id,
             WORK_SIZE_MESSAGE.format(message.text),
