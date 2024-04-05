@@ -26,8 +26,11 @@ def start(message):
     btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
     btn4 = types.InlineKeyboardButton(text='💰Поддержать', url=DONATE_URL)
+    btn5 = types.InlineKeyboardButton(text='📚Отзывы о боте', url=constants.FEEDBACK_URL)
+    btn6 = types.InlineKeyboardButton(text='🆘Поддержка', url=constants.SOS_URL)
     markup.add(btn1)
     markup.add(btn2, btn4)
+    markup.add(btn5, btn6)
     if message.from_user.id in MODERATORS:
         btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
         markup.add(btn5)
@@ -43,8 +46,11 @@ def menu(message):
     btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
     btn4 = types.InlineKeyboardButton(text='💰Поддержать', url=DONATE_URL)
+    btn5 = types.InlineKeyboardButton(text='📚Отзывы о боте', url=constants.FEEDBACK_URL)
+    btn6 = types.InlineKeyboardButton(text='🆘Поддержка', url=constants.SOS_URL)
     markup.add(btn1)
     markup.add(btn2, btn4)
+    markup.add(btn5, btn6)
     if message.from_user.id in MODERATORS:
         btn5 = types.InlineKeyboardButton(text='Список доступных работ', callback_data='list')
         markup.add(btn5)

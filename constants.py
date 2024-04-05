@@ -57,3 +57,5 @@ WORK_TYPES = ["pdf", "docx"]
 ALL_FILE_TYPES = ["docx", "aux", "log", "pdf", "toc"]
 READY_SYMBOL = "🟦"
 UNREADY_SYMBOL = "⬜️"
+FEEDBACK_URL = "https://t.me/scribot_feedback"
+SOS_URL = "https://t.me/nikpeg"
