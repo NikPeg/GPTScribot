@@ -30,6 +30,7 @@ SUBSTRING_BY_TYPE = {
     CourseWorkType.DIPLOMA: "дипломной",
     CourseWorkType.COURSE_WORK: "курсовой",
 }
+SYMBOLS_IN_PAGE = 2100
 
 
 class CourseWork:
@@ -40,6 +41,7 @@ class CourseWork:
         self.bot = bot
         self.work_type = work_type
         self.additional_sections = additional_sections
+        self.size = 20
 
     def print(self):
         print(self.text)
@@ -192,10 +194,11 @@ class CourseWorkFactory:
                 break
         else:
             log(f"!!!There is a problem with {cw.name}!!!", self.bot)
-        cw.chapters = cw.chapters[:13]
+        cw.chapters = cw.chapters[:cw.size // 2]
         if cw.chapters[-1] not in BIBLIOGRAPHIES and cw.chapters[-2] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
         log(f"Chapters: {cw.chapters}", self.bot)
+        cw.symbols_in_chapter = cw.size * SYMBOLS_IN_PAGE // len(cw.chapters)
 
     def _generate_subchapters(self, chapter, cw):
         log("Generating subchapters...", self.bot)
@@ -399,7 +402,8 @@ class CourseWorkFactory:
                 log("GPT answer: " + chapter_text, self.bot)
             else:
                 chapter_text = self.gpt.ask(
-                    GENERATE_CHAPTER.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type])) + "\n"
+                    GENERATE_CHAPTER.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type])
+                ) + "\n"
                 for subchapter in self._generate_subchapters(chapter, cw):
                     log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
                     subchapter_text = self.gpt.ask(
