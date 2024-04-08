@@ -232,10 +232,10 @@ def callback_query(call):
             message_id=message_id,
             parse_mode='html'
         )
-    elif req[0] == "any" or req[0] in WORK_SIZES:
+    elif req[0] == "size":
         bot.send_message(
             ADMIN,
-            BUTTON_PRESSED_MESSAGE.format(call.message.chat.id, call.message.chat.username, req[0]),
+            BUTTON_PRESSED_MESSAGE.format(call.message.chat.id, call.message.chat.username, req[1]),
         )
         if call.message.chat.id not in cw_by_id.keys():
             bot.send_message(
@@ -257,7 +257,7 @@ def callback_query(call):
             reply_markup=markup,
         )
         cw = cw_by_id[call.message.chat.id]
-        cw.size = int(req[0]) if req[0] in WORK_SIZES else None
+        cw.size = int(req[1])
 
         for i in range(TRIES_COUNT):
             bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
@@ -399,15 +399,15 @@ def get_message(message):
         cw = factory.create_coursework(message.text)
         cw_by_id[message.from_user.id] = cw
         markup = types.InlineKeyboardMarkup()
-        btn10 = types.InlineKeyboardButton(text='5-10', callback_data=f'10')
-        btn20 = types.InlineKeyboardButton(text='10-20', callback_data=f'20')
-        btn30 = types.InlineKeyboardButton(text='20-30', callback_data=f'30')
+        btn10 = types.InlineKeyboardButton(text='5-10', callback_data="size:10")
+        btn20 = types.InlineKeyboardButton(text='10-20', callback_data="size:20")
+        btn30 = types.InlineKeyboardButton(text='20-30', callback_data="size:30")
         markup.add(btn10, btn20, btn30)
-        btn40 = types.InlineKeyboardButton(text='30-40', callback_data=f'40')
-        btn50 = types.InlineKeyboardButton(text='40-50', callback_data=f'50')
-        btn60 = types.InlineKeyboardButton(text='50-60', callback_data=f'60')
+        btn40 = types.InlineKeyboardButton(text='30-40', callback_data="size:40")
+        btn50 = types.InlineKeyboardButton(text='40-50', callback_data="size:50")
+        btn60 = types.InlineKeyboardButton(text='50-60', callback_data="size:60")
         markup.add(btn40, btn50, btn60)
-        btn2 = types.InlineKeyboardButton(text='🤷‍♂️Любой размер работы', callback_data=f'any')
+        btn2 = types.InlineKeyboardButton(text='🤷‍♂️Любой размер работы', callback_data="size:20")
         markup.add(btn2)
         markup.add(btn1)
         bot.send_message(
