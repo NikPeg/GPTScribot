@@ -57,9 +57,6 @@ def menu(message):
     bot.send_message(message.from_user.id, MENU_MESSAGE, reply_markup=markup, parse_mode='html')
 
 
-WORK_SIZES = {"10", "20", "30", "40", "50", "60"}
-
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     req = call.data.split(':')
