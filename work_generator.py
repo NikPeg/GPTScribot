@@ -477,7 +477,7 @@ class CourseWorkFactory:
 
     def generate_coursework(self, cw, status_message):
         cw.name, cw.additional_sections = self._process_name(cw)
-        log(f"Generating {cw.work_type.name} {cw.name} with size {cw.size}...", self.bot)
+        log(f"Generating {cw.work_type.value} {cw.name} with size {cw.size}...", self.bot)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot)
             cw.delete()
