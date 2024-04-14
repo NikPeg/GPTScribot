@@ -261,8 +261,9 @@ def callback_query(call):
         markup.add(btn7)
         markup.add(btn8)
         bot.edit_message_text(
-            WORK_TYPE_MESSAGE,
+            WORK_TYPE_MESSAGE.format(cw.name),
             chat_id=call.message.chat.id,
+            parse_mode='html',
             message_id=call.message.message_id,
             reply_markup=markup,
         )
