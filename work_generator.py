@@ -21,20 +21,52 @@ from proxy import GPTProxy
 from utils import log
 
 
-class CourseWorkType(enum.StrEnum):
+class WorkType(enum.Enum):
     DIPLOMA = "Дипломная работа"
     COURSE_WORK = "Курсовая работа"
+    REFERENCE = "Реферат"
+    REPORT = "Доклад"
+    RESEARCH = "Исследовательская работа"
+    PRACTICE = "Отчет по практике"
+
+    @staticmethod
+    def from_name(name):
+        match name:
+            case "diploma":
+                return WorkType.DIPLOMA
+            case "coursework":
+                return WorkType.COURSE_WORK
+            case "reference":
+                return WorkType.REFERENCE
+            case "report":
+                return WorkType.REPORT
+            case "research":
+                return WorkType.RESEARCH
+            case "practice":
+                return WorkType.PRACTICE
+
+    @property
+    def substring(self):
+        match self:
+            case WorkType.DIPLOMA:
+                return "дипломной работы"
+            case WorkType.COURSE_WORK:
+                return "курсовой работы"
+            case WorkType.REFERENCE:
+                return "реферата"
+            case WorkType.REPORT:
+                return "доклада"
+            case WorkType.RESEARCH:
+                return "исследовательской работы"
+            case WorkType.PRACTICE:
+                return "отчета по практике"
 
 
-SUBSTRING_BY_TYPE = {
-    CourseWorkType.DIPLOMA: "дипломной",
-    CourseWorkType.COURSE_WORK: "курсовой",
-}
 SYMBOLS_IN_PAGE = 2100
 
 
 class CourseWork:
-    def __init__(self, name, bot=None, work_type=CourseWorkType.COURSE_WORK, additional_sections=""):
+    def __init__(self, name, bot=None, work_type=WorkType.COURSE_WORK, additional_sections=""):
         self.name = name
         self.chapters = []
         self.chapters_text = []
@@ -180,13 +212,13 @@ class CourseWorkFactory:
         for i in range(config.TRIES_COUNT):
             chapters = []
             chapters_string = self.gpt.ask(
-                GENERATE_CHAPTERS_LIST.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type], cw.size // 3)
+                GENERATE_CHAPTERS_LIST.format(cw.name, cw.work_type.substring, cw.size // 3)
             )
             log(f"GPT's response: {chapters_string}", self.bot)
             if cw.additional_sections:
                 log("Ask GPT to add sections...", self.bot)
                 chapters_string = self.gpt.ask(
-                    ADD_SECTIONS.format(chapters_string, cw.additional_sections, SUBSTRING_BY_TYPE[cw.work_type]))
+                    ADD_SECTIONS.format(chapters_string, cw.additional_sections, cw.work_type.substring))
                 log(f"GPT's response: {chapters_string}", self.bot)
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
@@ -207,7 +239,7 @@ class CourseWorkFactory:
 
         subchapters = []
         subchapters_string = self.gpt.ask(
-            GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
+            GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name, cw.work_type.substring))
         log(f"GPT's response: {subchapters_string}", self.bot)
         subchapters_list = subchapters_string.split("\n")
         for subchapter in subchapters_list:
@@ -289,7 +321,7 @@ class CourseWorkFactory:
         else:
             self.cite_index = 1
             res = re.sub(r'\\cite\{.*?\}', self._next_cite, res)
-        if work_type == CourseWorkType.COURSE_WORK:
+        if work_type == WorkType.COURSE_WORK:
             res = res.replace("дипломн", "курсов")
             res = res.replace("Дипломн", "Курсов")
         return res
@@ -397,19 +429,19 @@ class CourseWorkFactory:
         for i, chapter in enumerate(cw.chapters, 1):
             log(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
-                ask_string = GENERATE_BIBLIOGRAPHY.format(cw.name, SUBSTRING_BY_TYPE[cw.work_type]) + BIBLIOGRAPHY_PREFIX
+                ask_string = GENERATE_BIBLIOGRAPHY.format(cw.name, cw.work_type.substring) + BIBLIOGRAPHY_PREFIX
                 log("Asking GPT: " + ask_string, self.bot)
                 chapter_text = BIBLIOGRAPHY_PREFIX + self.gpt.ask(ask_string)
                 log("GPT answer: " + chapter_text, self.bot)
             else:
                 chapter_text = self.gpt.ask(
-                    GENERATE_CHAPTER.format(chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type])
+                    GENERATE_CHAPTER.format(chapter, cw.name, cw.work_type.substring)
                 ) + "\n"
                 if len(chapter_text) < cw.symbols_in_chapter:
                     for subchapter in self._generate_subchapters(chapter, cw):
                         log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
                         subchapter_text = self.gpt.ask(
-                            GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, SUBSTRING_BY_TYPE[cw.work_type]))
+                            GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, cw.work_type.substring))
                         subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
                         chapter_text += subchapter_text + "\n"
                         if len(chapter_text) > cw.symbols_in_chapter:
@@ -430,7 +462,7 @@ class CourseWorkFactory:
             log("Asking GPT about additional topics list...", self.bot)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
             log(f"Additional topics list: {additional_sections}", self.bot)
-        work_type = CourseWorkType.DIPLOMA if DIPLOMA_SUBSTRING in cw.name else CourseWorkType.COURSE_WORK
+        work_type = WorkType.DIPLOMA if DIPLOMA_SUBSTRING in cw.name else WorkType.COURSE_WORK
         for useless_string in USELESS_START_STRINGS:
             if res.startswith(useless_string):
                 res = res[len(useless_string):]

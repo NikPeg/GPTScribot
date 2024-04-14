@@ -4,7 +4,7 @@ import config
 import constants
 from config import *
 from messages import *
-from work_generator import CourseWorkFactory, CourseWork
+from work_generator import CourseWorkFactory, CourseWork, WorkType
 import telebot
 from telebot import types
 from utils import *
@@ -245,6 +245,41 @@ def callback_query(call):
                 message_id=call.message.message_id,
             )
             return
+        cw = cw_by_id[call.message.chat.id]
+        cw.size = int(req[1])
+
+        btn1 = types.InlineKeyboardButton(text='Курсовая', callback_data="type:coursework")
+        btn2 = types.InlineKeyboardButton(text='Дипломная', callback_data="type:diploma")
+        btn3 = types.InlineKeyboardButton(text='Реферат', callback_data="type:reference")
+        markup.add(btn1, btn2, btn3)
+        btn4 = types.InlineKeyboardButton(text='Доклад', callback_data="type:report")
+        btn5 = types.InlineKeyboardButton(text='Исследование', callback_data="type:research")
+        btn6 = types.InlineKeyboardButton(text='Отчет по практике', callback_data="type:practice")
+        markup.add(btn4, btn5, btn6)
+        btn7 = types.InlineKeyboardButton(text='🤷‍♂️Любая работа', callback_data="type:reference")
+        btn8 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+        markup.add(btn7)
+        markup.add(btn8)
+        bot.edit_message_text(
+            WORK_TYPE_MESSAGE,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            reply_markup=markup,
+        )
+    elif req[0] == "type":
+        if call.message.chat.id not in cw_by_id.keys():
+            bot.send_message(
+                ADMIN,
+                GENERATE_AGAIN_MESSAGE,
+            )
+            bot.edit_message_text(
+                GENERATE_AGAIN_MESSAGE,
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+            )
+            return
+        cw = cw_by_id[call.message.chat.id]
+        cw.work_type = WorkType.from_name(req[1])
 
         status_message = bot.edit_message_text(
             STATUS_MESSAGE.format(constants.UNREADY_SYMBOL * 10),
@@ -253,8 +288,6 @@ def callback_query(call):
             parse_mode='Markdown',
             reply_markup=markup,
         )
-        cw = cw_by_id[call.message.chat.id]
-        cw.size = int(req[1])
 
         for i in range(TRIES_COUNT):
             bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
