@@ -462,7 +462,6 @@ class CourseWorkFactory:
             log("Asking GPT about additional topics list...", self.bot)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
             log(f"Additional topics list: {additional_sections}", self.bot)
-        work_type = WorkType.DIPLOMA if DIPLOMA_SUBSTRING in cw.name else WorkType.COURSE_WORK
         for useless_string in USELESS_START_STRINGS:
             if res.startswith(useless_string):
                 res = res[len(useless_string):]
@@ -471,14 +470,14 @@ class CourseWorkFactory:
         while res and res[-1] in NAME_USELESS_SYMBOLS:
             res = res[:-1]
         res = res.strip()
-        return res, additional_sections, work_type
+        return res, additional_sections
 
     def create_coursework(self, name):
         return CourseWork(name, bot=self.bot)
 
     def generate_coursework(self, cw, status_message):
-        log(f"Generating {cw.type.name} {cw.name} with size {cw.size}...", self.bot)
-        cw.name, cw.additional_sections, cw.work_type = self._process_name(cw)
+        cw.name, cw.additional_sections = self._process_name(cw)
+        log(f"Generating {cw.work_type.name} {cw.name} with size {cw.size}...", self.bot)
         if os.path.exists(cw.file_name()):
             log("The file is already exist!", self.bot)
             cw.delete()
