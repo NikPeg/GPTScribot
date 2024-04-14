@@ -268,6 +268,10 @@ def callback_query(call):
             reply_markup=markup,
         )
     elif req[0] == "type":
+        bot.send_message(
+            ADMIN,
+            BUTTON_PRESSED_MESSAGE.format(call.message.chat.id, call.message.chat.username, req[1]),
+        )
         if call.message.chat.id not in cw_by_id.keys():
             bot.send_message(
                 ADMIN,
