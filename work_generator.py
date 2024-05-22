@@ -429,6 +429,8 @@ class CourseWorkFactory:
                 ask_string = GENERATE_BIBLIOGRAPHY.format(cw.name, cw.work_type.substring) + BIBLIOGRAPHY_PREFIX
                 log("Asking GPT: " + ask_string, self.bot)
                 chapter_text = BIBLIOGRAPHY_PREFIX + self.gpt.ask(ask_string)
+                if BIBLIOGRAPHY_POSTFIX not in chapter_text:
+                    chapter_text += BIBLIOGRAPHY_POSTFIX + "\\\\\n"
                 log("GPT answer: " + chapter_text, self.bot)
             else:
                 chapter_text = self.gpt.ask(

@@ -10,6 +10,7 @@ BIBLIOGRAPHY = "Список использованных источников"
 ENTER_NAME = "Введите название работы:\n"
 BIBLIOGRAPHY_PREFIX = '\\begin{thebibliography}{}\n' \
                       '\\bibitem{ref1}'
+BIBLIOGRAPHY_POSTFIX = '\\end{thebibliography}'
 GENERATE_BIBLIOGRAPHY = 'Напиши список использованных источников для {1} "{0}" в формате latex.\n'
 # 'Представь, что работа уже написана. Используй только русские и английские символы. Придумай имена авторов и названия' \
 # 'источников.'
