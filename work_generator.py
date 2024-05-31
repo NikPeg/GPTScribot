@@ -259,22 +259,6 @@ class CourseWorkFactory:
         self.cite_index += 1
         return result
 
-    def _ask_to_replace(self, match):
-        symbol = match.re.pattern
-        s = match.string
-        if match.span()[0] == len(s):
-            return ""
-        log(f"Asking GPT about symbol {symbol}", self.bot)
-        log(f"Len of string: {len(s)}, symbol index: {match.span()[0]}", self.bot)
-        substring = s[max(0, match.span()[0] - 100):min(len(s), match.span()[0] + 100)]
-        log(f"Substring to ask: {substring}", self.bot)
-        gpt_answer = self.gpt.ask(SYMBOLS_TO_ASK[symbol].format(substring))
-        log(f"GPT's answer: {gpt_answer}", self.bot)
-        if gpt_answer.lower().startswith('нет'):
-            return f"\\{symbol}"
-        else:
-            return symbol
-
     def _replace_ampersand(self, text):
         opened_table = False
         i = 0
@@ -307,8 +291,7 @@ class CourseWorkFactory:
         for c in SYMBOLS_TO_REPLACE:
             res = res.replace(c, SYMBOLS_TO_REPLACE[c])
             res = res.replace(f"\\\\{c}", f"\\{c}")
-        for c in SYMBOLS_TO_ASK:
-            # res = re.sub(c, self._ask_to_replace, res)
+        for c in SYMBOLS_TO_ESCAPE:
             res = res.replace(f"\\\\{c}", f"{c}")
             res = res.replace(f"\\{c}", f"{c}")
         for seq in USELESS_SEQUENCES:
