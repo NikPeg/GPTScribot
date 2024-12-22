@@ -4,7 +4,7 @@ from messages import *
 from constants import *
 from telebot import types
 
-from utils import log
+
 
 
 def edit_status_message(message, bot, ready_chapters=0, chapters_count=10):
@@ -26,4 +26,4 @@ def edit_status_message(message, bot, ready_chapters=0, chapters_count=10):
             message_id=message.message_id
         )
     except Exception as e:
-        log(e, bot)
+        print(e, bot)

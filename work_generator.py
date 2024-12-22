@@ -18,7 +18,7 @@ from bot_api import edit_status_message
 from constants import *
 from gpt_messages import *
 from proxy import GPTProxy
-from utils import log
+
 
 
 class WorkType(enum.Enum):
@@ -83,38 +83,38 @@ class CourseWork:
         return f"Курсовая работа {self.name}"
 
     def save(self, free=True) -> bool:
-        log("Saving work...", self.bot)
+        print("Saving work...", self.bot)
         try:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
                 result_file.write(self.text(free))
             if self.bot:
                 self.bot.send_document(config.ADMIN, open(self.file_name("tex"), 'rb'))
         except Exception as e:
-            log(f"Exception while saving tex: {e}", self.bot)
+            print(f"Exception while saving tex: {e}", self.bot)
             return False
 
-        log("Starting pdflatex...", self.bot)
+        print("Starting pdflatex...", self.bot)
         try:
             subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         except Exception as e:
-            log(f"Exception while running pdflatex: {e}", self.bot)
+            print(f"Exception while running pdflatex: {e}", self.bot)
         try:
             result = subprocess.run(["pdflatex", self.file_name()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            log(result.stderr, self.bot)
+            print(result.stderr, self.bot)
         except Exception as e:
-            log(f"Second exception while running pdflatex: {e}", self.bot)
+            print(f"Second exception while running pdflatex: {e}", self.bot)
 
         if not os.path.isfile(self.file_name("pdf")):
-            log(f"No pdf file fount: {self.file_name('pdf')}", self.bot)
+            print(f"No pdf file fount: {self.file_name('pdf')}", self.bot)
             return False
 
         try:
-            log("Converting pdf to docx...", self.bot)
+            print("Converting pdf to docx...", self.bot)
             cv = Converter(self.file_name("pdf"))
             cv.convert(self.file_name("docx"), start=0, end=None)
             cv.close()
         except Exception as e:
-            log(f"Exception while converting pdf to docx: {e}", self.bot)
+            print(f"Exception while converting pdf to docx: {e}", self.bot)
 
         return True
 
@@ -207,19 +207,19 @@ class CourseWorkFactory:
         return res.strip()
 
     def _generate_chapters(self, cw):
-        log("Generating chapters...", self.bot)
+        print("Generating chapters...", self.bot)
         cw.chapters = []
         for i in range(config.TRIES_COUNT):
             chapters = []
             chapters_string = self.gpt.ask(
                 GENERATE_CHAPTERS_LIST.format(cw.name, cw.work_type.substring, cw.size // 3)
             )
-            log(f"GPT's response: {chapters_string}", self.bot)
+            print(f"GPT's response: {chapters_string}", self.bot)
             if cw.additional_sections:
-                log("Ask GPT to add sections...", self.bot)
+                print("Ask GPT to add sections...", self.bot)
                 chapters_string = self.gpt.ask(
                     ADD_SECTIONS.format(chapters_string, cw.additional_sections, cw.work_type.substring))
-                log(f"GPT's response: {chapters_string}", self.bot)
+                print(f"GPT's response: {chapters_string}", self.bot)
             chapters_list = chapters_string.split("\n")
             for chapter in chapters_list:
                 chapter_name = self._strip_chapter(chapter)
@@ -230,23 +230,23 @@ class CourseWorkFactory:
         cw.chapters = cw.chapters[:cw.size // 2]
         if cw.chapters[-1] not in BIBLIOGRAPHIES and cw.chapters[-2] not in BIBLIOGRAPHIES:
             cw.chapters.append(BIBLIOGRAPHY)
-        log(f"Chapters: {cw.chapters}", self.bot)
+        print(f"Chapters: {cw.chapters}", self.bot)
         cw.symbols_in_chapter = cw.size * SYMBOLS_IN_PAGE // len(cw.chapters)
-        log("Symbols in chapter: ", cw.symbols_in_chapter)
+        print("Symbols in chapter: ", cw.symbols_in_chapter)
 
     def _generate_subchapters(self, chapter, cw):
-        log("Generating subchapters...", self.bot)
+        print("Generating subchapters...", self.bot)
 
         subchapters = []
         subchapters_string = self.gpt.ask(
             GENERATE_SUBCHAPTERS_LIST.format(chapter, cw.name, cw.work_type.substring))
-        log(f"GPT's response: {subchapters_string}", self.bot)
+        print(f"GPT's response: {subchapters_string}", self.bot)
         subchapters_list = subchapters_string.split("\n")
         for subchapter in subchapters_list:
             subchapter_name = self._strip_chapter(subchapter)
             if subchapter_name and subchapter_name.lower() != INTRODUCTION:
                 subchapters.append(subchapter_name)
-        log(f"Subchapters: {subchapters}", self.bot)
+        print(f"Subchapters: {subchapters}", self.bot)
         return subchapters
 
     def _next_bibitem(self, match):
@@ -266,13 +266,13 @@ class CourseWorkFactory:
             if text[i:i + len(TABLE_OPEN_SUBSTRING)] == TABLE_OPEN_SUBSTRING:
                 opened_table = True
                 i += len(TABLE_OPEN_SUBSTRING)
-                log(f"Fount table in position {i}", self.bot)
+                print(f"Fount table in position {i}", self.bot)
             elif text[i:i + len(TABLE_CLOSE_SUBSTRING)] == TABLE_CLOSE_SUBSTRING:
                 opened_table = False
                 i += len(TABLE_CLOSE_SUBSTRING)
-                log(f"Table closed in position {i}", self.bot)
+                print(f"Table closed in position {i}", self.bot)
             elif text[i] == "&" and not opened_table and (i == 0 or text[i - 1] != "\\"):
-                log(f"Fount & in position {i} not in table", self.bot)
+                print(f"Fount & in position {i} not in table", self.bot)
                 text = text[:i] + "\\" + text[i:]
                 i += 3
             else:
@@ -349,7 +349,7 @@ class CourseWorkFactory:
             photo_index = text.find(PICTURE_SUBSTRING, photo_index)
             if photo_index == -1:
                 break
-            log(f"Photo index: {photo_index}", self.bot)
+            print(f"Photo index: {photo_index}", self.bot)
             filename_match = re.compile(r'\\includegraphics.*\{(.+?)\..*\}').search(text[photo_index:])
             full_filename_match = re.compile(r'\\includegraphics.*\{(.+?)\}').search(text[photo_index:])
             description_match = re.compile(r'\\caption\{(.+?)\}').search(text[photo_index:])
@@ -358,7 +358,7 @@ class CourseWorkFactory:
                 full_filename = full_filename_match.group(1)
                 description = description_match.group(1)
                 new_filename = f"{filename}-{''.join(random.choices(string.ascii_lowercase + string.digits, k=9))}"
-                log(
+                print(
                     f"Filename: {filename}, full filename: {full_filename}, new filename: {new_filename}, "
                     f"description: {description}",
                     self.bot
@@ -373,11 +373,11 @@ class CourseWorkFactory:
                                     custom_image_name=new_filename)
                     text = text.replace(full_filename, new_filename)
                 except Exception as e:
-                    log(f"Exception while loading picture: {e}", self.bot)
+                    print(f"Exception while loading picture: {e}", self.bot)
                     files = os.listdir("pictures/")
                     text = text.replace(full_filename, random.choice(files))
             else:
-                log(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
+                print(f"Problem with picture {text[photo_index:photo_index + 200]}", self.bot)
             photo_index += len(PICTURE_SUBSTRING)
         return text
 
@@ -405,23 +405,23 @@ class CourseWorkFactory:
         return res
 
     def _generate_chapters_text(self, cw, status_message):
-        log("\n\n\nGenerating chapters\' text...", self.bot)
+        print("\n\n\nGenerating chapters\' text...", self.bot)
         for i, chapter in enumerate(cw.chapters, 1):
-            log(f"\nGenerating chapter {chapter}...", self.bot)
+            print(f"\nGenerating chapter {chapter}...", self.bot)
             if chapter in BIBLIOGRAPHIES:
                 ask_string = GENERATE_BIBLIOGRAPHY.format(cw.name, cw.work_type.substring) + BIBLIOGRAPHY_PREFIX
-                log("Asking GPT: " + ask_string, self.bot)
+                print("Asking GPT: " + ask_string, self.bot)
                 chapter_text = BIBLIOGRAPHY_PREFIX + self.gpt.ask(ask_string)
                 if BIBLIOGRAPHY_POSTFIX not in chapter_text:
                     chapter_text += BIBLIOGRAPHY_POSTFIX + "\\\\\n"
-                log("GPT answer: " + chapter_text, self.bot)
+                print("GPT answer: " + chapter_text, self.bot)
             else:
                 chapter_text = self.gpt.ask(
                     GENERATE_CHAPTER.format(chapter, cw.name, cw.work_type.substring)
                 ) + "\n"
                 if len(chapter_text) < cw.symbols_in_chapter:
                     for subchapter in self._generate_subchapters(chapter, cw):
-                        log(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
+                        print(f"Asking GPT about subchapter's {subchapter} text...", self.bot)
                         subchapter_text = self.gpt.ask(
                             GENERATE_SUBCHAPTER.format(subchapter, chapter, cw.name, cw.work_type.substring))
                         subchapter_text = self._validate_subchapter(subchapter_text, subchapter, cw.work_type)
@@ -432,18 +432,18 @@ class CourseWorkFactory:
             chapter_text = self._add_photos(chapter_text)
             if chapter not in BIBLIOGRAPHIES:
                 chapter_text = self._chapter_with_blank_lines(chapter_text)
-            log(chapter_text, self.bot)
+            print(chapter_text, self.bot)
             cw.chapters_text.append(chapter_text)
             edit_status_message(status_message, self.bot, i, len(cw.chapters))
 
     def _process_name(self, cw: CourseWork):
         res = cw.name
         additional_sections = ""
-        log("Asking GPT about additional topics...", self.bot)
+        print("Asking GPT about additional topics...", self.bot)
         if self.gpt.ask(SECTIONS_QUESTION.format(res)).lower().startswith("да"):
-            log("Asking GPT about additional topics list...", self.bot)
+            print("Asking GPT about additional topics list...", self.bot)
             additional_sections = self.gpt.ask(SECTIONS_LIST_QUESTION.format(res))
-            log(f"Additional topics list: {additional_sections}", self.bot)
+            print(f"Additional topics list: {additional_sections}", self.bot)
         for useless_string in USELESS_START_STRINGS:
             if res.startswith(useless_string):
                 res = res[len(useless_string):]
@@ -459,9 +459,9 @@ class CourseWorkFactory:
 
     def generate_coursework(self, cw, status_message):
         cw.name, cw.additional_sections = self._process_name(cw)
-        log(f"Generating {cw.work_type.value} {cw.name} with size {cw.size}...", self.bot)
+        print(f"Generating {cw.work_type.value} {cw.name} with size {cw.size}...", self.bot)
         if os.path.exists(cw.file_name()):
-            log("The file is already exist!", self.bot)
+            print("The file is already exist!", self.bot)
             cw.delete()
         self._generate_chapters(cw)
         self._generate_chapters_text(cw, status_message)
@@ -474,4 +474,4 @@ if __name__ == "__main__":
     factory = CourseWorkFactory()
     cw = factory.generate_coursework(name, None)
     cw.save()
-    log(f"Курсовая работа\n{cw.name} сгенерирована!")
+    print(f"Курсовая работа\n{cw.name} сгенерирована!")

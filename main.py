@@ -7,12 +7,15 @@ from messages import *
 from work_generator import CourseWorkFactory, CourseWork, WorkType
 import telebot
 from telebot import types
+from cloudpayments import CloudPayments
 from utils import *
+client = CloudPayments(PAYMENTS_ID, PAYMENTS_TOKEN)
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN,)
 users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
+order = ""
 factory = CourseWorkFactory(bot=bot)
 cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 
@@ -21,7 +24,7 @@ cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 def start(message):
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
-        bot.send_message(ADMIN, f"User @{message.from_user.username} started a bot.")
+        bot.send_message(ADMIN, f"User https://t.me/{message.from_user.username} started a bot.")
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
@@ -41,7 +44,7 @@ def start(message):
 def menu(message):
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
-        bot.send_message(ADMIN, f"User @{message.from_user.username} started a bot.")
+        bot.send_message(ADMIN, f"User https://t.me/{message.from_user.username} started a bot.")
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
     btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
@@ -60,6 +63,7 @@ def menu(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     req = call.data.split(':')
+    print(req)
     markup = types.InlineKeyboardMarkup()
     if req[0] == 'info':
         btn1 = types.InlineKeyboardButton(text='📢Канал проекта', url='https://t.me/scribo_project')
@@ -77,7 +81,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             disable_web_page_preview=True
         )
-        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed info button", bot)
+        print(f"User {call.message.chat.id} https://t.me/{call.message.chat.username} pressed info button", bot)
     elif req[0] == 'generate':
         bot.edit_message_text(
             GENERATE_MESSAGE.format(random.choice(constants.SAMPLE_WORKS)),
@@ -85,7 +89,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='html',
         )
-        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed generate button", bot)
+        print(f"User {call.message.chat.id} https://t.me/{call.message.chat.username} pressed generate button", bot)
     elif req[0] == 'menu':
         btn1 = types.InlineKeyboardButton(text='📝Сгенерировать работу', callback_data='generate')
         btn2 = types.InlineKeyboardButton(text='❓Узнать о Scribo', callback_data='info')
@@ -105,7 +109,7 @@ def callback_query(call):
             message_id=call.message.message_id,
             parse_mode='html',
         )
-        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed menu button", bot)
+        print(f"User {call.message.chat.id} https://t.me/{call.message.chat.username} pressed menu button", bot)
     elif req[0] == 'work':
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -128,7 +132,7 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
-        log(f"Moderator {call.message.chat.id} @{call.message.chat.username} pressed work button", bot)
+        print(f"Moderator {call.message.chat.id} https://t.me/{call.message.chat.username} pressed work button", bot)
     elif req[0] == 'list':
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -140,7 +144,7 @@ def callback_query(call):
                 message_id=call.message.message_id,
             )
             for work_chat_id, work_message_id, work_text in current_works:
-                bot.send_message(call.message.chat.id, f"{work_chat_id}\n{work_text}")
+                print(f"{work_chat_id}\n{work_text}")
         else:
             bot.edit_message_text(
                 EMPTY_LIST_MESSAGE,
@@ -148,47 +152,34 @@ def callback_query(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
             )
-        log(f"Moderator {call.message.chat.id} @{call.message.chat.username} pressed work button", bot)
-    elif req[0] == 'paid':
-        log(f"User {call.message.chat.id} @{call.message.chat.username} pressed paid button", bot)
+        print(f"Moderator {call.message.chat.id} https://t.me/{call.message.chat.username} pressed work button", bot)
+
+    elif req[0] == 'paid': ############
+        print(f"User {call.message.chat.id} https://t.me/{call.message.chat.username} pressed paid button", bot)
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
-        bot.edit_message_text(
-            WAIT_MESSAGE.format(price=config.PRICE),
-            reply_markup=markup,
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            parse_mode='html'
-        )
+        try:
+           payment_data = client.find_payment(order.number)
+           bot.send_message(ADMIN, f"заказ  №{order.number} на сумму {payment_data.amount};\n сообщение:{payment_data.cardholder_message}; \n регион оплаты: {payment_data.ip_region}; \n картa: {payment_data.issuer}, {payment_data.card_type} ")
+        except:
+            user_id = int(req[1])
+            message_id = int(req[2])
+
+            print(f"User {user_id} didn't pay!", bot)
+            btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
+            markup.add(btn1)
+            btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+            markup.add(btn2)
+            bot.edit_message_text(
+                "ошибка транзакции. проверьте правильно вы ли ввели все данные. В случае ошибки обратитесь к администратору",
+                reply_markup=markup,
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                parse_mode='html'
+            )
         markup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(
-            text='✅Да!',
-            callback_data=f'really_paid:{call.message.chat.id}:{call.message.message_id}:{call.message.chat.username}',
-        )
-        btn2 = types.InlineKeyboardButton(
-            text='❌Нет(',
-            callback_data=f'not_paid:{call.message.chat.id}:{call.message.message_id}:{call.message.chat.username}',
-        )
-        markup.add(btn1)
-        markup.add(btn2)
-        bot.send_message(
-            EMERGENCY_ADMIN,
-            PAID_QUESTION_MESSAGE.format(call.message.chat.id, call.message.chat.username),
-            reply_markup=markup,
-        )
-    elif req[0] == "really_paid":
-        user_id = int(req[1])
-        message_id = int(req[2])
-        username = req[3]
-        log(
-            f"Emergency admin {call.message.chat.id} pressed really paid button for user {user_id} @{username}",
-            bot,
-        )
-        bot.edit_message_text(
-            REALLY_PAID_MESSAGE,
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-        )
+      
+
         for i in range(TRIES_COUNT):
             cw: CourseWork = cw_by_id.get(user_id)
             if not cw:
@@ -197,48 +188,20 @@ def callback_query(call):
             try:
                 if cw.save(free=False):
                     bot.delete_message(user_id, message_id)
-                    send_work(cw, ADMIN, user_id, free=False)
+                    #send_work(cw, ADMIN, user_id, free=False)
                     remove_work(cw.name)
                     cw.delete()
                     break
             except Exception as e:
-                log(f"Exception while saving: {e}")
+               print(f"Exception while saving: {e}")
             finally:
                 cw.delete(i < TRIES_COUNT - 1)
         else:
-            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
-    elif req[0] == "not_paid":
-        user_id = int(req[1])
-        message_id = int(req[2])
-        username = req[3]
-        log(f"Emergency admin {call.message.chat.id} pressed not paid button for user {user_id} @{username}", bot)
-        bot.edit_message_text(
-            NOT_PAID_MESSAGE,
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-        )
-        log(f"User {user_id} didn't pay!", bot)
-        btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
-        markup.add(btn1)
-        btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
-        markup.add(btn2)
-        bot.edit_message_text(
-            WRONG_MESSAGE.format(price=config.PRICE),
-            reply_markup=markup,
-            chat_id=user_id,
-            message_id=message_id,
-            parse_mode='html'
-        )
+            print( PROBLEM_MESSAGE, reply_markup=markup)
+
     elif req[0] == "size":
-        bot.send_message(
-            ADMIN,
-            BUTTON_PRESSED_MESSAGE.format(call.message.chat.id, call.message.chat.username, req[1]),
-        )
+
         if call.message.chat.id not in cw_by_id.keys():
-            bot.send_message(
-                ADMIN,
-                GENERATE_AGAIN_MESSAGE,
-            )
             bot.edit_message_text(
                 GENERATE_AGAIN_MESSAGE,
                 chat_id=call.message.chat.id,
@@ -268,15 +231,8 @@ def callback_query(call):
             reply_markup=markup,
         )
     elif req[0] == "type":
-        bot.send_message(
-            ADMIN,
-            BUTTON_PRESSED_MESSAGE.format(call.message.chat.id, call.message.chat.username, req[1]),
-        )
+
         if call.message.chat.id not in cw_by_id.keys():
-            bot.send_message(
-                ADMIN,
-                GENERATE_AGAIN_MESSAGE,
-            )
             bot.edit_message_text(
                 GENERATE_AGAIN_MESSAGE,
                 chat_id=call.message.chat.id,
@@ -295,20 +251,18 @@ def callback_query(call):
         )
 
         for i in range(TRIES_COUNT):
-            bot.send_message(ADMIN, ATTEMPT_MESSAGE.format(i))
             factory.generate_coursework(cw, status_message)
             try:
                 if cw.save():
-                    send_work(cw, ADMIN, call.message.chat.id)
                     remove_work(cw.name)
                     cw.delete()
                     break
             except Exception as e:
-                log(f"Exception while saving: {e}")
+                print(f"Exception while saving: {e}")
             finally:
                 cw.delete(i < TRIES_COUNT - 1)
         else:
-            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
+            print(PROBLEM_MESSAGE)
 
 
 @bot.message_handler(content_types=['document'])
@@ -327,7 +281,7 @@ def get_document(message):
             bot.send_message(message.from_user.id, NO_WORKS_MESSAGE, parse_mode='Markdown')
     else:
         bot.send_message(message.from_user.id, IDK_MESSAGE)
-        log(f"User {message.from_user.id} sent some document", bot)
+        print(f"User https://t.me/{message.from_user.id} sent some document", bot)
 
 
 def remove_work(work_name):
@@ -338,6 +292,7 @@ def remove_work(work_name):
 
 
 def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
+    order = client.create_order(amount=int(config.PRICE), description= f"Оплата работы by NikPeg пользователем https://t.me/{user} \n рекомендуем указывать вашу почту.", currency="RUB" )
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     for work_type in constants.WORK_TYPES:
@@ -345,23 +300,22 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
             bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
             bot.send_document(user, open(cw.file_name(work_type), 'rb'))
         except Exception as e:
-            log(f"Can't send a document: {e}", bot)
+            print(f"Can't send a document: {e}", bot)
     if free:
         try:
             btn2 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
             markup.add(btn1)
-            bot.send_message(moderator, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+            bot.send_message(moderator, FREE_MESSAGE.format( pay_link =order.url, price=config.PRICE), reply_markup=markup, parse_mode='html')
             markup = types.InlineKeyboardMarkup()
             markup.add(btn2)
             markup.add(btn1)
-            bot.send_message(user, FREE_MESSAGE.format(price=config.PRICE), reply_markup=markup, parse_mode='html')
+            bot.send_message(user, FREE_MESSAGE.format( pay_link =order.url, price=config.PRICE), reply_markup=markup, parse_mode='html')
         except Exception as e:
-            log(f"Can't send a document: {e}", bot)
+            print(f"Can't send a document: {e}", bot)
     else:
         markup.add(btn1)
         bot.send_message(moderator, READY_MESSAGE, reply_markup=markup)
         bot.send_message(user, READY_MESSAGE, reply_markup=markup)
-
 
 def send_problem(moderator: int, user: int) -> None:
     markup = types.InlineKeyboardMarkup()
@@ -386,9 +340,9 @@ def get_message(message):
             remove_work(message.reply_to_message.text.partition("\n")[2])
         else:
             bot.send_message(message.from_user.id, WRONG_REPLY_MESSAGE, reply_markup=markup)
-        log(f"Moderator {message.from_user.id} sent беру", bot)
+        print(f"Moderator {message.from_user.id} sent беру", bot)
     if message.from_user.id in MODERATORS and message.text.lower() == "сгенерировать":
-        log(f"Moderator {message.from_user.id} sent сгенерировать", bot)
+        print(f"Moderator {message.from_user.id} sent сгенерировать", bot)
         if message.reply_to_message:
             reply_chat_id = int(message.reply_to_message.text.split("\n")[0])
             markup = types.InlineKeyboardMarkup()
@@ -411,7 +365,7 @@ def get_message(message):
                         cw.delete()
                         break
                 except Exception as e:
-                    log(f"Exception while saving: {e}")
+                    print(f"Exception while saving: {e}")
                 finally:
                     cw.delete(i < TRIES_COUNT - 1)
             else:
@@ -426,10 +380,7 @@ def get_message(message):
                 bot.send_message(moderator_id, f"{message.from_user.id}\n{message.text}")
             except telebot.apihelper.ApiTelegramException:
                 print(f"Moderator {moderator_id} has not started the bot yet")
-        bot.send_message(
-            ADMIN,
-            SENT_WORK_MESSAGE.format(message.from_user.id, message.from_user.username, message.text),
-        )
+
         current_works.append((message.from_user.id, message.id, message.text))
         cw = factory.create_coursework(message.text)
         cw_by_id[message.from_user.id] = cw
@@ -453,5 +404,5 @@ def get_message(message):
         )
 
 
-log("Bot is running!", bot)
-bot.infinity_polling()
+print("Bot is running!", bot)
+bot.infinity_polling(allowed_updates=True)
