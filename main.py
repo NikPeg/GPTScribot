@@ -274,7 +274,7 @@ def callback_query(call):
             finally:
                 cw.delete(i < TRIES_COUNT - 1)
         else:
-            print(PROBLEM_MESSAGE)
+            bot.send_messagep(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
 
 
 @bot.message_handler(content_types=['document'])
