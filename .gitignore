@@ -5,3 +5,4 @@ config.py
 env
 run_telegram_local_api.bat
 cloudpayments_api.py
+wsl_env

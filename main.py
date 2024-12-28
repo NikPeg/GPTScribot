@@ -8,20 +8,28 @@ from work_generator import CourseWorkFactory, CourseWork, WorkType
 import telebot
 from telebot import types
 from cloudpayments import CloudPayments
+from mongo_utils import DBClient
 from utils import *
-client = CloudPayments(PAYMENTS_ID, PAYMENTS_TOKEN)
+CP = CloudPayments(PAYMENTS_ID, PAYMENTS_TOKEN)
+DB = DBClient(MONGO_CLIENT_REF, DB_NAME)
 
 bot = telebot.TeleBot(TOKEN,)
 users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
-order = ""
 factory = CourseWorkFactory(bot=bot)
 cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 
-
+def id_check(msg_id:int):
+   DB_id = DB.find(COLLECTION_NAME, False, {"tg_id":msg_id})
+   if DB_id == None:
+        query ={"tg_id":msg_id, "order_data":{"payment_link":"str", "number":0}}
+        return DB.insert(COLLECTION_NAME, dict(query), False)
+             
 @bot.message_handler(commands=['start'])
 def start(message):
+    id_check(message.from_user.id)
+
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
         bot.send_message(ADMIN, f"User https://t.me/{message.from_user.username} started a bot.")
@@ -42,6 +50,8 @@ def start(message):
 
 @bot.message_handler(commands=['menu', 'help', 'cancel'])
 def menu(message):
+    id_check(message.from_user.id)
+
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
         bot.send_message(ADMIN, f"User https://t.me/{message.from_user.username} started a bot.")
@@ -159,8 +169,10 @@ def callback_query(call):
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         try:
-           payment_data = client.find_payment(order.number)
-           bot.send_message(ADMIN, f"заказ  №{order.number} на сумму {payment_data.amount};\n сообщение:{payment_data.cardholder_message}; \n регион оплаты: {payment_data.ip_region}; \n картa: {payment_data.issuer}, {payment_data.card_type} ")
+           order = DB.find(COLLECTION_NAME, False, {"tg_id":call.message.from_user.id})
+           print("ORDER", order)
+           payment_data = CP.find_payment(order["order_data"]["number"])
+           bot.send_message(ADMIN, "заказ №"+order["order_data"]["number"]+ f"на сумму {payment_data.amount};\n сообщение:{payment_data.cardholder_message}; \n регион оплаты: {payment_data.ip_region}; \n картa: {payment_data.issuer}, {payment_data.card_type} ")
         except:
             user_id = int(req[1])
             message_id = int(req[2])
@@ -171,7 +183,7 @@ def callback_query(call):
             btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
             markup.add(btn2)
             bot.edit_message_text(
-                "ошибка транзакции. проверьте правильно вы ли ввели все данные. В случае ошибки обратитесь к администратору",
+                "Ошибка транзакции. проверьте правильно вы ли ввели все данные. В случае ошибки обратитесь к администратору @NikPeg",
                 reply_markup=markup,
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
@@ -180,7 +192,7 @@ def callback_query(call):
         markup = types.InlineKeyboardMarkup()
       
 
-        for i in range(TRIES_COUNT):
+        for i in range(TRIES_COUNT): 
             cw: CourseWork = cw_by_id.get(user_id)
             if not cw:
                 send_problem(ADMIN, user_id)
@@ -188,7 +200,7 @@ def callback_query(call):
             try:
                 if cw.save(free=False):
                     bot.delete_message(user_id, message_id)
-                    #send_work(cw, ADMIN, user_id, free=False)
+                    send_work(cw, ADMIN, user_id, free=False)
                     remove_work(cw.name)
                     cw.delete()
                     break
@@ -292,13 +304,17 @@ def remove_work(work_name):
 
 
 def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
-    order = client.create_order(amount=int(config.PRICE), description= f"Оплата работы by NikPeg пользователем https://t.me/{user} \n рекомендуем указывать вашу почту.", currency="RUB" )
+    order = CP.create_order(amount=int(config.PRICE), description= f"Оплата работы by NikPeg пользователем https://t.me/{user} \n рекомендуем указывать вашу почту.", currency="RUB" )
+    DB.update(COLLECTION_NAME, {"tg_id":user}, { "$set": { "order_data":{"payment_link":order.url, "number":order.number} }})
+   
     markup = types.InlineKeyboardMarkup()
+    bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     for work_type in constants.WORK_TYPES:
         try:
             bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
             bot.send_document(user, open(cw.file_name(work_type), 'rb'))
+            
         except Exception as e:
             print(f"Can't send a document: {e}", bot)
     if free:

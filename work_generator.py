@@ -21,6 +21,7 @@ from proxy import GPTProxy
 
 
 
+
 class WorkType(enum.Enum):
     DIPLOMA = "Дипломная работа"
     COURSE_WORK = "Курсовая работа"
@@ -75,6 +76,7 @@ class CourseWork:
         self.additional_sections = additional_sections
         self.size = 20
         self.symbols_in_chapter = None
+        
 
     def print(self):
         print(self.text)
@@ -134,8 +136,8 @@ class CourseWork:
             res += " ".join(words_list[words_count // 3:words_count * 2 // 3]) + NEW_LINE
             res += " ".join(words_list[words_count * 2 // 3:words_count]) + NEW_LINE
         return res
-
-    def text(self, free=True):
+      
+    def text(self, free=True, url="link"): ###
         res = ""
         for i in range(2, 4):
             with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
@@ -143,7 +145,7 @@ class CourseWork:
             if i < 3:
                 res += f"{self.upper_name}{BIG_INDENT}{self.work_type.value}{NEW_LINE}"
         with io.open(f"templateFree.tex", mode="r", encoding="utf-8") as template:
-            free_text = template.read().format(price=config.PRICE)
+            free_text = template.read().format(link=url, price=config.PRICE)
         if free:
             for chapter in self.chapters_text[:len(self.chapters) // 2]:
                 res += NEW_PAGE + chapter
@@ -186,7 +188,7 @@ class CourseWork:
                 pass
 
 
-class CourseWorkFactory:
+class CourseWorkFactory: 
     def __init__(self, model="gpt-3.5-turbo", bot=None):
         self.model = model
         self.gpt = GPTProxy(model)
