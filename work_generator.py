@@ -92,7 +92,7 @@ class CourseWork:
             if self.bot:
                 self.bot.send_document(config.ADMIN, open(self.file_name("tex"), 'rb'))
         except Exception as e:
-            print(f"Exception while saving tex: {e}", self.bot)
+            print(f"Exception while saving tex: {e}")
             return False
 
         print("Starting pdflatex...", self.bot)
@@ -175,7 +175,7 @@ class CourseWork:
                 break
         return f"{res}.{type}"
 
-    def delete(self, delete_tex: bool = True):
+    """def delete(self, delete_tex: bool = True):
         for file_type in constants.ALL_FILE_TYPES:
             try:
                 os.remove(self.file_name(file_type))
@@ -185,7 +185,7 @@ class CourseWork:
             try:
                 os.remove(self.file_name("tex"))
             except:
-                pass
+                pass"""
 
 
 class CourseWorkFactory: 
@@ -464,16 +464,18 @@ class CourseWorkFactory:
         print(f"Generating {cw.work_type.value} {cw.name} with size {cw.size}...", self.bot)
         if os.path.exists(cw.file_name()):
             print("The file is already exist!", self.bot)
-            cw.delete()
+            #cw.delete()
         self._generate_chapters(cw)
         self._generate_chapters_text(cw, status_message)
         return cw
 
 
+
 if __name__ == "__main__":
-    # name = "История программы-примера Hello world и её влияние на мировую культуру"
-    name = input(ENTER_NAME)
+    name = "История программы-примера Hello world и её влияние на мировую культуру"
+        #name = input(ENTER_NAME)
     factory = CourseWorkFactory()
-    cw = factory.generate_coursework(name, None)
+    cw = CourseWork(name)
+    cw = factory.generate_coursework(cw, None)
     cw.save()
     print(f"Курсовая работа\n{cw.name} сгенерирована!")
