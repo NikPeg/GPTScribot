@@ -192,22 +192,29 @@ def callback_query(call):
         markup = types.InlineKeyboardMarkup()
       
 
-        for i in range(TRIES_COUNT): 
+        for _ in range(TRIES_COUNT): 
             cw: CourseWork = cw_by_id.get(user_id)
+            print("str 197 succ")
             if not cw:
                 send_problem(ADMIN, user_id)
+                print("str 200 - problem in main.py")
                 break
             try:
+                print("SAVING")
                 if cw.save(free=False):
+                    print("str 204")
                     bot.delete_message(user_id, message_id)
                     send_work(cw, ADMIN, user_id, free=False)
+                    print("str 207")
                     remove_work(cw.name)
-                    cw.delete()
+                    #cw.delete()
                     break
             except Exception as e:
                print(f"Exception while saving: {e}")
             finally:
-                cw.delete(i < TRIES_COUNT - 1)
+                print(214)
+                #cw.delete(i < TRIES_COUNT - 1)
+                pass
         else:
             print( PROBLEM_MESSAGE, reply_markup=markup)
 
@@ -261,20 +268,25 @@ def callback_query(call):
             parse_mode='Markdown',
             reply_markup=markup,
         )
-
+        print("3 tries...")
         for i in range(TRIES_COUNT):
+            print("generating...")
             factory.generate_coursework(cw, status_message)
+            print("saving")
             try:
                 if cw.save():
+                    print("saved")
+                    send_work(cw, ADMIN, call.message.chat.id)
                     remove_work(cw.name)
-                    cw.delete()
+                    #cw.delete()
                     break
             except Exception as e:
                 print(f"Exception while saving: {e}")
             finally:
-                cw.delete(i < TRIES_COUNT - 1)
+                #cw.delete(i < TRIES_COUNT - 1)
+                pass
         else:
-            bot.send_messagep(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
+            bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
 
 
 @bot.message_handler(content_types=['document'])
@@ -310,7 +322,10 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
     markup = types.InlineKeyboardMarkup()
     bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
+    print("str 315")
     for work_type in constants.WORK_TYPES:
+        print("str 316 "+cw.file_name(work_type))
+
         try:
             bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
             bot.send_document(user, open(cw.file_name(work_type), 'rb'))
@@ -378,12 +393,13 @@ def get_message(message):
                     if cw.save():
                         send_work(cw, message.from_user.id, reply_chat_id)
                         remove_work(cw.name)
-                        cw.delete()
+                        #cw.delete()
                         break
                 except Exception as e:
                     print(f"Exception while saving: {e}")
                 finally:
-                    cw.delete(i < TRIES_COUNT - 1)
+                    #cw.delete(i < TRIES_COUNT - 1)
+                    pass
             else:
                 bot.send_message(message.from_user.id,
                                  PROBLEM_MESSAGE.format(message.reply_to_message.text.split("\n")[1]),
