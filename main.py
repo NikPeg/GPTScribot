@@ -200,6 +200,7 @@ def callback_query(call):
                 print("str 200 - problem in main.py")
                 break
             try:
+                print("SAVING")
                 if cw.save(free=False):
                     print("str 204")
                     bot.delete_message(user_id, message_id)
@@ -267,11 +268,15 @@ def callback_query(call):
             parse_mode='Markdown',
             reply_markup=markup,
         )
-
+        print("3 tries...")
         for i in range(TRIES_COUNT):
+            print("generating...")
             factory.generate_coursework(cw, status_message)
+            print("saving")
             try:
                 if cw.save():
+                    print("saved")
+                    send_work(cw, ADMIN, call.message.chat.id)
                     remove_work(cw.name)
                     #cw.delete()
                     break
@@ -317,13 +322,13 @@ def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> N
     markup = types.InlineKeyboardMarkup()
     bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
-    print("str 315"+work_type)
+    print("str 315")
     for work_type in constants.WORK_TYPES:
         print("str 316 "+cw.file_name(work_type))
 
         try:
-            bot.send_document(moderator, open(cw.file_name(work_type), 'rb').read)
-            bot.send_document(user, open(cw.file_name(work_type), 'rb').read)
+            bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
+            bot.send_document(user, open(cw.file_name(work_type), 'rb'))
             
         except Exception as e:
             print(f"Can't send a document: {e}", bot)

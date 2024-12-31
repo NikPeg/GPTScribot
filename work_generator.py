@@ -110,13 +110,13 @@ class CourseWork:
             print(f"No pdf file fount: {self.file_name('pdf')}", self.bot)
             return False
 
-        try:
-            print("Converting pdf to docx...", self.bot)
-            cv = Converter(self.file_name("pdf"))
-            cv.convert(self.file_name("docx"), start=0, end=None)
-            cv.close()
-        except Exception as e:
-            print(f"Exception while converting pdf to docx: {e}", self.bot)
+        #try:
+        #    print("Converting pdf to docx...", self.bot)
+        #    cv = Converter(self.file_name("pdf"))
+        #    cv.convert(self.file_name("docx"), start=0, end=None)
+        #    cv.close()
+        #except Exception as e:
+        #    print(f"Exception while converting pdf to docx: {e}", self.bot)
 
         return True
 
