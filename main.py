@@ -1,5 +1,4 @@
 import random
-
 import config
 import constants
 from config import *
@@ -13,17 +12,17 @@ from utils import *
 CP = CloudPayments(PAYMENTS_ID, PAYMENTS_TOKEN)
 DB = DBClient(MONGO_CLIENT_REF, DB_NAME)
 
-bot = telebot.TeleBot(TOKEN,)
+bot = telebot.TeleBot(TOKEN)
 users_works_count = {}  # user's id: count of works
 current_works = []  # users' requests in (chat_id: int, message_id: int, text: str) type
 decorating = {}  # link between moderator and work. moderator_id: chat_id: int
-factory = CourseWorkFactory(bot=bot)
+factory = CourseWorkFactory(bot=bot, DB=DB, CP=CP)
 cw_by_id = {}  # users' works in (chat_id: int, cw: CourseWork) type
 
-def id_check(msg_id:int):
-   DB_id = DB.find(COLLECTION_NAME, False, {"tg_id":msg_id})
+def id_check(user_id:int):
+   DB_id = DB.find(COLLECTION_NAME, False, {"tg_id":user_id})
    if DB_id == None:
-        query ={"tg_id":msg_id, "order_data":{"payment_link":"str", "number":0}}
+        query ={"tg_id":user_id, "order_data":{"payment_link":"str", "number":0}}
         return DB.insert(COLLECTION_NAME, dict(query), False)
              
 @bot.message_handler(commands=['start'])
@@ -51,7 +50,7 @@ def start(message):
 @bot.message_handler(commands=['menu', 'help', 'cancel'])
 def menu(message):
     id_check(message.from_user.id)
-
+   
     if message.from_user.id not in users_works_count:
         users_works_count[message.from_user.id] = 0
         bot.send_message(ADMIN, f"User https://t.me/{message.from_user.username} started a bot.")
@@ -72,6 +71,7 @@ def menu(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
+    id_check(call.message.from_user.id)
     req = call.data.split(':')
     print(req)
     markup = types.InlineKeyboardMarkup()
@@ -165,6 +165,8 @@ def callback_query(call):
         print(f"Moderator {call.message.chat.id} https://t.me/{call.message.chat.username} pressed work button", bot)
 
     elif req[0] == 'paid': ############
+        user_id = int(req[1])
+        message_id = int(req[2])
         print(f"User {call.message.chat.id} https://t.me/{call.message.chat.username} pressed paid button", bot)
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
@@ -174,11 +176,9 @@ def callback_query(call):
            payment_data = CP.find_payment(order["order_data"]["number"])
            bot.send_message(ADMIN, "заказ №"+order["order_data"]["number"]+ f"на сумму {payment_data.amount};\n сообщение:{payment_data.cardholder_message}; \n регион оплаты: {payment_data.ip_region}; \n картa: {payment_data.issuer}, {payment_data.card_type} ")
         except:
-            user_id = int(req[1])
-            message_id = int(req[2])
 
             print(f"User {user_id} didn't pay!", bot)
-            btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
+            btn1 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data=f'paid:{user_id}:{message_id}')
             markup.add(btn1)
             btn2 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
             markup.add(btn2)
@@ -192,7 +192,7 @@ def callback_query(call):
         markup = types.InlineKeyboardMarkup()
       
 
-        for _ in range(TRIES_COUNT): 
+        for i in range(TRIES_COUNT): 
             cw: CourseWork = cw_by_id.get(user_id)
             print("str 197 succ")
             if not cw:
@@ -201,22 +201,22 @@ def callback_query(call):
                 break
             try:
                 print("SAVING")
-                if cw.save(free=False):
+                if cw.save(user_id):
                     print("str 204")
                     bot.delete_message(user_id, message_id)
-                    send_work(cw, ADMIN, user_id, free=False)
+                    send_work(cw, ADMIN, user_id, message_id)
                     print("str 207")
                     remove_work(cw.name)
-                    #cw.delete()
+                    cw.delete()
                     break
             except Exception as e:
                print(f"Exception while saving: {e}")
             finally:
                 print(214)
-                #cw.delete(i < TRIES_COUNT - 1)
+                cw.delete(i < TRIES_COUNT - 1)
                 pass
         else:
-            print( PROBLEM_MESSAGE, reply_markup=markup)
+            print( PROBLEM_MESSAGE)
 
     elif req[0] == "size":
 
@@ -269,21 +269,21 @@ def callback_query(call):
             reply_markup=markup,
         )
         print("3 tries...")
-        for i in range(TRIES_COUNT):
+        for _ in range(TRIES_COUNT):
             print("generating...")
             factory.generate_coursework(cw, status_message)
             print("saving")
             try:
-                if cw.save():
+                if cw.save(call.message.from_user.id):
                     print("saved")
-                    send_work(cw, ADMIN, call.message.chat.id)
+                    send_work(cw, ADMIN, call.message.chat.id, message_id=call.message.message_id)
                     remove_work(cw.name)
-                    #cw.delete()
+                    cw.delete()
                     break
             except Exception as e:
                 print(f"Exception while saving: {e}")
             finally:
-                #cw.delete(i < TRIES_COUNT - 1)
+                cw.delete(i < TRIES_COUNT - 1)
                 pass
         else:
             bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
@@ -315,32 +315,35 @@ def remove_work(work_name):
             break
 
 
-def send_work(cw: CourseWork, moderator: int, user: int, free: bool = True) -> None:
-    order = CP.create_order(amount=int(config.PRICE), description= f"Оплата работы by NikPeg пользователем https://t.me/{user} \n рекомендуем указывать вашу почту.", currency="RUB" )
-    DB.update(COLLECTION_NAME, {"tg_id":user}, { "$set": { "order_data":{"payment_link":order.url, "number":order.number} }})
-   
+def send_work(cw: CourseWork, moderator: int, user: int, message_id:int, free: bool = True) -> None:
+    order = DB.find(COLLECTION_NAME, False, {"tg_id":user})
+    print("order: ",order)
+    print("user_id: ",user)
+    print("message_id: ", message_id)
     markup = types.InlineKeyboardMarkup()
     bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
-    print("str 315")
+    print("str 326")
     for work_type in constants.WORK_TYPES:
-        print("str 316 "+cw.file_name(work_type))
+        print("str 328 "+cw.file_name(work_type))
 
         try:
-            bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
-            bot.send_document(user, open(cw.file_name(work_type), 'rb'))
+           bot.send_document(moderator, open(cw.file_name(work_type), 'rb'))
+           bot.send_document(user, open(cw.file_name(work_type), 'rb'))
             
         except Exception as e:
             print(f"Can't send a document: {e}", bot)
     if free:
         try:
-            btn2 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data='paid')
+            print(" str 336 FREE")
+            print("str 338:"+str(order["order_data"]["number"]))
+            btn2 = types.InlineKeyboardButton(text='✅Я оплатил', callback_data=f'paid:{user}:{message_id}:'+str(order["order_data"]["number"]))
             markup.add(btn1)
-            bot.send_message(moderator, FREE_MESSAGE.format( pay_link =order.url, price=config.PRICE), reply_markup=markup, parse_mode='html')
+            bot.send_message(moderator, FREE_MESSAGE.format( pay_link =order["order_data"]["payment_link"], price=config.PRICE), reply_markup=markup, parse_mode='html')
             markup = types.InlineKeyboardMarkup()
             markup.add(btn2)
             markup.add(btn1)
-            bot.send_message(user, FREE_MESSAGE.format( pay_link =order.url, price=config.PRICE), reply_markup=markup, parse_mode='html')
+            bot.send_message(user, FREE_MESSAGE.format( pay_link =order["order_data"]["payment_link"], price=config.PRICE), reply_markup=markup, parse_mode='html')
         except Exception as e:
             print(f"Can't send a document: {e}", bot)
     else:
@@ -390,15 +393,15 @@ def get_message(message):
                 cw_by_id[reply_chat_id] = cw
                 factory.generate_coursework(cw, status_message)
                 try:
-                    if cw.save():
-                        send_work(cw, message.from_user.id, reply_chat_id)
+                    if cw.save(message.from_user.id):
+                        send_work(cw, message.from_user.id, message.message_id, reply_chat_id)
                         remove_work(cw.name)
-                        #cw.delete()
+                        cw.delete()
                         break
                 except Exception as e:
                     print(f"Exception while saving: {e}")
                 finally:
-                    #cw.delete(i < TRIES_COUNT - 1)
+                    cw.delete(i < TRIES_COUNT - 1)
                     pass
             else:
                 bot.send_message(message.from_user.id,
