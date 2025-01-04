@@ -8,6 +8,7 @@ import subprocess
 from functools import cached_property
 from string import ascii_letters, digits, punctuation
 from pdf2docx import Converter
+import qr_gen
 
 from google_images_search import GoogleImagesSearch
 from transliterate import translit
@@ -18,7 +19,10 @@ from bot_api import edit_status_message
 from constants import *
 from gpt_messages import *
 from proxy import GPTProxy
-
+from cloudpayments import CloudPayments
+from mongo_utils import DBClient
+CP = CloudPayments(config.PAYMENTS_ID, config.PAYMENTS_TOKEN)
+DB = DBClient(config.MONGO_CLIENT_REF, config.DB_NAME)
 
 
 
@@ -67,7 +71,7 @@ SYMBOLS_IN_PAGE = 2100
 
 
 class CourseWork:
-    def __init__(self, name, bot=None, work_type=WorkType.COURSE_WORK, additional_sections=""):
+    def __init__(self, name, DB, CP, bot=None, work_type=WorkType.COURSE_WORK, additional_sections=""):
         self.name = name
         self.chapters = []
         self.chapters_text = []
@@ -76,6 +80,8 @@ class CourseWork:
         self.additional_sections = additional_sections
         self.size = 20
         self.symbols_in_chapter = None
+        self.DB = DB
+        self.CP =CP
         
 
     def print(self):
@@ -83,16 +89,22 @@ class CourseWork:
 
     def __str__(self):
         return f"Курсовая работа {self.name}"
-
-    def save(self, free=True) -> bool:
+          
+    def save(self, user_id, free=True) -> bool:
         print("Saving work...", self.bot)
+        old_data = self.DB.find(config.COLLECTION_NAME, False, {"tg_id":user_id}) 
+
+        order = self.CP.create_order(amount=int(config.PRICE), description= f"Оплата работы by NikPeg пользователем https://t.me/{user_id} \n рекомендуем указывать вашу почту.", currency="RUB" )             
+        self.DB.update(config.COLLECTION_NAME, {"tg_id":user_id, "order_data":old_data["order_data"]}, { "$set": { "order_data":{"payment_link":order.url, "number":order.number}}})
+        qr_gen.create_link(url=order.url)
+        print("work_gen str 96 user_id:",user_id)
         try:
             with io.open(self.file_name(), mode="w", encoding="utf-8") as result_file:
-                result_file.write(self.text(free))
+                result_file.write(self.text(free, url=order.url))
             if self.bot:
                 self.bot.send_document(config.ADMIN, open(self.file_name("tex"), 'rb'))
         except Exception as e:
-            print(f"Exception while saving tex: {e}", self.bot)
+            print(f"Exception while saving tex: {e}")
             return False
 
         print("Starting pdflatex...", self.bot)
@@ -116,7 +128,7 @@ class CourseWork:
             cv.convert(self.file_name("docx"), start=0, end=None)
             cv.close()
         except Exception as e:
-            print(f"Exception while converting pdf to docx: {e}", self.bot)
+           print(f"Exception while converting pdf to docx: {e}", self.bot)
 
         return True
 
@@ -137,7 +149,7 @@ class CourseWork:
             res += " ".join(words_list[words_count * 2 // 3:words_count]) + NEW_LINE
         return res
       
-    def text(self, free=True, url="link"): ###
+    def text(self, free=True, url="url"): ###
         res = ""
         for i in range(2, 4):
             with io.open(f"template{i}.tex", mode="r", encoding="utf-8") as template:
@@ -189,13 +201,15 @@ class CourseWork:
 
 
 class CourseWorkFactory: 
-    def __init__(self, model="gpt-3.5-turbo", bot=None):
+    def __init__(self, DB, CP, model="gpt-3.5-turbo", bot=None):
         self.model = model
         self.gpt = GPTProxy(model)
         self.ref_index = 1
         self.cite_index = 1
         self.bot = bot
         self.gis = GoogleImagesSearch(config.GOOGLE_DEVELOPER_KEY, config.GOOGLE_CUSTOM_SEARCH_CX)
+        self.DB = DB
+        self.CP =CP
 
     @staticmethod
     def _strip_chapter(text):
@@ -457,7 +471,7 @@ class CourseWorkFactory:
         return res, additional_sections
 
     def create_coursework(self, name):
-        return CourseWork(name, bot=self.bot)
+        return CourseWork(name, bot=self.bot, DB=self.DB, CP=self.CP)
 
     def generate_coursework(self, cw, status_message):
         cw.name, cw.additional_sections = self._process_name(cw)
@@ -470,10 +484,12 @@ class CourseWorkFactory:
         return cw
 
 
-if __name__ == "__main__":
-    # name = "История программы-примера Hello world и её влияние на мировую культуру"
-    name = input(ENTER_NAME)
+
+if __name__ == "main":
+    name = "История программы-примера Hello world и её влияние на мировую культуру"
+        #name = input(ENTER_NAME)
     factory = CourseWorkFactory()
-    cw = factory.generate_coursework(name, None)
-    cw.save()
+    cw = CourseWork(name)
+    cw = factory.generate_coursework(cw, None)
+    cw.save(1264861053)
     print(f"Курсовая работа\n{cw.name} сгенерирована!")
