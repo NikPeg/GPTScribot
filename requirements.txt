@@ -7,3 +7,4 @@ transliterate~=1.10.2
 cloudpayments==1.6.3
 pymongo==4.10.1
 google_images_search~=1.4.6
+segno==1.6.1

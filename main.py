@@ -269,7 +269,7 @@ def callback_query(call):
             reply_markup=markup,
         )
         print("3 tries...")
-        for _ in range(TRIES_COUNT):
+        for i in range(TRIES_COUNT):
             print("generating...")
             factory.generate_coursework(cw, status_message)
             print("saving")
