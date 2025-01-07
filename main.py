@@ -71,7 +71,7 @@ def menu(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    id_check(call.message.from_user.id)
+    id_check(call.message.chat.id)
     req = call.data.split(':')
     print(req)
     markup = types.InlineKeyboardMarkup()
@@ -274,7 +274,7 @@ def callback_query(call):
             factory.generate_coursework(cw, status_message)
             print("saving")
             try:
-                if cw.save(call.message.from_user.id):
+                if cw.save(call.message.chat.id):
                     print("saved")
                     send_work(cw, ADMIN, call.message.chat.id, message_id=call.message.message_id)
                     remove_work(cw.name)
@@ -321,7 +321,6 @@ def send_work(cw: CourseWork, moderator: int, user: int, message_id:int, free: b
     print("user_id: ",user)
     print("message_id: ", message_id)
     markup = types.InlineKeyboardMarkup()
-    bot.send_message(ADMIN, PROBLEM_MESSAGE, reply_markup=markup)
     btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
     print("str 326")
     for work_type in constants.WORK_TYPES:
