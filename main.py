@@ -171,10 +171,35 @@ def callback_query(call):
         btn1 = types.InlineKeyboardButton(text='🏠Главное меню', callback_data='menu')
         markup.add(btn1)
         try:
-           order = DB.find(COLLECTION_NAME, False, {"tg_id":call.message.from_user.id})
-           print("ORDER", order)
-           payment_data = CP.find_payment(order["order_data"]["number"])
-           bot.send_message(ADMIN, "заказ №"+order["order_data"]["number"]+ f"на сумму {payment_data.amount};\n сообщение:{payment_data.cardholder_message}; \n регион оплаты: {payment_data.ip_region}; \n картa: {payment_data.issuer}, {payment_data.card_type} ")
+            order = DB.find(COLLECTION_NAME, False, {"tg_id":call.message.from_user.id})
+            print("ORDER", order)
+            payment_data = CP.find_payment(order["order_data"]["number"])
+            bot.send_message(ADMIN, "заказ №"+order["order_data"]["number"]+ f"на сумму {payment_data.amount};\n сообщение:{payment_data.cardholder_message}; \n регион оплаты: {payment_data.ip_region}; \n картa: {payment_data.issuer}, {payment_data.card_type} ")
+            for i in range(TRIES_COUNT): 
+                cw: CourseWork = cw_by_id.get(user_id)
+                print("str 197 succ")
+                if not cw:
+                    send_problem(ADMIN, user_id)
+                    print("str 200 - problem in main.py")
+                    break
+                try:
+                    print("SAVING")
+                    if cw.save(user_id):
+                        print("str 204")
+                        bot.delete_message(user_id, message_id)
+                        send_work(cw, ADMIN, user_id, message_id)
+                        print("str 207")
+                        remove_work(cw.name)
+                        cw.delete()
+                        break
+                except Exception as e:
+                    print(f"Exception while saving: {e}")
+                finally:
+                    print(214)
+                    cw.delete(i < TRIES_COUNT - 1)
+                    pass
+            else:
+                print( PROBLEM_MESSAGE) 
         except:
 
             print(f"User {user_id} didn't pay!", bot)
@@ -192,31 +217,6 @@ def callback_query(call):
         markup = types.InlineKeyboardMarkup()
       
 
-        for i in range(TRIES_COUNT): 
-            cw: CourseWork = cw_by_id.get(user_id)
-            print("str 197 succ")
-            if not cw:
-                send_problem(ADMIN, user_id)
-                print("str 200 - problem in main.py")
-                break
-            try:
-                print("SAVING")
-                if cw.save(user_id):
-                    print("str 204")
-                    bot.delete_message(user_id, message_id)
-                    send_work(cw, ADMIN, user_id, message_id)
-                    print("str 207")
-                    remove_work(cw.name)
-                    cw.delete()
-                    break
-            except Exception as e:
-               print(f"Exception while saving: {e}")
-            finally:
-                print(214)
-                cw.delete(i < TRIES_COUNT - 1)
-                pass
-        else:
-            print( PROBLEM_MESSAGE)
 
     elif req[0] == "size":
 

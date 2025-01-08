@@ -27,8 +27,12 @@ class DBClient:
                     except StopIteration:
                         return None
 
-    def update(self, collection:str, query:dict, new_values:dict) -> int:
-           return self.db_instance[collection].update_many(query, new_values).modified_count
+    def update(self, collection:str, query:dict, new_values:dict|list, all:bool) -> int:
+            match all:
+              case True:
+                        return self.db_instance[collection].update_many(query, new_values).modified_count
+              case False:
+                        return self.db_instance[collection].delete_one(query).deleted_count
     
     def delete(self, collection:str, query:dict, all:bool) -> int:
          
