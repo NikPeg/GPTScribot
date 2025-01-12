@@ -1,17 +1,19 @@
-#from config import DEBUG, ADMIN
+from config import TIME_TO_DELETE
+from datetime import datetime, timezone
 
 
-#MAX_MESSAGE_LENGTH = 4096
+def unix_time_now(UTC:bool)->int:
+    if UTC:
+        dt_utc_aware = datetime.now(timezone.utc)
+        return dt_utc_aware.timestamp()
+    else:
+        return datetime.now().timestamp()
 
-
-"""def log(text, bot=None):
-    try:
-        if not text:
-            return
-        if DEBUG:
-            print(text)
-        if bot:
-            for i in range(0, len(text), MAX_MESSAGE_LENGTH):
-                bot.send_message(ADMIN, text[i:i + MAX_MESSAGE_LENGTH])
-    except Exception:
-        pass"""
+def DB_timer(DB, Coollection:str)->bool:
+    data = DB.find(Coollection, False, {"tg_id":111})["orders"]
+    for i in range(len(data)):
+        if data[i]["date"]+TIME_TO_DELETE <= unix_time_now():
+            new = data.pop[i]
+            DB.collection.update(dict({"tg_id":111, "orders":data}), 
+            dict({"$set":{f"orders.{i}":new}}))
+    return True
