@@ -95,7 +95,7 @@ class CourseWork:
         old_data = self.DB.find(config.COLLECTION_NAME, False, {"tg_id":user_id}) 
 
         order = self.CP.create_order(amount=int(config.PRICE), description= f"Оплата работы by NikPeg пользователем https://t.me/{user_id} \n рекомендуем указывать вашу почту.", currency="RUB" )             
-        self.DB.update(config.COLLECTION_NAME, {"tg_id":user_id, "order_data":old_data["order_data"]}, { "$set": { "order_data":{"payment_link":order.url, "number":order.number}}})
+        self.DB.update(config.COLLECTION_NAME, {"tg_id":user_id, "order_data":old_data["order_data"]}, { "$set": { "order_data":{"payment_link":order.url, "number":order.number}}}, True)
         qr_gen.create_link(url=order.url)
         print("work_gen str 96 user_id:",user_id)
         try:
